@@ -58,6 +58,7 @@ img{max-width:100%;height:auto}
 .site-header{
   background:var(--bg);
   position:sticky; top:0; z-index:20;
+  border-bottom:2px solid #000;
 }
 .site-header.elevated{
   box-shadow: var(--shadow-sm);
@@ -135,7 +136,7 @@ img{max-width:100%;height:auto}
 }
 
 /* ---------- Footer ---------- */
-.site-footer{border-top:1px solid var(--line); margin-top:80px; background:#fff;}
+.site-footer{border-top:2px solid #000; margin-top:80px; background:#fff;}
 .footer-inner{display:flex; align-items:center; justify-content:space-between; padding:22px 0; gap:12px; flex-wrap:wrap;}
 .footer-nav a{color:var(--muted); text-decoration:none; margin-right:16px}
 .footer-nav a:hover{color:var(--ink)}
@@ -173,3 +174,4 @@ img{max-width:100%;height:auto}
 
 .footer-slide { transition: transform .35s ease; will-change: transform; }
 .footer-hidden { transform: translateY(100%); }
+

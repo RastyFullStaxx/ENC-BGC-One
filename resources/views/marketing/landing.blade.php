@@ -41,7 +41,7 @@
   ])
 
   @if (!view()->exists('partials.navbar'))
-  <header class="sticky-top bg-white border-bottom" role="banner" aria-label="Primary">
+  <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
     <nav class="navbar navbar-expand-md bg-white">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ route('landing') }}">
@@ -82,18 +82,16 @@
     {{-- HERO --}}
     <section class="py-5 py-lg-5 text-center hero-full">
       <div class="container" style="max-width: 900px;">
-        <span class="badge rounded-pill text-secondary-emphasis bg-primary-subtle border border-primary-subtle mb-3">
-          Smart Booking System
-        </span>
+        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-3">Smart Booking System</span>
 
         <h1 class="display-5 fw-bold lh-1 mb-2">
-          <span class="d-block">Shared Services Portal</span>
-          <span class="d-block text-primary">Request Rooms Easily</span>
+          <span class="d-block">Manage Shared Facilities</span>
+          <span class="d-block text-primary">Faster. Smarter. Seamless.</span>
         </h1>
 
         <p class="lead text-secondary mx-auto" style="max-width: 720px;">
-          Your one-stop shop for booking meeting rooms, special facilities, and shuttle services.
-          Real-time availability, instant confirmations, and a seamless booking experience.
+          Simplify how teams reserve meeting rooms, special facilities, and transport services.
+          Get instant approvals, avoid conflicts, and save time with real-time scheduling.
         </p>
 
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
@@ -139,7 +137,7 @@
   ])
 
   @if (!view()->exists('partials.footer'))
-  <footer class="border-top py-3">
+  <footer class="py-3 site-footer footer-slide">
     <div class="container d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
       <nav class="nav">
         <a class="nav-link px-0 me-3 text-secondary" href="{{ url('/privacy') }}">Privacy</a>

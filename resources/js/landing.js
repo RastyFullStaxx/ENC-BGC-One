@@ -51,10 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
       nav.classList.toggle('open');
     });
   }
+
+  initIdleHeaderFooter();
 });
 
-// --- Idle hide/show for header & footer ---
-(function () {
+function initIdleHeaderFooter(){
   const header = document.querySelector('.header-slide');
   const footer = document.querySelector('.footer-slide');
   if (!header && !footer) return;
@@ -63,26 +64,27 @@ document.addEventListener('DOMContentLoaded', () => {
   const IDLE_MS = 3000;
 
   const hideBars = () => {
-    header && header.classList.add('header-hidden');
-    footer && footer.classList.add('footer-hidden');
+    if (header) header.classList.add('header-hidden');
+    if (footer) footer.classList.add('footer-hidden');
   };
 
   const showBars = () => {
-    header && header.classList.remove('header-hidden');
-    footer && footer.classList.remove('footer-hidden');
+    if (header) header.classList.remove('header-hidden');
+    if (footer) footer.classList.remove('footer-hidden');
   };
 
   const resetTimer = () => {
     showBars();
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(hideBars, IDLE_MS);
+    idleTimer = window.setTimeout(hideBars, IDLE_MS);
   };
 
-  // User activity that should reveal bars
-  ['mousemove','mousedown','keydown','touchstart','scroll'].forEach(evt =>
-    window.addEventListener(evt, resetTimer, { passive: true })
-  );
+  const activityEvents = ['mousemove','mousedown','keydown','touchstart','scroll'];
+  activityEvents.forEach(evt => {
+    const options = (evt === 'scroll' || evt === 'touchstart' || evt === 'mousemove') ? { passive: true } : false;
+    window.addEventListener(evt, resetTimer, options);
+  });
 
-  // start the timer once the page is ready
-  window.addEventListener('load', resetTimer);
-})();
+  window.addEventListener('load', resetTimer, { once: true });
+  resetTimer();
+}

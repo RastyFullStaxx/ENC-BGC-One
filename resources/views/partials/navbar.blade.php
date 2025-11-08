@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-md bg-white border-bottom sticky-top">
+<nav class="navbar navbar-expand-md bg-white sticky-top site-header header-slide">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ route('landing') }}">
       <span class="d-inline-flex align-items-center justify-content-center rounded-3 border p-1 text-primary" aria-hidden="true">
