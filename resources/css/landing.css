@@ -3,19 +3,28 @@
 
 /* ---------- Tokens ---------- */
 :root{
-  --brand: #0B2C66;           /* primary brand (deep navy) */
-  --brand-600:#133D9A;
+  --brand: #1C398E;           /* primary brand (deep navy) */
+  --brand-600:#152B6B;
   --ink: #111318;             /* body text */
   --muted: #5F6470;           /* secondary text */
   --line: #E6E8EF;            /* dividers */
   --bg: #ffffff;
   --badge: #EEF2FF;           /* soft blue badge bg */
   --badge-ink: #334155;
-  --focus: #2563EB;           /* focus ring */
+  --focus: #1C398E;           /* focus ring */
   --radius: 12px;
   --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
   --shadow-md: 0 6px 18px rgba(17,19,24,.08);
   --container: 1120px;
+  --bs-primary: #1C398E;
+  --bs-primary-rgb: 28,57,142;
+  --bs-link-color: var(--brand);
+  --bs-link-hover-color: var(--brand-600);
+  --bs-link-hover-color-rgb: 21,43,107;
+  --bs-primary-text-emphasis: #152653;
+  --bs-primary-bg-subtle: #E4E7F5;
+  --bs-primary-border-subtle: #B2BCDF;
+  --bs-btn-focus-shadow-rgb: 28,57,142;
 }
 
 /* ---------- Resets & base ---------- */
@@ -175,3 +184,46 @@ img{max-width:100%;height:auto}
 .footer-slide { transition: transform .35s ease; will-change: transform; }
 .footer-hidden { transform: translateY(100%); }
 
+/* --- Landing section helpers --- */
+section + section { scroll-margin-top: 72px; } /* nice anchor jumps under a fixed header */
+
+/* Card polish */
+.card:hover { transform: translateY(-2px); transition: transform .2s ease; }
+.card-img-top { object-fit: cover; height: 220px; }
+
+/* Progress bars: larger & legible */
+.progress { background-color: #eef1f5; }
+.progress, .progress .progress-bar { border-radius: 999px; }
+.progress .progress-bar { font-size: .75rem; }
+
+/* CTA contrast on primary band */
+#cta .btn-outline-light { --bs-btn-hover-color:#1C398E; --bs-btn-hover-bg:#fff; --bs-btn-hover-border-color:#fff; }
+
+/* Small badges in facility tags */
+.badge.text-bg-light.border { background: #fff; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card:hover { transform:none; }
+  .progress .progress-bar { transition:none !important; }
+}
+
+/* --- Quick Glance (Heat) --- */
+.progress-heat { background-color: #eef1f5; border-radius: 999px; }
+.progress-heat .heatbar {
+  background: var(--heat);             /* solid heat color per % */
+  border-radius: 999px;
+  transition: width .6s ease;          /* animates when JS restores width */
+}
+
+/* Legend dots */
+.legend-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  display: inline-block; background: var(--legend, #999);
+}
+
+/* Make labels readable at all widths */
+#availability .progress { height: 24px; }
+
+/* Optional: subtle card hover (keeps from earlier suggestion) */
+.card:hover { transform: translateY(-2px); transition: transform .2s ease; }
