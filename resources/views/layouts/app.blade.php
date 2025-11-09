@@ -6,8 +6,9 @@
   <title>@yield('title', 'ENC Booking')</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  {{-- Global CSS/JS (Bootstrap via Vite) --}}
+  {{-- Default to Tailwind CSS --}}
   @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 
   {{-- Page-specific assets --}}
   @stack('styles')
