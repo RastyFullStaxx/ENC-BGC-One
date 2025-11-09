@@ -1,83 +1,79 @@
 /* resources/js/wizard.js
-   Booking Wizard interactions — vanilla JS, Bootstrap friendly
+   Sequential Booking Wizard — progressive disclosure, autosave, bindings
 */
 (() => {
-
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  const $  = (sel, root = document) => root.querySelector(sel);
-
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const $  = (s, r=document) => r.querySelector(s);
   const form = $('#bookingForm');
-  if (!form) return; // only run on the wizard page
+  if (!form) return;
 
-  // --- Elements
-  const steps = $$('.wizard-step');               // fieldsets (step-1..3)
+  // ---- Elements
+  const steps = $$('.wizard-step');
   const progressEl = $('#wizardProgress');
   const stepTitle = $('#wizardStepTitle');
   const stepHelp  = $('#wizardStepHelp');
   const stepCounter = $('#wizardStepCounter');
-  const crumb = $('.wizard-stepper .breadcrumb');
+  const crumb = $('.wizard-nav .breadcrumb');
 
-  const summary = $('#summary');
-
-  // Step metadata (title + helper)
+  // Ask blocks (mini questions) are handled *within* each step by data-ask indexing.
+  // Step labels
   const META = {
-    1: { title: '1. Choose Resource', help: 'Pick date, time and a room.' },
-    2: { title: '2. Booking Details', help: 'Tell us what you need — we’ll prep the room.' },
-    3: { title: '3. Review & Confirm', help: 'Verify details and accept policies.' }
+    1: { title: 'Step 1 — Smart Room Finder', help: 'Answer a few quick questions.' },
+    2: { title: 'Step 2 — Date & Time', help: 'Pick a date/time; recurrence optional.' },
+    3: { title: 'Step 3 — Purpose & Details', help: 'Tell us the essentials.' },
+    4: { title: 'Step 4 — Attendees', help: 'Invite people and choose visibility.' },
+    5: { title: 'Step 5 — Review & Policies', help: 'Check details and submit.' }
   };
 
-  // Helpers to convert values to nice labels
+  // Local storage key for autosave
+  const STORE_KEY = 'enc_booking_wizard_draft';
+
+  // ---------- UTIL
   const durationLabel = (mins) => {
     const n = parseInt(mins, 10);
-    if (!n || n <= 0) return '—';
-    if (n % 60 === 0) return `${n/60} hour${n===60? '':''}`;
-    if (n === 90) return '1.5 hours';
-    return `${n} mins`;
+    if (!n) return '—';
+    const h = Math.floor(n/60), m = n%60;
+    if (m===0) return `${h} hour${h>1?'s':''}`;
+    return `${h>0?`${h}h `:''}${m}m`;
   };
-
   const multiselectLabel = (select) => {
-    const vals = $$('.form-select option:checked', select).map(o => o.textContent.trim()).filter(Boolean);
+    if (!select) return 'None';
+    const vals = Array.from(select.selectedOptions).map(o=>o.textContent.trim());
     return vals.length ? vals.join(', ') : 'None';
   };
+  const setEnterAnim = (el) => {
+    el.classList.add('ask-enter');
+    requestAnimationFrame(()=> el.classList.add('ask-enter-active'));
+    setTimeout(()=> el.classList.remove('ask-enter','ask-enter-active'), 260);
+  };
 
-  // Keep current step state
-  let stepIndex = 0; // 0-based
+  // ---------- STEP NAV
+  let stepIndex = 0; // 0..4
 
-  // -------- Navigation
   const showStep = (i) => {
-    stepIndex = Math.max(0, Math.min(steps.length - 1, i));
-
+    stepIndex = Math.max(0, Math.min(steps.length-1, i));
     steps.forEach((fs, idx) => {
       const active = idx === stepIndex;
       fs.classList.toggle('d-none', !active);
       fs.setAttribute('aria-hidden', String(!active));
     });
 
-    const human = stepIndex + 1;
-    const meta = META[human];
-
-    // Progress (33/66/100)
+    const human = stepIndex+1, meta = META[human];
     const pct = Math.round(((human) / steps.length) * 100);
     progressEl.style.width = `${pct}%`;
     progressEl.setAttribute('aria-valuenow', String(pct));
-
-    // Titles
     stepTitle.textContent = meta.title;
     stepHelp.textContent  = meta.help;
     stepCounter.textContent = `Step ${human} of ${steps.length}`;
 
-    // Breadcrumb badges
-    if (crumb) {
+    if (crumb){
       const items = $$('.breadcrumb-item', crumb);
       items.forEach((li, idx) => {
         const badge = $('.badge', li);
         if (!badge) return;
-        if (idx < stepIndex) {
+        if (idx <= stepIndex){
           badge.className = 'badge rounded-pill text-bg-primary';
-          li.classList.remove('active');
-        } else if (idx === stepIndex) {
-          badge.className = 'badge rounded-pill text-bg-primary';
-          li.classList.add('active');
+          li.classList.toggle('active', idx===stepIndex);
         } else {
           badge.className = 'badge rounded-pill text-bg-light border';
           li.classList.remove('active');
@@ -85,206 +81,650 @@
       });
     }
 
-    // Move focus to first interactive field in the step for keyboarders
-    const focusable = $('input,select,textarea,button', steps[stepIndex]);
-    if (focusable) focusable.focus({ preventScroll: true });
+    // Focus first interactive control of the first visible ask in the step
+    const firstAsk = steps[stepIndex].querySelector('.ask:not(.d-none) input, .ask:not(.d-none) select, .ask:not(.d-none) textarea, .ask:not(.d-none) .btn');
+    firstAsk?.focus({ preventScroll:true });
 
-    // Refresh review bindings when entering step 3
-    if (human === 3) bindAll();
+    // When entering Review step, refresh all bindings
+    if (human === 5) bindAll();
   };
 
-  const next = () => {
-    if (!validateStep(stepIndex)) return;
-    showStep(stepIndex + 1);
-  };
-  const prev = () => showStep(stepIndex - 1);
+  const nextStep = () => showStep(stepIndex+1);
+  const prevStep = () => showStep(stepIndex-1);
 
-  // Buttons
-  $$('[data-next]').forEach(btn => btn.addEventListener('click', next));
-  $$('[data-prev]').forEach(btn => btn.addEventListener('click', prev));
-  $$('[data-jump]').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const target = parseInt(btn.getAttribute('data-jump'), 10) - 1;
-      showStep(target);
-    });
-  });
+  // Step buttons (Next/Prev across steps)
+  $$('[data-next]').forEach(b => b.addEventListener('click', () => {
+    if (!validateCurrentStep()) return;
+    nextStep(); saveDraft();
+  }));
+  $$('[data-prev]').forEach(b => b.addEventListener('click', () => { prevStep(); saveDraft(); }));
 
-  // -------- Validation per step
-  const step1 = $('#step-1');
-  const step2 = $('#step-2');
-  const step3 = $('#step-3');
+  // ---------- ASK FLOW (within steps)
+  function showNextAsk(container, fromAsk){
+    const asks = $$('.ask', container);
+    if (!asks.length) return;
 
-  function validateStep(idx) {
-    if (idx === 0) return validateStep1();
-    if (idx === 1) return validateStep2();
-    if (idx === 2) return validateStep3();
-    return true;
-  }
-
-  function validateStep1() {
-    // HTML5 validation pass
-    if (!step1.checkValidity()) {
-      step1.classList.add('was-validated');
-      return false;
-    }
-    // room type selected?
-    const typeChosen = $('input[name="room_type"]:checked', step1);
-    const typeErr = step1.querySelector('[data-error-roomtype]');
-    if (!typeChosen) {
-      if (typeErr) typeErr.style.display = '';
-      return false;
-    } else if (typeErr) typeErr.style.display = 'none';
-
-    // room selected?
-    const roomChosen = $('input[name="room_id"]:checked', step1);
-    if (!roomChosen) {
-      alert('Please select a room from the list.');
-      return false;
-    }
-
-    return true;
-  }
-
-  function validateStep2() {
-    // No required fields here except standard controls
-    if (!step2.checkValidity()) {
-      step2.classList.add('was-validated');
-      return false;
-    }
-    return true;
-  }
-
-  function validateStep3() {
-    if (!step3.checkValidity()) {
-      step3.classList.add('was-validated');
-      return false;
-    }
-    return true;
-  }
-
-  // --------- Live Summary Bindings
-  const bindMap = {
-    date:      () => $('#date')?.value || '—',
-    start_time:() => $('#start_time')?.value || '—',
-    duration_label:() => durationLabel($('#duration')?.value),
-    capacity:  () => $('#capacity')?.value || '—',
-    room_name: () => $('input[name="room_id"]:checked')?.closest('.room-card')?.querySelector('.card-title')?.textContent?.trim() || '—',
-    layout_label:() => $('#layout')?.selectedOptions?.[0]?.text || 'Standard',
-    extras_label:() => multiselectLabel($('#equipment')),
-    purpose:   () => $('#purpose')?.value || '—'
-  };
-
-  function bindAll() {
-    Object.entries(bindMap).forEach(([key, fn]) => {
-      $$(`[data-bind="${key}"]`, summary.parentElement).forEach(el => {
-        el.textContent = fn();
-      });
-    });
-  }
-
-  // Keep summary hot while typing/changing
-  ['change','input'].forEach(evt => form.addEventListener(evt, bindAll));
-
-  // Duration shows label in summary immediately
-  $('#duration')?.addEventListener('change', bindAll);
-
-  // --------- Rooms: choose, sort, filter
-  const roomsGrid = $('#roomsGrid');
-  const sortRooms = $('#sortRooms');
-
-  // Clicking a room card's radio will also select via card click
-  $$('.room-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      const radio = $('.choose-room', card);
-      if (!radio) return;
-      // Ignore when clicking links/controls inside
-      if (e.target.closest('input,button,label,select')) return;
-      radio.checked = true;
-      // Visual focus for accessibility
-      radio.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-  });
-
-  // Filter rooms based on attendees (capacity) as user types
-  const capacityInput = $('#capacity');
-  function filterRooms() {
-    const need = parseInt(capacityInput.value || '0', 10);
-    let shown = 0;
-    $$('.room-card', roomsGrid).forEach(card => {
-      const cap = parseInt(card.getAttribute('data-capacity') || '0', 10);
-      const ok = !need || cap >= need;
-      card.parentElement.classList.toggle('d-none', !ok);
-      if (ok) shown++;
-    });
-    if (roomsGrid) {
-      const emptyText = roomsGrid.getAttribute('data-empty-text') || 'No rooms available.';
-      let msg = $('#roomsEmptyMsg', roomsGrid);
-      if (shown === 0) {
-        if (!msg) {
-          msg = document.createElement('div');
-          msg.id = 'roomsEmptyMsg';
-          msg.className = 'text-center text-secondary small py-3';
-          msg.textContent = emptyText;
-          roomsGrid.appendChild(msg);
+    let idx = fromAsk ? asks.indexOf(fromAsk) : -1;
+    if (idx === -1){
+      for (let i = asks.length - 1; i >= 0; i--){
+        if (!asks[i].classList.contains('d-none')){
+          idx = i;
+          break;
         }
-      } else if (msg) {
-        msg.remove();
       }
     }
+
+    const next = asks[idx+1];
+    if (!next) return;
+
+    next.classList.remove('d-none');
+    next.setAttribute('aria-hidden','false');
+    setEnterAnim(next);
+    // focus first control in the next ask
+    const f = next.querySelector('input,select,textarea,button');
+    f?.focus({ preventScroll:true });
   }
-  capacityInput?.addEventListener('input', filterRooms);
 
-  function sortRoomsNow() {
-    if (!roomsGrid) return;
-    const cards = $$('.col-12.col-md-6', roomsGrid).filter(col => !col.classList.contains('d-none'));
-    const key = sortRooms?.value || 'soonest';
+  // Per-ask "Next" buttons
+  $$('[data-next-ask]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const ask = e.currentTarget.closest('.ask');
+      if (!ask) return;
+      if (!validateAsk(ask)) return;
+      const fs = e.currentTarget.closest('.wizard-step');
+      showNextAsk(fs, ask);
+      saveDraft();
+    });
+  });
 
-    const byName = (a,b) => {
-      const an = $('.card-title', a).textContent.trim().toLowerCase();
-      const bn = $('.card-title', b).textContent.trim().toLowerCase();
-      return an.localeCompare(bn);
-    };
-    const byCap = (a,b) => {
-      const ac = parseInt($('.room-card', a).getAttribute('data-capacity')||'0',10);
-      const bc = parseInt($('.room-card', b).getAttribute('data-capacity')||'0',10);
-      return ac - bc;
-    };
-    // 'soonest' is placeholder; without per-room times we default to name
-    const comparator = key === 'capacity' ? byCap : byName;
+  // Step 1 actions: find rooms / manual
+  const finderResults = $('#finderResults');
+  const manualPicker  = $('#manualPicker');
+  $$('[data-find-rooms]').forEach(btn => btn.addEventListener('click', () => {
+    // Validate the last ask in Step 1 if needed
+    const step1 = $('#step-1');
+    const asks = $$('.ask', step1);
+    if (!asks.every(validateAsk)) return;
 
-    cards.sort(comparator).forEach(col => roomsGrid.appendChild(col));
+    manualPicker?.classList.add('d-none');
+    finderResults?.classList.remove('d-none');
+    setEnterAnim(finderResults);
+    // Mock filter pass can be done here later
+    saveDraft();
+  }));
+  $$('[data-manual-rooms]').forEach(btn => btn.addEventListener('click', () => {
+    finderResults?.classList.add('d-none');
+    manualPicker?.classList.remove('d-none');
+    setEnterAnim(manualPicker);
+    saveDraft();
+  }));
+  $$('[data-edit-answers]').forEach(btn => btn.addEventListener('click', () => {
+    // Hide result sections and show first ask again
+    finderResults?.classList.add('d-none');
+    manualPicker?.classList.add('d-none');
+    // reveal Q1 only, hide others
+    const s1 = $('#step-1');
+    const asks = $$('.ask', s1);
+    asks.forEach((a, idx) => {
+      a.classList.toggle('d-none', idx !== 0);
+      a.setAttribute('aria-hidden', String(idx !== 0));
+    });
+  }));
+
+  // ---------- VALIDATION
+  function validateAsk(askEl){
+    // Use native validity of inputs inside this ask (only the ones visible)
+    const ctrls = $$('input,select,textarea', askEl).filter(el => !el.closest('.d-none'));
+    let ok = true;
+
+    ctrls.forEach(el => {
+      if (el.type === 'radio'){
+        const group = $$(`input[type="radio"][name="${el.name}"]`, askEl);
+        const checked = group.some(r => r.checked);
+        const err = askEl.querySelector('[data-error="room_type"]');
+        if (group.length && !checked){
+          err && (err.style.display = '');
+          ok = false;
+        } else if (err) err.style.display = 'none';
+      } else {
+        if (!el.checkValidity()){
+          el.classList.add('is-invalid');
+          ok = false;
+        } else {
+          el.classList.remove('is-invalid');
+        }
+      }
+    });
+    return ok;
   }
-  sortRooms?.addEventListener('change', sortRoomsNow);
 
-  // -------- Form submit
+  function validateCurrentStep(){
+    const fs = steps[stepIndex];
+    // ensure any visible ask is valid
+    const visibleAsks = $$('.ask', fs).filter(a => !a.classList.contains('d-none'));
+    return visibleAsks.every(validateAsk);
+  }
+
+  // ---------- ROOM CARD UX
+  const chooseRoomRadios = $$('input.choose-room');
+  chooseRoomRadios.forEach(r => {
+    r.addEventListener('change', () => { bindAll(); saveDraft(); });
+  });
+  $$('.room-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('input,label,button,select,textarea')) return;
+      const radio = $('.choose-room', card);
+      if (!radio) return;
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles:true }));
+    });
+  });
+
+  // ---------- DATE/TIME step: recurrence toggle + conflict mock
+  const repeatToggle = $('#repeatToggle');
+  const repeatOptions = $('#repeatOptions');
+  repeatToggle?.addEventListener('change', () => {
+    if (repeatToggle.checked){
+      repeatOptions.classList.remove('d-none'); setEnterAnim(repeatOptions);
+    } else {
+      repeatOptions.classList.add('d-none');
+    }
+    saveDraft();
+  });
+
+  const dateInput = $('#date');
+  const startInput = $('#start_time');
+  const endInput   = $('#end_time');
+  const conflictBlock = $('#conflictBlock');
+
+  function mockConflictCheck(){
+    // Demo: conflict if start between 11:00 and 14:00
+    if (!startInput || !endInput) return;
+    const s = startInput.value;
+    if (s && s >= '11:00' && s < '14:00'){
+      conflictBlock?.classList.remove('d-none');
+    } else {
+      conflictBlock?.classList.add('d-none');
+    }
+  }
+  [dateInput, startInput, endInput].forEach(el => el?.addEventListener('change', () => {
+    mockConflictCheck(); bindAll(); saveDraft();
+  }));
+
+  // ---------- SUMMARY BINDINGS
+  const summaryRoot = $('#summary')?.parentElement || document;
+  const bindMap = {
+    room_name: () => $('input[name="room_id"]:checked')?.closest('.room-card')?.querySelector('.card-title')?.textContent?.trim() || '—',
+    capacity:  () => $('#capacity')?.value || $('#attendees')?.value || '—',
+    date:      () => $('#date')?.value || '—',
+    start_time:() => $('#start_time')?.value || '—',
+    end_time:  () => $('#end_time')?.value || '—',
+    layout_label: () => $('#layout')?.selectedOptions?.[0]?.text || 'Standard',
+    attendees_label: () => {
+      const a = $('#attendees')?.value || '';
+      return a ? `${a} attendee${parseInt(a,10)>1?'s':''}` : '—';
+    },
+    manpower_label: () => {
+      const n = parseInt($('#manpower_count')?.value || '0',10);
+      const role = $('#manpower_role')?.selectedOptions?.[0]?.text || 'General Support';
+      return n>0 ? `${n} × ${role}` : 'None';
+    },
+    visibility_label: () => $('input[name="visibility"]:checked')?.value === 'public' ? 'Public (internal)' : 'Private',
+    status_label: () => 'Pending Approval'
+  };
+
+  function bindAll(){
+    Object.entries(bindMap).forEach(([k,fn]) => {
+      $$(`[data-bind="${k}"]`, summaryRoot).forEach(el => el.textContent = fn());
+      $$(`#reviewSummary [data-bind="${k}"]`).forEach(el => el.textContent = fn());
+    });
+  }
+
+  // Keep summary hot
+  form.addEventListener('input', () => { bindAll(); saveDraft(); });
+  form.addEventListener('change', () => { bindAll(); saveDraft(); });
+
+  // ---------- AUTOSAVE (localStorage)
+  function saveDraft(){
+    const data = Object.fromEntries(new FormData(form).entries());
+    // include multi-value fields
+    data['buildings[]'] = $$('input[name="buildings[]"]:checked').map(el=>el.value);
+    data['equipment[]'] = $$('input[name="equipment[]"]:checked').map(el=>el.value);
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  }
+  function loadDraft(){
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    try{
+      const data = JSON.parse(raw);
+      Object.entries(data).forEach(([k,v]) => {
+        const els = $$(`[name="${k}"]`);
+        if (!els.length) return;
+        if (Array.isArray(v)){
+          els.forEach(el => el.checked = v.includes(el.value));
+        } else {
+          const el = els[0];
+          if (el.type === 'radio' || el.type === 'checkbox'){
+            els.forEach(r => r.checked = (r.value == v));
+          } else {
+            el.value = v;
+          }
+        }
+      });
+    }catch(e){}
+  }
+
+  // ---------- FORM SUBMIT
   form.addEventListener('submit', (e) => {
-    // Validate all before real submit
-    if (!validateStep(0) || !validateStep(1) || !validateStep(2)) {
+    // Validate visible asks in current step and the agreement
+    if (!validateCurrentStep()){
+      e.preventDefault(); return;
+    }
+    const agree = $('#agree');
+    if (agree && !agree.checked){
       e.preventDefault();
-      // Move user to the first failing step
-      if (!validateStep(0)) showStep(0);
-      else if (!validateStep(1)) showStep(1);
-      else showStep(2);
+      agree.classList.add('is-invalid');
+      showStep(4);
       return;
     }
-    // Normal submit: server handles success -> redirect/flash
-    // If you want a client-side demo success, enable below:
+    // Allow normal submit; to demo client-side success uncomment below:
     // e.preventDefault(); showSuccess();
   });
 
-  function showSuccess() {
-    $$('#step-1,#step-2,#step-3').forEach(s => s.classList.add('d-none'));
+  function showSuccess(){
+    $$('#step-1,#step-2,#step-3,#step-4,#step-5').forEach(s => s.classList.add('d-none'));
     $('#step-success')?.classList.remove('d-none');
     progressEl.style.width = '100%';
-    stepTitle.textContent = 'Success';
-    stepHelp.textContent  = 'Your booking has been created.';
-    stepCounter.textContent = 'Done';
+    stepTitle.textContent = 'Done — Request Sent';
+    stepHelp.textContent  = 'We’ll notify you once it’s approved.';
+    stepCounter.textContent = 'Completed';
+    localStorage.removeItem(STORE_KEY);
   }
 
-  // -------- Init
-  filterRooms();
-  sortRoomsNow();
+  // ---------- INIT
+  loadDraft();
+  // Ensure only the first ask of each step is visible initially (unless draft restored)
+  steps.forEach(step => {
+    const asks = $$('.ask', step);
+    if (!asks.length) return;
+    const anyFilled = asks.some(a => $$('input,select,textarea', a).some(ctrl => {
+      if (ctrl.type === 'radio' || ctrl.type === 'checkbox') return ctrl.checked;
+      return !!ctrl.value;
+    }));
+    if (!anyFilled){
+      asks.forEach((a, idx) => {
+        a.classList.toggle('d-none', idx!==0);
+        a.setAttribute('aria-hidden', String(idx!==0));
+      });
+    }
+  });
+
   bindAll();
   showStep(0);
+  mockConflictCheck();
+})();
+/* resources/js/wizard.js
+   Sequential Booking Wizard — progressive disclosure, autosave, bindings
+*/
+(() => {
+  const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+  const $  = (s, r=document) => r.querySelector(s);
+  const form = $('#bookingForm');
+  if (!form) return;
 
+  // ---- Elements
+  const steps = $$('.wizard-step');
+  const progressEl = $('#wizardProgress');
+  const stepTitle = $('#wizardStepTitle');
+  const stepHelp  = $('#wizardStepHelp');
+  const stepCounter = $('#wizardStepCounter');
+  const crumb = $('.wizard-nav .breadcrumb');
+
+  // Ask blocks (mini questions) are handled *within* each step by data-ask indexing.
+  // Step labels
+  const META = {
+    1: { title: 'Step 1 — Smart Room Finder', help: 'Answer a few quick questions.' },
+    2: { title: 'Step 2 — Date & Time', help: 'Pick a date/time; recurrence optional.' },
+    3: { title: 'Step 3 — Purpose & Details', help: 'Tell us the essentials.' },
+    4: { title: 'Step 4 — Attendees', help: 'Invite people and choose visibility.' },
+    5: { title: 'Step 5 — Review & Policies', help: 'Check details and submit.' }
+  };
+
+  // Local storage key for autosave
+  const STORE_KEY = 'enc_booking_wizard_draft';
+
+  // ---------- UTIL
+  const durationLabel = (mins) => {
+    const n = parseInt(mins, 10);
+    if (!n) return '—';
+    const h = Math.floor(n/60), m = n%60;
+    if (m===0) return `${h} hour${h>1?'s':''}`;
+    return `${h>0?`${h}h `:''}${m}m`;
+  };
+  const multiselectLabel = (select) => {
+    if (!select) return 'None';
+    const vals = Array.from(select.selectedOptions).map(o=>o.textContent.trim());
+    return vals.length ? vals.join(', ') : 'None';
+  };
+  const setEnterAnim = (el) => {
+    el.classList.add('ask-enter');
+    requestAnimationFrame(()=> el.classList.add('ask-enter-active'));
+    setTimeout(()=> el.classList.remove('ask-enter','ask-enter-active'), 260);
+  };
+
+  // ---------- STEP NAV
+  let stepIndex = 0; // 0..4
+
+  const showStep = (i) => {
+    stepIndex = Math.max(0, Math.min(steps.length-1, i));
+    steps.forEach((fs, idx) => {
+      const active = idx === stepIndex;
+      fs.classList.toggle('d-none', !active);
+      fs.setAttribute('aria-hidden', String(!active));
+    });
+
+    const human = stepIndex+1, meta = META[human];
+    const pct = Math.round(((human) / steps.length) * 100);
+    progressEl.style.width = `${pct}%`;
+    progressEl.setAttribute('aria-valuenow', String(pct));
+    stepTitle.textContent = meta.title;
+    stepHelp.textContent  = meta.help;
+    stepCounter.textContent = `Step ${human} of ${steps.length}`;
+
+    if (crumb){
+      const items = $$('.breadcrumb-item', crumb);
+      items.forEach((li, idx) => {
+        const badge = $('.badge', li);
+        if (!badge) return;
+        if (idx <= stepIndex){
+          badge.className = 'badge rounded-pill text-bg-primary';
+          li.classList.toggle('active', idx===stepIndex);
+        } else {
+          badge.className = 'badge rounded-pill text-bg-light border';
+          li.classList.remove('active');
+        }
+      });
+    }
+
+    // Focus first interactive control of the first visible ask in the step
+    const firstAsk = steps[stepIndex].querySelector('.ask:not(.d-none) input, .ask:not(.d-none) select, .ask:not(.d-none) textarea, .ask:not(.d-none) .btn');
+    firstAsk?.focus({ preventScroll:true });
+
+    // When entering Review step, refresh all bindings
+    if (human === 5) bindAll();
+  };
+
+  const nextStep = () => showStep(stepIndex+1);
+  const prevStep = () => showStep(stepIndex-1);
+
+  // Step buttons (Next/Prev across steps)
+  $$('[data-next]').forEach(b => b.addEventListener('click', () => {
+    if (!validateCurrentStep()) return;
+    nextStep(); saveDraft();
+  }));
+  $$('[data-prev]').forEach(b => b.addEventListener('click', () => { prevStep(); saveDraft(); }));
+
+  // ---------- ASK FLOW (within steps)
+  function showNextAsk(container, fromAsk){
+    const asks = $$('.ask', container);
+    if (!asks.length) return;
+
+    let idx = fromAsk ? asks.indexOf(fromAsk) : -1;
+    if (idx === -1){
+      for (let i = asks.length - 1; i >= 0; i--){
+        if (!asks[i].classList.contains('d-none')){
+          idx = i;
+          break;
+        }
+      }
+    }
+
+    const next = asks[idx+1];
+    if (!next) return;
+
+    next.classList.remove('d-none');
+    next.setAttribute('aria-hidden','false');
+    setEnterAnim(next);
+    // focus first control in the next ask
+    const f = next.querySelector('input,select,textarea,button');
+    f?.focus({ preventScroll:true });
+  }
+
+  // Per-ask "Next" buttons
+  $$('[data-next-ask]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const ask = e.currentTarget.closest('.ask');
+      if (!ask) return;
+      if (!validateAsk(ask)) return;
+      const fs = e.currentTarget.closest('.wizard-step');
+      showNextAsk(fs, ask);
+      saveDraft();
+    });
+  });
+
+  // Step 1 actions: find rooms / manual
+  const finderResults = $('#finderResults');
+  const manualPicker  = $('#manualPicker');
+  $$('[data-find-rooms]').forEach(btn => btn.addEventListener('click', () => {
+    // Validate the last ask in Step 1 if needed
+    const step1 = $('#step-1');
+    const asks = $$('.ask', step1);
+    if (!asks.every(validateAsk)) return;
+
+    manualPicker?.classList.add('d-none');
+    finderResults?.classList.remove('d-none');
+    setEnterAnim(finderResults);
+    // Mock filter pass can be done here later
+    saveDraft();
+  }));
+  $$('[data-manual-rooms]').forEach(btn => btn.addEventListener('click', () => {
+    finderResults?.classList.add('d-none');
+    manualPicker?.classList.remove('d-none');
+    setEnterAnim(manualPicker);
+    saveDraft();
+  }));
+  $$('[data-edit-answers]').forEach(btn => btn.addEventListener('click', () => {
+    // Hide result sections and show first ask again
+    finderResults?.classList.add('d-none');
+    manualPicker?.classList.add('d-none');
+    // reveal Q1 only, hide others
+    const s1 = $('#step-1');
+    const asks = $$('.ask', s1);
+    asks.forEach((a, idx) => {
+      a.classList.toggle('d-none', idx !== 0);
+      a.setAttribute('aria-hidden', String(idx !== 0));
+    });
+  }));
+
+  // ---------- VALIDATION
+  function validateAsk(askEl){
+    // Use native validity of inputs inside this ask (only the ones visible)
+    const ctrls = $$('input,select,textarea', askEl).filter(el => !el.closest('.d-none'));
+    let ok = true;
+
+    ctrls.forEach(el => {
+      if (el.type === 'radio'){
+        const group = $$(`input[type="radio"][name="${el.name}"]`, askEl);
+        const checked = group.some(r => r.checked);
+        const err = askEl.querySelector('[data-error="room_type"]');
+        if (group.length && !checked){
+          err && (err.style.display = '');
+          ok = false;
+        } else if (err) err.style.display = 'none';
+      } else {
+        if (!el.checkValidity()){
+          el.classList.add('is-invalid');
+          ok = false;
+        } else {
+          el.classList.remove('is-invalid');
+        }
+      }
+    });
+    return ok;
+  }
+
+  function validateCurrentStep(){
+    const fs = steps[stepIndex];
+    // ensure any visible ask is valid
+    const visibleAsks = $$('.ask', fs).filter(a => !a.classList.contains('d-none'));
+    return visibleAsks.every(validateAsk);
+  }
+
+  // ---------- ROOM CARD UX
+  const chooseRoomRadios = $$('input.choose-room');
+  chooseRoomRadios.forEach(r => {
+    r.addEventListener('change', () => { bindAll(); saveDraft(); });
+  });
+  $$('.room-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('input,label,button,select,textarea')) return;
+      const radio = $('.choose-room', card);
+      if (!radio) return;
+      radio.checked = true;
+      radio.dispatchEvent(new Event('change', { bubbles:true }));
+    });
+  });
+
+  // ---------- DATE/TIME step: recurrence toggle + conflict mock
+  const repeatToggle = $('#repeatToggle');
+  const repeatOptions = $('#repeatOptions');
+  repeatToggle?.addEventListener('change', () => {
+    if (repeatToggle.checked){
+      repeatOptions.classList.remove('d-none'); setEnterAnim(repeatOptions);
+    } else {
+      repeatOptions.classList.add('d-none');
+    }
+    saveDraft();
+  });
+
+  const dateInput = $('#date');
+  const startInput = $('#start_time');
+  const endInput   = $('#end_time');
+  const conflictBlock = $('#conflictBlock');
+
+  function mockConflictCheck(){
+    // Demo: conflict if start between 11:00 and 14:00
+    if (!startInput || !endInput) return;
+    const s = startInput.value;
+    if (s && s >= '11:00' && s < '14:00'){
+      conflictBlock?.classList.remove('d-none');
+    } else {
+      conflictBlock?.classList.add('d-none');
+    }
+  }
+  [dateInput, startInput, endInput].forEach(el => el?.addEventListener('change', () => {
+    mockConflictCheck(); bindAll(); saveDraft();
+  }));
+
+  // ---------- SUMMARY BINDINGS
+  const summaryRoot = $('#summary')?.parentElement || document;
+  const bindMap = {
+    room_name: () => $('input[name="room_id"]:checked')?.closest('.room-card')?.querySelector('.card-title')?.textContent?.trim() || '—',
+    capacity:  () => $('#capacity')?.value || $('#attendees')?.value || '—',
+    date:      () => $('#date')?.value || '—',
+    start_time:() => $('#start_time')?.value || '—',
+    end_time:  () => $('#end_time')?.value || '—',
+    layout_label: () => $('#layout')?.selectedOptions?.[0]?.text || 'Standard',
+    attendees_label: () => {
+      const a = $('#attendees')?.value || '';
+      return a ? `${a} attendee${parseInt(a,10)>1?'s':''}` : '—';
+    },
+    manpower_label: () => {
+      const n = parseInt($('#manpower_count')?.value || '0',10);
+      const role = $('#manpower_role')?.selectedOptions?.[0]?.text || 'General Support';
+      return n>0 ? `${n} × ${role}` : 'None';
+    },
+    visibility_label: () => $('input[name="visibility"]:checked')?.value === 'public' ? 'Public (internal)' : 'Private',
+    status_label: () => 'Pending Approval'
+  };
+
+  function bindAll(){
+    Object.entries(bindMap).forEach(([k,fn]) => {
+      $$(`[data-bind="${k}"]`, summaryRoot).forEach(el => el.textContent = fn());
+      $$(`#reviewSummary [data-bind="${k}"]`).forEach(el => el.textContent = fn());
+    });
+  }
+
+  // Keep summary hot
+  form.addEventListener('input', () => { bindAll(); saveDraft(); });
+  form.addEventListener('change', () => { bindAll(); saveDraft(); });
+
+  // ---------- AUTOSAVE (localStorage)
+  function saveDraft(){
+    const data = Object.fromEntries(new FormData(form).entries());
+    // include multi-value fields
+    data['buildings[]'] = $$('input[name="buildings[]"]:checked').map(el=>el.value);
+    data['equipment[]'] = $$('input[name="equipment[]"]:checked').map(el=>el.value);
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  }
+  function loadDraft(){
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return;
+    try{
+      const data = JSON.parse(raw);
+      Object.entries(data).forEach(([k,v]) => {
+        const els = $$(`[name="${k}"]`);
+        if (!els.length) return;
+        if (Array.isArray(v)){
+          els.forEach(el => el.checked = v.includes(el.value));
+        } else {
+          const el = els[0];
+          if (el.type === 'radio' || el.type === 'checkbox'){
+            els.forEach(r => r.checked = (r.value == v));
+          } else {
+            el.value = v;
+          }
+        }
+      });
+    }catch(e){}
+  }
+
+  // ---------- FORM SUBMIT
+  form.addEventListener('submit', (e) => {
+    // Validate visible asks in current step and the agreement
+    if (!validateCurrentStep()){
+      e.preventDefault(); return;
+    }
+    const agree = $('#agree');
+    if (agree && !agree.checked){
+      e.preventDefault();
+      agree.classList.add('is-invalid');
+      showStep(4);
+      return;
+    }
+    // Allow normal submit; to demo client-side success uncomment below:
+    // e.preventDefault(); showSuccess();
+  });
+
+  function showSuccess(){
+    $$('#step-1,#step-2,#step-3,#step-4,#step-5').forEach(s => s.classList.add('d-none'));
+    $('#step-success')?.classList.remove('d-none');
+    progressEl.style.width = '100%';
+    stepTitle.textContent = 'Done — Request Sent';
+    stepHelp.textContent  = 'We’ll notify you once it’s approved.';
+    stepCounter.textContent = 'Completed';
+    localStorage.removeItem(STORE_KEY);
+  }
+
+  // ---------- INIT
+  loadDraft();
+  // Ensure only the first ask of each step is visible initially (unless draft restored)
+  steps.forEach(step => {
+    const asks = $$('.ask', step);
+    if (!asks.length) return;
+    const anyFilled = asks.some(a => $$('input,select,textarea', a).some(ctrl => {
+      if (ctrl.type === 'radio' || ctrl.type === 'checkbox') return ctrl.checked;
+      return !!ctrl.value;
+    }));
+    if (!anyFilled){
+      asks.forEach((a, idx) => {
+        a.classList.toggle('d-none', idx!==0);
+        a.setAttribute('aria-hidden', String(idx!==0));
+      });
+    }
+  });
+
+  bindAll();
+  showStep(0);
+  mockConflictCheck();
 })();

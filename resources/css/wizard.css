@@ -1,63 +1,38 @@
 /* ===========================
-   Booking Wizard (Bootstrap)
-   Palette tokens (from your spec)
+   Booking Wizard — Sequential
+   Palette tokens
    =========================== */
 :root{
-  --brand-primary: #0B1640;      /* Navy Blue */
-  --brand-secondary: #0B1840;    /* Sapphire Blue (close match) */
-  --accent-gold: #FFC400;        /* Golden Yellow */
-  --accent-maize: #FFCE3F;       /* Maize Yellow */
+  --brand-primary: #0B1640;      /* Navy */
+  --brand-secondary: #0B1840;    /* Sapphire */
+  --accent-gold: #FFC400;        /* Golden */
+  --accent-maize: #FFCE3F;       /* Maize */
   --support-ivory: #F7F5E8;      /* Ivory */
   --text-body: #0B0B3A;          /* Mirage */
-  --text-subtle: #CCD2DD;        /* Spun Pearl */
-  --light: #F0F0F0;
-  --dark: #0B0D0E;
+  --text-subtle: #6b7280;        /* Subtle text */
+  --surface: #ffffff;
+  --surface-alt: #f6f8fb;
 }
 
-/* Base text color */
-#wizardProgress,
-.wizard-stepper,
-.wizard-step,
-#summary { color: var(--text-body); }
+/* Base */
+body { color: var(--text-body); }
+.card { border-radius: 1rem; }
+.card.shadow-sm { box-shadow: 0 .5rem 1rem rgba(0,0,0,.06)!important; }
 
-/* Stepper header */
-.wizard-stepper .breadcrumb{
-  --bs-breadcrumb-divider: '›';
-  margin-bottom: 0;
-}
-.wizard-stepper .badge{
-  width: 28px; height: 28px;
-  display: inline-flex; align-items:center; justify-content:center;
+/* Stepper */
+#wizardProgress{ background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)); }
+.wizard-nav .badge{
+  width: 28px; height: 28px; display: inline-flex; align-items:center; justify-content:center;
   font-weight: 600;
 }
-.wizard-stepper .breadcrumb-item.active .badge{
-  background-color: var(--brand-primary) !important;
-}
-.wizard-stepper .breadcrumb-item .badge{
-  border: 1px solid rgba(13, 110, 253, .25);
-}
-
-/* Progress bar tint */
-#wizardProgress{
-  background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary));
-}
-
-/* Cards */
-.card.shadow-sm{ border-radius: 1rem; }
-.card-img-top{ height: 180px; object-fit: cover; }
-
-/* Room card hover */
-.room-card{ transition: transform .2s ease, box-shadow .2s ease; }
-.room-card:hover{ transform: translateY(-2px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.08) !important; }
-.room-card .badge.text-bg-primary{ background-color: var(--brand-primary) !important; }
+.wizard-nav .text-bg-primary{ background-color: var(--brand-primary)!important; }
 
 /* Buttons */
 .btn-primary{
   background-color: var(--brand-primary);
   border-color: var(--brand-primary);
 }
-.btn-primary:hover,
-.btn-primary:focus{
+.btn-primary:hover,.btn-primary:focus{
   background-color: var(--brand-secondary);
   border-color: var(--brand-secondary);
 }
@@ -65,58 +40,65 @@
   color: var(--brand-primary);
   border-color: var(--brand-primary);
 }
-.btn-outline-primary:hover,
-.btn-outline-primary:focus{
-  background: #fff;
-  color: var(--brand-secondary);
-  border-color: var(--brand-secondary);
+.btn-outline-primary:hover,.btn-outline-primary:focus{
+  background: #fff; color: var(--brand-secondary); border-color: var(--brand-secondary);
 }
 
-/* Inputs & focus */
-.form-control:focus, .form-select:focus, .btn-check:focus + .btn{
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 .25rem rgba(11,22,64,.15);
-}
+/* Chips (btn-check) */
 .btn-check:checked + .btn{
   color:#fff; background-color: var(--brand-primary); border-color: var(--brand-primary);
 }
-
-/* Inline helper text */
-.form-text{ color:#7a8396; }
-
-/* Sticky summary */
-.sticky-top{ z-index: 2; }
-#summary dt{ font-weight: 600; }
-
-/* Success state (when shown) */
-#step-success .display-6{ color: var(--brand-primary); }
-
-/* Validation */
-.was-validated .form-control:invalid,
-.form-control.is-invalid{ border-color:#dc3545; }
-.was-validated .form-control:valid,
-.form-control.is-valid{ border-color:#198754; }
-
-/* Minimal pills for amenities */
-.badge.text-bg-light.border{
-  background:#fff;
-  border-color:#e6e9ee !important;
-  color:#39425a;
+.btn-check:focus + .btn,
+.form-control:focus,.form-select:focus,.form-check-input:focus{
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 .25rem rgba(11,22,64,.15);
 }
 
-/* Gold highlight for warnings / notices if needed */
-.alert-gold{
+/* Ask blocks: progressive disclosure */
+.ask{ background: var(--surface-alt); border: 1px solid #e6ebf3; padding: 1rem; border-radius: .75rem; }
+.ask + .ask{ margin-top: 1rem; }
+
+.ask-enter{ opacity: 0; transform: translateY(6px); }
+.ask-enter.ask-enter-active{
+  opacity: 1; transform: translateY(0); transition: all .25s ease;
+}
+
+/* Results & Manual pick sections */
+#finderResults, #manualPicker{
+  background: var(--surface);
+  border: 1px dashed #e6ebf3;
+  border-radius: .75rem;
+  padding: 1rem;
+}
+
+/* Room cards */
+.card-img-top{ height: 180px; object-fit: cover; }
+.room-card{ transition: transform .2s ease, box-shadow .2s ease; }
+.room-card:hover{ transform: translateY(-2px); box-shadow: 0 .6rem 1.2rem rgba(0,0,0,.08)!important; }
+.room-card .badge.text-bg-primary{ background-color: var(--brand-primary)!important; }
+
+/* Sidebar summary */
+.sticky-top{ z-index: 2; }
+#summary dt{ color: var(--text-subtle); }
+
+/* Alerts */
+.alert-warning{
   --bs-alert-bg: rgba(255,196,0,.08);
   --bs-alert-border-color: rgba(255,196,0,.3);
-  --bs-alert-color: #725200;
+  --bs-alert-color: #7a5a00;
 }
 
-/* Small screens spacing tweaks */
-@media (max-width: 991.98px){
-  .room-card .card-body{ padding-top:.75rem; }
-}
+/* Policies list */
+#step-5 ul{ padding-left: 1rem; }
+#step-5 li{ margin-bottom:.35rem; }
 
-/* Respect reduced motion */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce){
   .room-card{ transition:none; }
+  .ask-enter.ask-enter-active{ transition:none; }
+}
+
+/* Small screens */
+@media (max-width: 991.98px){
+  .card-img-top{ height: 160px; }
 }
