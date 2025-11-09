@@ -9,6 +9,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 'resources/css/landing.css',
                 'resources/js/landing.js',
+                'resources/css/wizard.css',
+                'resources/js/wizard.js',
             ],
             refresh: true,
         }),
