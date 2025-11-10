@@ -9,7 +9,7 @@
         </div>
 
         <!-- Title -->
-        <h2 class="flex items-center justify-center text-xl font-semibold text-gray-800 mb-2 space-x-2">
+        <h2 class="flex items-center justify-center text-xl font-semibold text-gray-800 mb-4 space-x-2">
             <img src="{{ asset('images/login/booking.png') }}" alt="Booking Icon" class="h-8 w-8">
             <span>ENC Booking Portal</span>
         </h2>

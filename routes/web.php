@@ -12,7 +12,8 @@ Route::view('/login', 'auth.login.index')->name('login.index');
 Route::view('/login/form', 'auth.login.login')->name('login.form');
 
     // Signup page
-Route::view('/register', 'auth.register')->name('register'); // create resources/views/auth/signup.blade.php
+Route::view('/signup', 'auth.signup.index')->name('signup.index');
+// Route::view('/signup', 'auth.signup.signup')->name('sign'); // create resources/views/auth/signup.blade.php
 
 // --- Booking Wizard page ---
 Route::get('/book', function () {
@@ -21,5 +22,5 @@ Route::get('/book', function () {
 })->name('booking.wizard');
 
 // --- Booking submit endpoint (placeholder) ---
-Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
-    ->name('bookings.store');
+// Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
+//     ->name('bookings.store');

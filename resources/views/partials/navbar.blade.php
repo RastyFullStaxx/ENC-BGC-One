@@ -22,7 +22,7 @@
           <a class="btn btn-outline-secondary" href="{{ $actions[1]['href'] ?? route('login.index') }}">Log In</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-primary" href="{{ $actions[2]['href'] ?? url('/register') }}">Sign Up</a>
+          <a class="btn btn-primary" href="{{ $actions[2]['href'] ?? route('signup.index') }}">Sign Up</a>
         </li>
       </ul>
     </div>

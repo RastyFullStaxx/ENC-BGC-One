@@ -35,8 +35,8 @@
     'brand' => 'ONE Services',
     'actions' => [
       ['label' => 'Help/FAQ', 'href' => url('/help')],
-      ['label' => 'Log In',   'href' => route('login')],
-      ['label' => 'Sign Up',  'href' => url('/register'), 'variant' => 'primary']
+      ['label' => 'Log In',   'href' => route('login.index')],
+      ['label' => 'Sign Up',  'href' => route('signup.index')]
     ]
   ])
 
