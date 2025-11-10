@@ -9,16 +9,22 @@
         </div>
 
         <!-- Title -->
-        <h2 class="text-center text-xl font-semibold text-gray-800 mb-2">ENC Booking Portal</h2>
+        <h2 class="flex items-center justify-center text-xl font-semibold text-gray-800 mb-2 space-x-2">
+            <img src="{{ asset('images/login/booking.png') }}" alt="Booking Icon" class="h-8 w-8">
+            <span>ENC Booking Portal</span>
+        </h2>
         <p class="text-center text-gray-500 mb-6">Welcome back! Sign in to manage your bookings</p>
 
         <!-- Sign-in Buttons -->
         <p class="text-sm text-gray-600 mb-2 text-center">Choose your sign-in method</p>
 
-        <button class="w-full bg-blue-900 text-white py-2.5 rounded-md hover:bg-blue-800 transition-colors mb-4 flex items-center justify-center space-x-2">
-                <img src="{{ asset('images/login/ministryicon.png') }}" alt="ENC Logo" class="h-6">
+        {{-- signin with ministry email --}}
+        <a href="{{ route('login.form') }}"
+        class="w-full bg-blue-900 text-white py-2.5 rounded-md hover:bg-blue-800 transition-colors mb-4 flex items-center justify-center space-x-2">
+            <img src="{{ asset('images/login/ministryicon.png') }}" alt="ENC Logo" class="h-4">
             <span>Sign in with Ministry Email (SSO)</span>
-        </button>
+        </a>
+
 
         <div class="flex items-center my-4">
             <div class="flex-grow h-px bg-gray-200"></div>
@@ -26,10 +32,12 @@
             <div class="flex-grow h-px bg-gray-200"></div>
         </div>
 
-        <button class="w-full border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
-                <img src="{{ asset('images/login/emailicon.png') }}" alt="ENC Logo" class="h-6">
+        {{-- signin with normal email--}}
+        <a href="{{ route('login.form') }}"
+        class="w-full border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
+                <img src="{{ asset('images/login/emailicon.png') }}" alt="ENC Logo" class="h-4">
             <span>Sign in with Email/Password</span>
-        </button>
+        </a>
 
         <!-- Info box -->
         <div class="bg-blue-50 border border-blue-100 text-blue-900 text-sm rounded-md p-3 mt-6">

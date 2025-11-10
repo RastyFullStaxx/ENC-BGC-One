@@ -6,8 +6,13 @@ Route::get('/', function () {
     return view('marketing/landing');
 })->name('landing');
 
-Route::view('/login', 'auth.login')->name('login');       // create resources/views/auth/login.blade.php
-Route::view('/register', 'auth.register')->name('register'); // create resources/views/auth/register.blade.php
+// --- Authentication pages ---
+    // Login pages
+Route::view('/login', 'auth.login.index')->name('login.index');     
+Route::view('/login/form', 'auth.login.login')->name('login.form');
+
+    // Signup page
+Route::view('/register', 'auth.register')->name('register'); // create resources/views/auth/signup.blade.php
 
 // --- Booking Wizard page ---
 Route::get('/book', function () {
