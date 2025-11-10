@@ -66,8 +66,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 11c0 .828-.672 1.5-1.5 1.5S9 11.828 9 11s.672-1.5 1.5-1.5S12 10.172 12 11z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 11V7a5 5 0 00-10 0v4H5a2 2 0 00-2 2v6a2 2 0 002 2h14a2 2 0 002-2v-6a2 2 0 00-2-2h-2z" />
                     </svg>
-                    <button type="button" id="togglePassword" class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700 text-sm">
-                        Show
+                    <!-- Eye Icon Toggle -->
+                    <button type="button" class="absolute right-3 top-2.5 flex items-center" onclick="togglePassword('password')">
+                        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -83,7 +87,7 @@
         <!-- Create account -->
         <p class="text-center text-gray-600 mt-6 text-sm">
             Don't have an account? 
-            <a href="#" class="text-blue-700 hover:underline font-medium">Create an account</a>
+            <a href="{{ route('signup.index') }}" class="text-blue-700 hover:underline font-medium">Create an account</a>
         </p>
 
         <!-- Footer -->
@@ -102,6 +106,6 @@
 </div>
 
 {{-- password toggle --}}
-<script src="{{ asset('js/login/login.js') }}">
+<script src="{{ asset('js/global/password.js') }}">
 </script>
 @endsection

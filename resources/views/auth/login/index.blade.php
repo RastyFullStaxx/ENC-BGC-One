@@ -52,7 +52,7 @@
         <!-- Create account -->
         <p class="text-center text-gray-600 mt-6 text-sm">
             Don't have an account? 
-            <a href="#" class="text-blue-700 hover:underline font-medium">Create an account</a>
+            <a href="{{ route('signup.index') }}" class="text-blue-700 hover:underline font-medium">Create an account</a>
         </p>
 
         <!-- Footer -->

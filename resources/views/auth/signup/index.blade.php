@@ -29,7 +29,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
 
             <!-- ENC Staff / SFI -->
-            <a href="#" 
+            <a href="{{ route('signup.staff') }}" 
                class="border border-gray-300 rounded-lg p-4 hover:border-blue-600 hover:shadow-lg transition-all duration-200 block bg-white">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
