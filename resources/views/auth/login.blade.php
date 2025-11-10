@@ -16,9 +16,7 @@
         <p class="text-sm text-gray-600 mb-2 text-center">Choose your sign-in method</p>
 
         <button class="w-full bg-blue-900 text-white py-2.5 rounded-md hover:bg-blue-800 transition-colors mb-4 flex items-center justify-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                     <img src="{{ asset('images/login/ministryicon.png') }}" alt="ENC Logo" class="h-6">
-            </svg>
+                <img src="{{ asset('images/login/ministryicon.png') }}" alt="ENC Logo" class="h-6">
             <span>Sign in with Ministry Email (SSO)</span>
         </button>
 
@@ -29,7 +27,7 @@
         </div>
 
         <button class="w-full border border-gray-300 py-2.5 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2">
-                     <img src="{{ asset('images/login/emailicon.png') }}" alt="ENC Logo" class="h-6">
+                <img src="{{ asset('images/login/emailicon.png') }}" alt="ENC Logo" class="h-6">
             <span>Sign in with Email/Password</span>
         </button>
 
