@@ -35,6 +35,7 @@
 
         <!-- Login Form -->
         <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-4">
+            {{-- @csrf --}}
             <!-- Email -->
             <div class="relative mb-4">
                 <input type="email" id="email" name="email" placeholder="your.email@ministry.gov"
