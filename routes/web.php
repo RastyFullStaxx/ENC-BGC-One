@@ -15,7 +15,8 @@ Route::view('/login/form', 'auth.login.login')->name('login.form');
 Route::view('/signup', 'auth.signup.index')->name('signup.index');
 Route::view('/signup/staff', 'auth.signup.staff-signup')->name('signup.staff'); // create resources/views/auth/signup.blade.php
 
-
+// User Pages
+Route::view('/user/dashboard', 'user.dashboard')->name('user.dashboard');
 
 // --- Booking Wizard page ---
 Route::get('/book', function () {

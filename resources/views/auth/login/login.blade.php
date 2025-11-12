@@ -34,13 +34,11 @@
         </div>
 
         <!-- Login Form -->
-        <form action="#" method="POST" class="space-y-4">
-            @csrf
+        <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-4">
             <!-- Email -->
             <div class="relative mb-4">
                 <input type="email" id="email" name="email" placeholder="your.email@ministry.gov"
-                    class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-                    required>
+                    class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800">
                 <!-- Envelope/Message Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" 
                     class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" 
@@ -57,8 +55,7 @@
 
                 <div class="relative mb-4">
                     <input type="password" id="password" name="password" placeholder="Enter your password"
-                        class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800"
-                        required>
+                        class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800">
                     <!-- Lock Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" 
