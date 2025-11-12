@@ -18,6 +18,4 @@
             <p class="text-center text-gray-600 mb-8">Manage your bookings and account settings here.</p>
         </div>
 
-
-
 </html>
