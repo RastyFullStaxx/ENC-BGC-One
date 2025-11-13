@@ -50,7 +50,7 @@
 </head>
 <body>
     <div class="lottie-container" id="lottieAnimation"></div>
-    <p class="loading-text">Logging you in...</p>
+    {{-- <p class="loading-text">Logging you in...</p> --}}
 
     <!-- Lottie Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>

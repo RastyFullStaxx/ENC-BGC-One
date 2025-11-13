@@ -58,6 +58,18 @@ function handleLoginSubmit(event) {
     // Prevent default form submission
     event.preventDefault();
     
+    // Get submit button and show loading state
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalButtonText = submitButton.innerHTML;
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+        <span class="loading-dots-container">
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+            <span class="loading-dot"></span>
+        </span>
+    `;
+    
     // Get form data
     const formData = new FormData(form);
     
@@ -82,6 +94,10 @@ function handleLoginSubmit(event) {
         window.location.href = data.redirectUrl;
     })
     .catch(error => {
+        // Restore button state
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonText;
+        
         // Show error messages
         if (error.errors) {
             // Validation errors - show inline

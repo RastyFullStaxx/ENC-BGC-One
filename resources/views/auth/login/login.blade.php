@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/auth/login-loading.css') }}">
+@endpush
+
 @section('content')
 <div class="enc-page flex items-center justify-center min-h-screen px-4 py-10">
     <div class="enc-card w-full max-w-[448px] p-10 sm:p-12">
