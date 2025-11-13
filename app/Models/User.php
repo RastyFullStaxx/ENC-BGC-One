@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Department;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -21,6 +20,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',        // added phone
+        'department',   // added department
+        'role', // added
+
     ];
 
     /**
@@ -34,7 +37,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -44,5 +47,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relationship: User belongs to many departments (optional future normalization)
+     */
+    public function departments()
+    {
+        return $this->belongsToMany(Department::class, 'user_departments', 'user_id', 'department_id');
     }
 }

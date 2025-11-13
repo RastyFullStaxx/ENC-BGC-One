@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\SignupController;
+
 
 Route::get('/', function () {
     return view('marketing/landing');
@@ -14,6 +16,13 @@ Route::view('/login/form', 'auth.login.login')->name('login.form');
     // Signup page
 Route::view('/signup', 'auth.signup.index')->name('signup.index');
 Route::view('/signup/staff', 'auth.signup.staff-signup')->name('signup.staff'); // create resources/views/auth/signup.blade.php
+
+    // Show staff signup form
+    Route::get('/signup/staff', [SignupController::class, 'showStaffForm'])->name('signup.staff');
+
+    // Handle staff signup submission
+    Route::post('/signup/staff', [SignupController::class, 'registerStaff'])->name('signup.staff.submit');
+
 
 // User Pages
     // Dashboard

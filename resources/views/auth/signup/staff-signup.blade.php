@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner-container">
+        <div class="spinner"></div>
+        <p class="loading-text">Creating your account...</p>
+    </div>
+</div>
+
 <div class="enc-page flex items-center justify-center min-h-screen px-4 py-10">
     <div class="enc-card w-full max-w-xl p-6 sm:p-10">
 
@@ -33,12 +41,11 @@
         </div>
 
         <!-- Form -->
-        <form action="#" method="POST">
+        <form id="staffSignupForm" action="{{ route("signup.staff.submit") }}" method="POST">
             @csrf
-
             <!-- Full Name -->
             <div class="mb-2">
-                <label for="full_name" class="block text-sm font-medium enc-text-strong mb-1">
+                <label for="name" class="block text-sm font-medium enc-text-strong mb-1">
                     Full Name <span class="text-red-500">*</span>
                 </label>
                 <div class="relative">
@@ -47,9 +54,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <input type="text" id="full_name" name="full_name" 
+                    <input type="text" id="name" name="name" 
                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-strong"
-                           placeholder="Enter your full name" required>
+                           placeholder="Enter your full name" value="{{ old('name') }}" required>
+                    @error('name')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -66,26 +76,36 @@
                     </div>
                     <input type="email" id="email" name="email" 
                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-strong"
-                           placeholder="your.name@ministry.gov" required>
+                           placeholder="your.name@ministry.gov" 
+                           pattern="[a-zA-Z0-9._-]+@ministry\.gov"
+                           title="Email must be in the format: your.name@ministry.gov"
+                           value="{{ old('email') }}" required>
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
             <!-- Department -->
             <div class="mb-3">
-                <label for="department" class="block text-sm font-medium enc-text-strong mb-1">
+                <label for="department_id" class="block text-sm font-medium enc-text-strong mb-1">
                     Department <span class="text-red-500">*</span>
                 </label>
-                <select id="department" name="department" 
-                        class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-muted" required>
+                <select id="department_id" name="department_id" 
+                        class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-muted"
+                        required>
                     <option value="">Select your department</option>
-                    <option value="administration">Administration</option>
-                    <option value="finance">Finance</option>
-                    <option value="hr">Human Resources</option>
-                    <option value="it">Information Technology</option>
-                    <option value="operations">Operations</option>
-                    <option value="legal">Legal</option>
-                    <option value="other">Other</option>
+                    <option value="administration" {{ old('department_id') == 'administration' ? 'selected' : '' }}>Administration</option>
+                    <option value="finance" {{ old('department_id') == 'finance' ? 'selected' : '' }}>Finance</option>
+                    <option value="hr" {{ old('department_id') == 'hr' ? 'selected' : '' }}>Human Resources</option>
+                    <option value="it" {{ old('department_id') == 'it' ? 'selected' : '' }}>Information Technology</option>
+                    <option value="operations" {{ old('department_id') == 'operations' ? 'selected' : '' }}>Operations</option>
+                    <option value="legal" {{ old('department_id') == 'legal' ? 'selected' : '' }}>Legal</option>
+                    <option value="other" {{ old('department_id') == 'other' ? 'selected' : '' }}>Other</option>
                 </select>
+                @error('department_id')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Phone Number -->
@@ -101,7 +121,10 @@
                     </div>
                     <input type="tel" id="phone" name="phone" 
                            class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-strong"
-                           placeholder="+63 912 345 6789" required>
+                           placeholder="+63 912 345 6789" value="{{ old('phone') }}">
+                    @error('phone')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
@@ -126,6 +149,9 @@
                         </svg>
                     </button>
                 </div>
+                @error('password')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Confirm Password -->
@@ -149,6 +175,9 @@
                         </svg>
                     </button>
                 </div>
+                @error('password_confirmation')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Terms & Conditions -->
@@ -188,6 +217,17 @@
     </div>
 </div>
 
-<script src="{{ asset('js/global/password.js') }}">
-</script>
+<!-- SweetAlert2 Local -->
+<link rel="stylesheet" href="{{ asset('css/vendor/sweetalert2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('css/auth/sweetalert-custom.css') }}">
+<script src="{{ asset('js/vendor/sweetalert2.min.js') }}"></script>
+
+<!-- Loading CSS -->
+<link rel="stylesheet" href="{{ asset('css/auth/loading.css') }}">
+
+<!-- Password Toggle Script -->
+<script src="{{ asset('js/global/password.js') }}"></script>
+
+<!-- Signup Handler Script -->
+<script src="{{ asset('js/auth/signup-handler.js') }}"></script>
 @endsection
