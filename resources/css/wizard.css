@@ -1,104 +1,218 @@
-/* ===========================
-   Booking Wizard — Sequential
-   Palette tokens
-   =========================== */
-:root{
-  --brand-primary: #0B1640;      /* Navy */
-  --brand-secondary: #0B1840;    /* Sapphire */
-  --accent-gold: #FFC400;        /* Golden */
-  --accent-maize: #FFCE3F;       /* Maize */
-  --support-ivory: #F7F5E8;      /* Ivory */
-  --text-body: #0B0B3A;          /* Mirage */
-  --text-subtle: #6b7280;        /* Subtle text */
-  --surface: #ffffff;
-  --surface-alt: #f6f8fb;
+/* resources/css/wizard.css */
+/* Uses design tokens from resources/css/design-system.css */
+
+/* ---- Layout shell ---- */
+.wizard-shell {
+  min-height: calc(100vh - 140px); /* leave room for navbar/footer */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 4vh, 4rem) 1rem;
+  background: var(--enc-color-light, #FDFDFD);
 }
 
-/* Base */
-body { color: var(--text-body); }
-.card { border-radius: 1rem; }
-.card.shadow-sm { box-shadow: 0 .5rem 1rem rgba(0,0,0,.06)!important; }
+/* ---- Greeting panel ---- */
+.wizard-greeting-panel {
+  /* Remove card look; keep layout + spacing only */
+  border-radius: 0;          /* or keep a small radius if you like */
+  border: none;
+  background: transparent;
+  box-shadow: none;
 
-/* Stepper */
-#wizardProgress{ background: linear-gradient(90deg, var(--brand-primary), var(--brand-secondary)); }
-.wizard-nav .badge{
-  width: 28px; height: 28px; display: inline-flex; align-items:center; justify-content:center;
+  color: var(--enc-color-text-strong, #00163A);
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+/* keep content from hugging edges on small screens */
+.wizard-greeting-panel .wizard-greeting-body,
+.wizard-greeting-panel .wizard-greeting-cta,
+.wizard-greeting-panel .wizard-greeting-next-hint {
+  width: 100%;
+}
+
+.wizard-greeting-meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* ---- Main title & copy ---- */
+.wizard-greeting-title {
+  font-size: var(--enc-type-display, 48px);
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.wizard-greeting-subtitle {
+  font-size: var(--enc-type-primary, 24px);
+  line-height: 1.4;
+  color: var(--enc-color-text-strong, #00163A);
+}
+
+.wizard-greeting-subsubtitle {
+  font-size: var(--enc-type-secondary, 16px);
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* ---- CTA ---- */
+.wizard-primary-cta {
+  min-width: 210px;
+  border-radius: 999px;
+  font-size: 1rem;
   font-weight: 600;
-}
-.wizard-nav .text-bg-primary{ background-color: var(--brand-primary)!important; }
-
-/* Buttons */
-.btn-primary{
-  background-color: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-.btn-primary:hover,.btn-primary:focus{
-  background-color: var(--brand-secondary);
-  border-color: var(--brand-secondary);
-}
-.btn-outline-primary{
-  color: var(--brand-primary);
-  border-color: var(--brand-primary);
-}
-.btn-outline-primary:hover,.btn-outline-primary:focus{
-  background: #fff; color: var(--brand-secondary); border-color: var(--brand-secondary);
+  box-shadow: 0 12px 28px rgba(0, 24, 64, 0.18);
 }
 
-/* Chips (btn-check) */
-.btn-check:checked + .btn{
-  color:#fff; background-color: var(--brand-primary); border-color: var(--brand-primary);
-}
-.btn-check:focus + .btn,
-.form-control:focus,.form-select:focus,.form-check-input:focus{
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 0 .25rem rgba(11,22,64,.15);
+.wizard-primary-cta:focus-visible {
+  outline: 3px solid var(--enc-color-supporting, #75A3EB);
+  outline-offset: 2px;
 }
 
-/* Ask blocks: progressive disclosure */
-.ask{ background: var(--surface-alt); border: 1px solid #e6ebf3; padding: 1rem; border-radius: .75rem; }
-.ask + .ask{ margin-top: 1rem; }
-
-.ask-enter{ opacity: 0; transform: translateY(6px); }
-.ask-enter.ask-enter-active{
-  opacity: 1; transform: translateY(0); transition: all .25s ease;
+.wizard-greeting-cta-note {
+  max-width: 360px;
+  margin-inline: auto;
 }
 
-/* Results & Manual pick sections */
-#finderResults, #manualPicker{
-  background: var(--surface);
-  border: 1px dashed #e6ebf3;
-  border-radius: .75rem;
-  padding: 1rem;
+/* ---- Next-step hint ---- */
+.wizard-greeting-next-hint {
+  max-width: 420px;
+  margin-inline: auto;
 }
 
-/* Room cards */
-.card-img-top{ height: 180px; object-fit: cover; }
-.room-card{ transition: transform .2s ease, box-shadow .2s ease; }
-.room-card:hover{ transform: translateY(-2px); box-shadow: 0 .6rem 1.2rem rgba(0,0,0,.08)!important; }
-.room-card .badge.text-bg-primary{ background-color: var(--brand-primary)!important; }
+/* ---- Responsive tweaks ---- */
+@media (max-width: 991.98px) {
+  .wizard-shell {
+    min-height: auto;
+  }
 
-/* Sidebar summary */
-.sticky-top{ z-index: 2; }
-#summary dt{ color: var(--text-subtle); }
-
-/* Alerts */
-.alert-warning{
-  --bs-alert-bg: rgba(255,196,0,.08);
-  --bs-alert-border-color: rgba(255,196,0,.3);
-  --bs-alert-color: #7a5a00;
+  .wizard-greeting-panel {
+    border-radius: 1.25rem;
+  }
 }
 
-/* Policies list */
-#step-5 ul{ padding-left: 1rem; }
-#step-5 li{ margin-bottom:.35rem; }
+@media (max-width: 767.98px) {
+  .wizard-shell {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
 
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .room-card{ transition:none; }
-  .ask-enter.ask-enter-active{ transition:none; }
+  .wizard-greeting-title {
+    font-size: 2rem; /* ~32px */
+  }
+
+  .wizard-greeting-subtitle {
+    font-size: 1.125rem; /* 18px */
+  }
+
+  .wizard-greeting-panel {
+    padding-inline: 1.5rem !important;
+  }
 }
 
-/* Small screens */
-@media (max-width: 991.98px){
-  .card-img-top{ height: 160px; }
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .wizard-primary-cta {
+    transition: none !important;
+    box-shadow: none;
+  }
+}
+
+/* ---- Method selection section ---- */
+.wizard-method-section {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: 2.5rem 2rem 2rem;
+  border-radius: 1.5rem;
+  background: rgba(253, 253, 253, 0.96);
+  box-shadow: 0 18px 45px rgba(0, 24, 64, 0.18);
+}
+
+.wizard-method-title {
+  font-size: var(--enc-type-title, 32px);
+  font-weight: 600;
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.wizard-method-subtitle {
+  font-size: var(--enc-type-secondary, 16px);
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* Cards */
+.wizard-method-card {
+  border-radius: 1.25rem;
+  border: 1px solid rgba(0, 24, 64, 0.15);
+  padding: 1.4rem 1.5rem;
+  background: #ffffff;
+  cursor: pointer;
+  transition: box-shadow 0.18s ease, transform 0.1s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.wizard-method-card:hover {
+  box-shadow: 0 14px 30px rgba(0, 24, 64, 0.16);
+  transform: translateY(-2px);
+  border-color: var(--enc-color-supporting, #75A3EB);
+}
+
+.wizard-method-card:focus-visible {
+  outline: 3px solid var(--enc-color-supporting, #75A3EB);
+  outline-offset: 2px;
+}
+
+.wizard-method-card.is-recommended {
+  border-width: 1.5px;
+  border-color: var(--enc-color-brand-secondary, #102A71);
+}
+
+/* Card icon + text */
+.wizard-method-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.9rem;
+  background: rgba(117, 163, 235, 0.18);
+  color: var(--enc-color-brand-secondary, #102A71);
+}
+
+.wizard-method-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--enc-color-text-strong, #00163A);
+}
+
+.wizard-method-desc {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* Recommended badge */
+.wizard-method-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(21, 93, 252, 0.06);
+  color: var(--enc-color-brand-secondary, #102A71);
+}
+
+/* Footnote */
+.wizard-method-footnote {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .wizard-method-section {
+    padding-inline: 1.25rem;
+  }
+
+  .wizard-method-card {
+    padding: 1.1rem 1.2rem;
+  }
 }

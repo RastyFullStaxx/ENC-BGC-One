@@ -3,12 +3,12 @@
 
 /* ---------- Tokens ---------- */
 :root{
-  --brand: #1C398E;           /* primary brand (deep navy) */
-  --brand-600:#152B6B;
-  --ink: #111318;             /* body text */
-  --muted: #5F6470;           /* secondary text */
-  --line: #E6E8EF;            /* dividers */
-  --bg: #ffffff;
+  --brand: var(--enc-color-brand-primary, #1C398E);           /* primary brand (deep navy) */
+  --brand-600: var(--enc-color-brand-secondary, #152B6B);
+  --ink: var(--enc-color-text-strong, #111318);               /* body text */
+  --muted: var(--enc-color-text-muted, #5F6470);              /* secondary text */
+  --line: #E6E8EF;                                            /* dividers */
+  --bg: var(--enc-color-light, #ffffff);
   --badge: #EEF2FF;           /* soft blue badge bg */
   --badge-ink: #334155;
   --focus: #1C398E;           /* focus ring */
@@ -36,7 +36,9 @@ body.landing{
   background:var(--bg);
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  font:16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+  font-family: var(--enc-font-sans, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji");
+  font-size: var(--enc-type-body, 16px);
+  line-height: 1.6;
 }
 img{max-width:100%;height:auto}
 

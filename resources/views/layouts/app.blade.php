@@ -6,14 +6,15 @@
   <title>@yield('title', 'ENC Booking')</title>
   <meta name="csrf-token" content="{{ csrf_token() }}">
 
-  {{-- Default to Tailwind CSS --}}
-  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+  {{-- Default assets --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+  @vite(['resources/css/design-system.css'])
 
   {{-- Page-specific assets --}}
   @stack('styles')
 </head>
-<body>
+<body class="enc-type-body">
 
   {{-- Optional: site navbar --}}
   @includeIf('partials.nav')

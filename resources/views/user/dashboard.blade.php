@@ -1,26 +1,37 @@
-<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Dashboard</title>
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-50 min-h-screen flex items-center justify-center">
-        <div class="bg-white shadow-md rounded-lg w-full max-w-3xl p-8">
-            <!-- Logo -->
-            <div class="flex justify-center mb-6">
-                <img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="h-16">
-            </div>
+@extends('layouts.app')
 
-            <!-- Welcome Message -->
-            <h1 class="text-2xl font-semibold text-gray-800 text-center mb-4">Welcome to Your Dashboard</h1>
-            <p class="text-center text-gray-600 mb-8">Manage your bookings and account settings here.</p>
+@section('title', 'User Dashboard')
 
+@section('content')
+<section class="enc-page enc-fill-screen">
+  <div class="container">
+    <div class="enc-card mx-auto p-4 p-md-5" style="max-width: 960px;">
 
-            </div>
+      <div class="text-center mb-5">
+        <img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="mb-4" style="height: 72px;">
+        <h1 class="enc-text-strong enc-type-title mb-2">Welcome to Your Dashboard</h1>
+        <p class="enc-text-muted mb-0">Manage bookings, review approvals, and pick up where you left off.</p>
+      </div>
+
+      <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+        <div class="text-center text-md-start">
+          <p class="mb-1 text-uppercase small fw-semibold enc-text-muted">Next action</p>
+          <p class="mb-0 enc-text-strong">Jump into the Smart Booking Wizard to create a request.</p>
         </div>
 
+        <a href="{{ route('booking.wizard', ['start' => 'method']) }}"
+        class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="17" rx="3"
+                    stroke="currentColor" stroke-width="1.8" />
+                <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+            Start a New Booking
+        </a>
+      </div>
 
-
-</html>
+    </div>
+  </div>
+</section>
+@endsection
