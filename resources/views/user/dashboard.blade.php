@@ -11,6 +11,20 @@
         <img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="mb-4" style="height: 72px;">
         <h1 class="enc-text-strong enc-type-title mb-2">Welcome to Your Dashboard</h1>
         <p class="enc-text-muted mb-0">Manage bookings, review approvals, and pick up where you left off.</p>
+        
+        <!-- Logout Button -->
+        <div class="mt-3">
+          <form action="{{ route('logout') }}" method="POST" class="d-inline">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-outline-danger d-inline-flex align-items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" 
+                  stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Logout
+            </button>
+          </form>
+        </div>
       </div>
 
       <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">

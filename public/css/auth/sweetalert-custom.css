@@ -1,0 +1,103 @@
+/**
+ * SweetAlert2 Custom Overrides
+ * Ensures buttons are always visible and properly styled
+ */
+
+/* Make modal smaller and more compact */
+.swal2-popup {
+    border-radius: 1rem !important;
+    padding: 1.5rem !important;
+    width: 400px !important;
+    max-width: 90% !important;
+}
+
+/* Force hide deny button only */
+.swal2-deny {
+    display: none !important;
+}
+
+/* Confirm button styling (Go to Login) */
+.swal2-confirm {
+    background-color: #1e40af !important;
+    color: white !important;
+    padding: 0.625em 1.5em !important;
+    font-size: 0.95em !important;
+    font-weight: 500 !important;
+    border-radius: 0.5rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+.swal2-confirm:hover {
+    background-color: #1e3a8a !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Cancel button styling (Return Home) */
+.swal2-cancel {
+    background-color: #6b7280 !important;
+    color: white !important;
+    padding: 0.625em 1.5em !important;
+    font-size: 0.95em !important;
+    font-weight: 500 !important;
+    border-radius: 0.5rem !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+.swal2-cancel:hover {
+    background-color: #4b5563 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ensure actions container is visible */
+.swal2-actions {
+    display: flex !important;
+    gap: 0.75rem !important;
+    margin: 1.25em auto 0 !important;
+    padding: 0 !important;
+}
+
+/* Title styling - smaller */
+.swal2-title {
+    color: #001840 !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0.5em 0 0 !important;
+}
+
+/* Content text styling - smaller */
+.swal2-html-container {
+    color: #4b5563 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    padding: 0.5em 1em 0.3em !important;
+}
+
+/* Icon styling - smaller */
+.swal2-icon {
+    width: 4em !important;
+    height: 4em !important;
+    margin: 1.5em auto 0.5em !important;
+}
+
+.swal2-icon.swal2-success {
+    border-color: #10b981 !important;
+    color: #10b981 !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+}

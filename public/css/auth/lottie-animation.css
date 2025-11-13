@@ -1,0 +1,56 @@
+/* Lottie Animation Full Screen Overlay */
+.lottie-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #001840 0%, #1e40af 100%);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+/* Lottie Animation Container */
+.lottie-container {
+    width: 80%;
+    max-width: 600px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Lottie Animation */
+#lottieAnimation {
+    width: 100%;
+    height: 500px;
+}
+
+/* Loading Text */
+.lottie-text {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Hide scrollbar when overlay is active */
+body.lottie-active {
+    overflow: hidden;
+}
