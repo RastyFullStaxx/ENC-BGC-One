@@ -34,7 +34,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     // Dashboard
     Route::view('/user/dashboard', 'user.dashboard')->name('user.dashboard');
     
-    // Booking
+    // List of Bookings
     Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
 });
 

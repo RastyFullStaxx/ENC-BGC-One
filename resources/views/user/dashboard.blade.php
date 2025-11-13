@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+      <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 mb-4">
         <div class="text-center text-md-start">
           <p class="mb-1 text-uppercase small fw-semibold enc-text-muted">Next action</p>
           <p class="mb-0 enc-text-strong">Jump into the Smart Booking Wizard to create a request.</p>
@@ -42,6 +42,18 @@
                     stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
             </svg>
             Start a New Booking
+        </a>
+      </div>
+
+      <!-- View All Bookings Button -->
+      <div class="d-flex justify-content-center">
+        <a href="{{ route('user.booking.index') }}"
+        class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M3 6h18M3 12h18M3 18h18"
+                    stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            </svg>
+            View My Bookings
         </a>
       </div>
 
