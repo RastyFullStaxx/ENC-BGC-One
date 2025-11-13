@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SignupController;
+use App\Http\Controllers\Auth\LoginController;
 
 
 Route::get('/', function () {
@@ -9,27 +10,39 @@ Route::get('/', function () {
 })->name('landing');
 
 // --- Authentication pages ---
-    // Login pages
-Route::view('/login', 'auth.login.index')->name('login.index');     
-Route::view('/login/form', 'auth.login.login')->name('login.form');
-
-    // Signup page
-Route::view('/signup', 'auth.signup.index')->name('signup.index');
-Route::view('/signup/staff', 'auth.signup.staff-signup')->name('signup.staff'); // create resources/views/auth/signup.blade.php
-
-    // Show staff signup form
+// Login pages (guest middleware redirects authenticated users to dashboard)
+Route::middleware(['guest'])->group(function () {
+    Route::view('/login', 'auth.login.index')->name('login.index');     
+    Route::get('/login/form', [LoginController::class, 'showLoginForm'])->name('login.form');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+    
+    // Signup pages
+    Route::view('/signup', 'auth.signup.index')->name('signup.index');
     Route::get('/signup/staff', [SignupController::class, 'showStaffForm'])->name('signup.staff');
-
-    // Handle staff signup submission
     Route::post('/signup/staff', [SignupController::class, 'registerStaff'])->name('signup.staff.submit');
+});
+
+// Loading page (accessible to all)
+Route::view('/login/loading', 'auth.login.loading')->name('login.loading');
+
+// Logout (requires authentication)
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 
-// User Pages
+// User Pages (Protected - requires authentication and staff role)
+Route::middleware(['auth', 'role:staff'])->group(function () {
     // Dashboard
-Route::view('/user/dashboard', 'user.dashboard')->name('user.dashboard');
-
+    Route::view('/user/dashboard', 'user.dashboard')->name('user.dashboard');
+    
     // Booking
-Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
+    Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
+});
+
+// Admin Pages (Protected - requires authentication and admin role)
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Dashboard
+    Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
+});
 
 
 // --- Booking Wizard page ---

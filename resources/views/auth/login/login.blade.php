@@ -34,12 +34,16 @@
         </div>
 
         <!-- Login Form -->
-        <form action="{{ route('user.dashboard') }}" method="GET" class="space-y-4">
-            {{-- @csrf --}}
+        <form id="loginForm" action="{{ route('login.submit') }}" method="POST" class="space-y-4">
+            @csrf
             <!-- Email -->
             <div class="relative mb-4">
                 <input type="email" id="email" name="email" placeholder="your.email@ministry.gov"
-                    class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 enc-text-strong">
+                    pattern="[a-zA-Z0-9._-]+@ministry\.gov"
+                    title="Email must be in the format: your.name@ministry.gov"
+                    value="{{ old('email') }}"
+                    class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 enc-text-strong"
+                    required>
                 <!-- Envelope/Message Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" 
                     class="absolute left-3 top-2.5 h-5 w-5 enc-text-muted" 
@@ -47,6 +51,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 8V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2z" />
                 </svg>
             </div>
+            @error('email')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
 
             <!-- Password -->
             <div>
@@ -56,7 +63,8 @@
 
                 <div class="relative mb-4">
                     <input type="password" id="password" name="password" placeholder="Enter your password"
-                        class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 enc-text-strong">
+                        class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 enc-text-strong"
+                        required>
                     <!-- Lock Icon -->
                     <svg xmlns="http://www.w3.org/2000/svg" 
                         class="absolute left-3 top-2.5 h-5 w-5 enc-text-muted" 
@@ -72,6 +80,9 @@
                         </svg>
                     </button>
                 </div>
+                @error('password')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Sign In Button -->
@@ -104,7 +115,15 @@
     </div>
 </div>
 
-{{-- password toggle --}}
-<script src="{{ asset('js/global/password.js') }}">
-</script>
+<!-- Lottie Animation Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+
+    </div>
+</div>
+
+<!-- Password Toggle Script -->
+<script src="{{ asset('js/global/password.js') }}"></script>
+
+<!-- Login Handler Script -->
+<script src="{{ asset('js/auth/login-handler.js') }}"></script>
 @endsection

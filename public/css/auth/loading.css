@@ -43,6 +43,12 @@
     }
 }
 
+/* Lottie Animation Container */
+.lottie-animation {
+    width: 150px;
+    height: 150px;
+}
+
 /* Loading Text */
 .loading-text {
     color: #1e40af;
