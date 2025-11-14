@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Font stack */
+    --enc-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+    /* Brand colors */
+    --enc-color-brand-primary: #001840;
+    --enc-color-brand-secondary: #102A71;
+    --enc-color-supporting: #75A3EB;
+    --enc-color-text-strong: #00163A;
+    --enc-color-text-muted: #CCD1D9;
+    --enc-color-dark: #000206;
+    --enc-color-light: #FDFDFD;
+
+    /* Accent palette */
+    --enc-color-blue-light: #155DFC;
+    --enc-color-green-light: #00C950;
+    --enc-color-red-dark: #9F0712;
+    --enc-color-red-light: #FFC9C9;
+    --enc-color-yellow-dark: #894B00;
+    --enc-color-yellow-light: #FFF085;
+    --enc-color-gray-light: #E5E7EB;
+    --enc-color-gray-dark: #1E2939;
+    --enc-color-info: #4C7DFF;
+
+    /* Typography scale */
+    --enc-type-display: 48px;
+    --enc-type-title: 32px;
+    --enc-type-primary: 24px;
+    --enc-type-secondary: 16px;
+    --enc-type-body: 16px;
+
+    /* Shared tokens */
+    --enc-radius-card: 1.25rem;
+    --enc-shadow-card: 0 15px 35px rgba(0, 24, 64, 0.08);
+    --enc-border-subtle: 1px solid var(--enc-color-gray-light);
+}
+
+body {
+    font-family: var(--enc-font-sans);
+    background-color: var(--enc-color-light);
+    color: var(--enc-color-text-strong);
+}
+
+.enc-page {
+    background: linear-gradient(135deg, rgba(0, 24, 64, 0.04), rgba(16, 42, 113, 0.08));
+}
+
+.enc-card {
+    background-color: #fff;
+    border-radius: var(--enc-radius-card);
+    box-shadow: var(--enc-shadow-card);
+}
+
+.enc-text-strong {
+    color: var(--enc-color-text-strong);
+}
+
+.enc-text-muted {
+    color: var(--enc-color-text-muted);
+}
+
+.enc-text-brand {
+    color: var(--enc-color-brand-secondary);
+}
+
+.enc-link {
+    color: var(--enc-color-supporting);
+    font-weight: 600;
+}
+
+.enc-link:hover,
+.enc-link:focus-visible {
+    color: var(--enc-color-blue-light);
+    text-decoration: underline;
+}
+
+.enc-info-panel {
+    background-color: rgba(21, 93, 252, 0.06);
+    border: 1px solid rgba(21, 93, 252, 0.15);
+    color: var(--enc-color-brand-secondary);
+}
+
+.enc-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.55rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.625rem;
+    letter-spacing: 0.01em;
+}
+
+.enc-chip-success {
+    background-color: rgba(0, 201, 80, 0.12);
+    color: var(--enc-color-green-light);
+}
+
+.enc-chip-info {
+    background-color: rgba(117, 163, 235, 0.15);
+    color: var(--enc-color-brand-secondary);
+}
+
+.enc-chip-warning {
+    background-color: rgba(255, 240, 133, 0.3);
+    color: var(--enc-color-yellow-dark);
+}
+
+.enc-chip-neutral {
+    background-color: rgba(229, 231, 235, 0.65);
+    color: var(--enc-color-gray-dark);
+}
+
+.enc-type-title {
+    font-size: var(--enc-type-primary);
+    line-height: 1.35;
+}
+
+.enc-type-subheading {
+    font-size: var(--enc-type-secondary);
+    line-height: 1.4;
+}
+
+.enc-type-body {
+    font-size: var(--enc-type-body);
+    line-height: 1.6;
+}
+
+.enc-fill-screen {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(2rem, 4vh, 4rem) 1rem;
+}
+
+.enc-fill-screen > * {
+    width: 100%;
+}

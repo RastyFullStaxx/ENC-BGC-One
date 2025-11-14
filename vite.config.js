@@ -11,6 +11,7 @@ export default defineConfig({
                 'resources/js/landing.js',
                 'resources/css/wizard.css',
                 'resources/js/wizard.js',
+                'resources/css/design-system.css',
             ],
             refresh: true,
         }),

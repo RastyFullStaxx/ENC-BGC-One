@@ -7,7 +7,8 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>ENC BGC One — Shared Services Portal</title>
 
-  {{-- Vite entry should include Bootstrap CSS & JS --}}
+  {{-- Vite entry with global design tokens + Bootstrap bundle --}}
+  @vite(['resources/css/design-system.css'])
   @vite(['resources/css/landing.css', 'resources/js/landing.js'])
 
   {{-- If you prefer CDN instead of Vite, uncomment: --}}
@@ -26,7 +27,7 @@
     .skip-link:focus{left:12px;top:12px;width:auto;height:auto;padding:.625rem .875rem;background:#111;color:#fff;border-radius:.6rem;z-index:1055}
   </style>
 </head>
-<body class="landing bg-white text-body">
+<body class="landing enc-type-body">
 
   <a href="#main" class="skip-link">Skip to content</a>
 
@@ -105,7 +106,7 @@
           </a>
 
           <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
+             href="{{ route('booking.wizard', ['start' => 'method']) }}" data-analytics="cta_book_now">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
               <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
