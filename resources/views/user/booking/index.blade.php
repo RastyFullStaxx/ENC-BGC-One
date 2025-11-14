@@ -725,7 +725,7 @@
     <header class="header">
         <div class="header-content">
             <div class="logo-section">
-                <img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="logo">
+                <a href="{{ route('user.dashboard', ['start' => 'method']) }}"><img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="logo"></a>
                 <div class="logo-text">
                     <h1>Shared Services Portal</h1>
                     <p>One-Stop Booking Platform</p>

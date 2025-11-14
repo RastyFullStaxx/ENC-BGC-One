@@ -9,6 +9,10 @@ Route::get('/', function () {
     return view('marketing/landing');
 })->name('landing');
 
+Route::get('/faq', function () {
+    return view('user.faq');
+})->name('faq');
+
 // --- Authentication pages ---
 // Login pages (guest middleware redirects authenticated users to dashboard)
 Route::middleware(['guest'])->group(function () {
@@ -54,3 +58,4 @@ Route::get('/book', function () {
 // --- Booking submit endpoint (placeholder) ---
 Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
     ->name('bookings.store');
+    

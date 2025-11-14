@@ -40,7 +40,7 @@
             @endif
           </li>
           <li class="mb-1">
-            <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ url('/help') }}">Help &amp; FAQ</a>
+            <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('faq') }}">Help &amp; FAQ</a>
           </li>
           <li>
             <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ url('/rooms') }}">
