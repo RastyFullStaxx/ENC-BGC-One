@@ -36,7 +36,7 @@
     'brand' => 'ONE Services',
     'actions' => [
       ['label' => 'Help/FAQ', 'href' => url('/help')],
-      ['label' => 'Log In',   'href' => route('login.index')],
+      ['label' => 'Log In',   'href' => route('login')],
       ['label' => 'Sign Up',  'href' => route('signup.index')]
     ]
   ])
@@ -106,7 +106,7 @@
           </a>
 
           <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('booking.wizard', ['start' => 'method']) }}" data-analytics="cta_book_now">
+             href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
               <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -435,7 +435,7 @@
         <div class="col-lg-4 text-lg-end">
           <div class="d-flex d-lg-inline-flex gap-2">
             @if (Route::has('register'))
-              <a href="{{ route('register') }}" class="btn btn-light">Create Account</a>
+              <a href="{{ route('signup.index') }}" class="btn btn-light">Create Account</a>
             @else
               <a href="{{ url('/register') }}" class="btn btn-light">Create Account</a>
             @endif

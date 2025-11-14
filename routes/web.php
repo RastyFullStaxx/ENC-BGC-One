@@ -8,7 +8,7 @@ Route::get('/', function () {
 
 // --- Authentication pages ---
     // Login pages
-Route::view('/login', 'auth.login.index')->name('login.index');     
+Route::view('/login', 'auth.login.index')->name('login');     
 Route::view('/login/form', 'auth.login.login')->name('login.form');
 
     // Signup page
@@ -28,6 +28,7 @@ Route::get('/book', function () {
     // Ensure the view path matches: resources/views/booking/wizard.blade.php
     return view('booking.wizard');
 })->name('booking.wizard');
+
 
 // --- Booking submit endpoint (placeholder) ---
 Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
