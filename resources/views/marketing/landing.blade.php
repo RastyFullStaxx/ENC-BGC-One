@@ -94,11 +94,11 @@
         </p>
 
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
-          <a class="btn btn-outline-secondary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ url('/rooms') }}" data-analytics="cta_find_room">
+
+          <a class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Find a Room
           </a>

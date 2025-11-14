@@ -135,8 +135,8 @@
             <div class="text-muted">{{ $userEmail }}</div>
           </li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Profile</a></li>
-          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
+          <li><a class="dropdown-item" href="{{ route('user.settings') }}">Settings</a></li>
           @auth
             <li><hr class="dropdown-divider"></li>
             <li>

@@ -57,6 +57,25 @@
         </a>
       </div>
 
+      <hr class="my-5">
+
+      <div class="row g-3 g-md-4">
+        <div class="col-md-6">
+          <a href="{{ route('user.profile') }}" class="enc-card text-decoration-none d-block h-100 p-4">
+            <p class="text-uppercase small fw-semibold text-muted mb-1">Profile</p>
+            <h5 class="mb-2 enc-text-strong">Review your profile + delegates</h5>
+            <p class="mb-0 text-muted">Update personal details, favorite rooms, and quick stats.</p>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{{ route('user.settings') }}" class="enc-card text-decoration-none d-block h-100 p-4">
+            <p class="text-uppercase small fw-semibold text-muted mb-1">Settings</p>
+            <h5 class="mb-2 enc-text-strong">Control notifications & security</h5>
+            <p class="mb-0 text-muted">Manage alerts, passwords, and session security for your account.</p>
+          </a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

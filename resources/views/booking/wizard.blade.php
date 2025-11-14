@@ -259,7 +259,7 @@
                       'status_variant' => 'success',
                       'location' => 'ENC Tower A · 3rd Floor',
                       'tags' => ['Projector', 'Whiteboard', 'VC setup', 'HDMI', 'WiFi'],
-                      'image' => 'https://images.unsplash.com/photo-1507209696998-3c532be9b2b1?q=80&w=1200&auto=format&fit=crop',
+                      'image' => asset('images/rooms/conference-room-a301.svg'),
                       'availability' => [
                         'text' => 'Available until 5:00 PM',
                         'subtext' => null,
@@ -398,17 +398,17 @@
                 @endforeach
               </div>
 
-                <div class="d-flex justify-content-end mt-4" id="wizardRoomsActions">
+                <div class="d-flex align-items-center flex-wrap gap-3 mt-4" id="wizardRoomsActions">
                   <button
                     type="button"
-                    class="btn btn-light me-3"
+                    class="btn btn-light"
                     id="wizardBackToMethods"
                   >
                     Go Back to Booking Type
                   </button>
                   <button
                     type="button"
-                    class="btn btn-room-available wizard-next-date"
+                    class="btn btn-room-available wizard-next-date ms-auto"
                     disabled
                   >
                     Next: Select Date &amp; Time
