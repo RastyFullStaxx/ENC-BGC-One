@@ -16,11 +16,24 @@
 
 .faq-stage {
     font-family: 'Inter', sans-serif;
-    background: radial-gradient(circle at top, rgba(0, 24, 64, 0.95), var(--brand-blue));
+    background: linear-gradient(135deg, rgba(0, 36, 99, 0.95), #001840, rgba(0, 20, 59, 0.95));
     min-height: calc(100vh - 120px);
     display: flex;
     justify-content: center;
+    animation: facilitiesGradient 18s ease infinite;
     padding: 72px 24px 120px;
+}
+
+@keyframes facilitiesGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .faq-hub {

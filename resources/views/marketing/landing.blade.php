@@ -106,10 +106,62 @@
           <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
              href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
+             <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
               <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
             Book Now
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.users') }}" data-analytics="cta_admin_users">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Users & Roles
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.facilities') }}" data-analytics="cta_admin_facilities">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 21V9l8-5 8 5v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Facilities
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.analytics') }}" data-analytics="cta_admin_analytics">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 12h4v8H4zM10 6h4v14h-4zM16 3h4v17h-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Analytics
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.policies') }}" data-analytics="cta_admin_policies">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Policies
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.calendar') }}" data-analytics="cta_admin_calendar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 5h16v16H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Global Calendar
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.audit') }}" data-analytics="cta_admin_audit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 9h8M8 13h8M8 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Audit Log
           </a>
         </div>
       </div>
