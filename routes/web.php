@@ -49,6 +49,9 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     // Profile & Settings
     Route::view('/user/profile', 'user.profile')->name('user.profile');
     Route::view('/user/settings', 'user.settings')->name('user.settings');
+
+    // Booking
+    Route::view('/user/booking/wizard', 'booking.wizard')->name('user.booking.wizard');
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
