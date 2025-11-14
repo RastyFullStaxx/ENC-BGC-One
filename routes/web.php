@@ -12,7 +12,7 @@ Route::get('/', function () {
 // Facility catalog (public for preview)
 Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
 
-//Help/FAQ
+// Help/FAQ - Accessible to all users (guest and authenticated)
 Route::get('/faq', function () {
     return view('user.faq');
 })->name('faq');

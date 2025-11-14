@@ -3,7 +3,13 @@
 @section('title', 'Account Settings — ONE Services')
 
 @push('styles')
+  @vite(['resources/css/wizard/base.css'])
   @vite(['resources/css/user/account.css'])
+  <style>
+    .account-hero {
+      margin-top: -2rem;
+    }
+  </style>
 @endpush
 
 @php
@@ -15,6 +21,18 @@
 @endphp
 
 @section('content')
+<!-- Include Dashboard Navbar -->
+@include('partials.dashboard-navbar', [
+    'currentStep' => 0,
+    'steps' => [],
+    'bookingsCount' => 0,
+    'notificationsCount' => 0,
+    'userName' => auth()->user()->name ?? 'User',
+    'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
+    'userRole' => auth()->user()->role ?? 'staff',
+    'brand' => 'ONE Services'
+])
+
 <div class="account-page">
   <section class="account-hero">
     <div class="container">

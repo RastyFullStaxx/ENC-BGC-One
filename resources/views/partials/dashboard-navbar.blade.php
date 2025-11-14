@@ -31,16 +31,18 @@
   <div class="container-fluid align-items-center px-3 px-lg-4 px-xxl-5">
 
     {{-- Brand --}}
-    <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2" href="{{ url('/') }}">
-      <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
-        {{-- Simple placeholder mark; replace with your SVG/logo as needed --}}
-        <span class="fw-bold small">ONE</span>
-      </span>
-      <span class="brand-copy d-none d-md-inline text-start lh-sm">
-        <span class="d-block fw-semibold">Shared Services Portal</span>
-        <span class="d-block text-muted small">One-Stop Booking Platform</span>
-      </span>
+    <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('user.dashboard') }}">
+        <!-- Replace ONE with image -->
+        <img src="{{ asset('images/enclogo.png') }}" alt="Enclogo" style="height: 60px; width: auto;" class="d-inline-block align-middle">
+
+        <!-- Brand text -->
+        <span class="brand-copy d-none d-md-inline text-start lh-sm">
+            <span class="d-block fw-semibold">{{ $brand ?? 'ONE Services' }}</span>
+            {{-- <span class="d-block text-muted small">Shared Services Portal</span> --}}
+            <span class="d-block text-muted small">One-Stop Booking Platform</span>
+        </span>
     </a>
+
 
     {{-- Right-side controls --}}
     <div class="ms-auto d-flex align-items-center gap-2">
@@ -75,6 +77,21 @@
           </span>
         @endif
       </button>
+
+      {{-- Help/FAQ --}}
+      <a
+        href="{{ route('faq') }}"
+        class="btn btn-light enc-nav-icon-btn"
+        aria-label="Help and FAQ"
+        title="Help & FAQ"
+      >
+        {{-- Help/Question icon --}}
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+        </svg>
+      </a>
 
       {{-- Notifications --}}
       <div class="dropdown">
@@ -136,6 +153,7 @@
           </li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
+          <li><a class="dropdown-item" href="{{ route('faq') }}">Faq</a></li>
           <li><a class="dropdown-item" href="{{ route('user.settings') }}">Settings</a></li>
           @auth
             <li><hr class="dropdown-divider"></li>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'User Dashboard')
+@section('title', 'Dashboard')
 
 @section('content')
 <section class="enc-page enc-fill-screen">
