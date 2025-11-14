@@ -95,13 +95,11 @@
                         class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm enc-text-muted"
                         required>
                     <option value="">Select your department</option>
-                    <option value="administration" {{ old('department_id') == 'administration' ? 'selected' : '' }}>Administration</option>
-                    <option value="finance" {{ old('department_id') == 'finance' ? 'selected' : '' }}>Finance</option>
-                    <option value="hr" {{ old('department_id') == 'hr' ? 'selected' : '' }}>Human Resources</option>
-                    <option value="it" {{ old('department_id') == 'it' ? 'selected' : '' }}>Information Technology</option>
-                    <option value="operations" {{ old('department_id') == 'operations' ? 'selected' : '' }}>Operations</option>
-                    <option value="legal" {{ old('department_id') == 'legal' ? 'selected' : '' }}>Legal</option>
-                    <option value="other" {{ old('department_id') == 'other' ? 'selected' : '' }}>Other</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                            {{ $department->name }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('department_id')
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>

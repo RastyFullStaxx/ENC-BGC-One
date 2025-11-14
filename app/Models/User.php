@@ -21,7 +21,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',        // added phone
-        'department',   // added department
+        'department_id',   // added department_id (foreign key)
         'role', // added
 
     ];
@@ -47,6 +47,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relationship: User belongs to a department
+     */
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 
     /**
