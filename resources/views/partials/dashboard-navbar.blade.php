@@ -167,7 +167,7 @@
           class="enc-stepper-item d-flex align-items-center text-center flex-grow-1 {{ $state }}"
           aria-current="{{ $currentStep === $n ? 'step' : 'false' }}"
         >
-          <div class="enc-stepper-node d-flex flex-column align-items-center flex-shrink-0 w-100">
+          <div class="enc-stepper-node d-flex flex-column align-items-center flex-shrink-0">
             <span class="enc-stepper-circle d-inline-flex align-items-center justify-content-center" data-step-number="{{ $n }}">{{ $n }}</span>
             <span class="enc-stepper-title mt-2 fw-semibold">{{ $step['title'] }}</span>
             @if(!empty($step['desc']))
@@ -177,7 +177,7 @@
 
           {{-- Divider line to the next step (purely presentational; CSS draws the line) --}}
           @if(!$loop->last)
-            <div class="enc-stepper-line flex-grow-1 ms-3" aria-hidden="true"></div>
+            <div class="enc-stepper-line flex-grow-1" aria-hidden="true"></div>
           @endif
         </li>
       @endforeach
