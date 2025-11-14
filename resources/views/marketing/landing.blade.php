@@ -44,7 +44,7 @@
   @if (!view()->exists('partials.navbar'))
   <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
     <nav class="navbar navbar-expand-md bg-white">
-      <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+      <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap gap-3">
         <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('landing') }}">
           <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
             <span class="fw-bold small">ONE</span>
@@ -55,13 +55,13 @@
           </span>
         </a>
 
-        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+        <button class="navbar-toggler ms-auto d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
                 aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0 w-100 w-md-auto">
-          <ul class="navbar-nav align-items-center ms-md-auto">
+        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0">
+          <ul class="navbar-nav align-items-center ms-md-auto ms-lg-0 flex-row flex-md-row gap-2">
             <li class="nav-item me-2">
               <a class="nav-link" href="{{ url('/help') }}">Help/FAQ</a>
             </li>

@@ -82,6 +82,18 @@ img{max-width:100%;height:auto}
   border-bottom:1px solid var(--line);
   box-shadow: 0 6px 25px rgba(0,24,64,0.05);
 }
+.site-header .navbar .container{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.5rem;
+  flex-wrap:wrap;
+}
+@media (min-width: 768px){
+  .site-header .navbar .container{
+    flex-wrap:nowrap;
+  }
+}
 .site-header.elevated{
   box-shadow: var(--shadow-sm);
 }
@@ -105,6 +117,14 @@ img{max-width:100%;height:auto}
 .brand-copy .text-muted{color:var(--muted)!important;}
 .brand-text{font-size:16px; letter-spacing:.2px}
 .nav{display:flex; align-items:center; gap:12px;}
+.site-header .navbar-nav{
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:0.5rem;
+}
+.site-header .navbar-nav .nav-item{
+  margin:0;
+}
 .nav-link{
   color:var(--muted); text-decoration:none; padding:10px 12px; border-radius:999px; font-weight:500;
 }

@@ -1,8 +1,6 @@
 // resources/js/wizard.js
 
 document.addEventListener('DOMContentLoaded', () => {
-  const startButton       = document.getElementById('wizardStartButton');
-  const greetingPanel     = document.querySelector('.wizard-greeting-panel');
   const methodSection     = document.getElementById('wizardMethodSection');
   const landingShell      = document.getElementById('wizardLandingShell');
   const manualStage       = document.getElementById('wizardManualStage');
@@ -213,16 +211,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const showMethodSelection = () => {
     if (!methodSection) return;
 
-    if (greetingPanel) {
-      greetingPanel.classList.add('d-none');
-    }
-
     methodSection.classList.remove('d-none');
     methodSection.hidden = false;
 
     methodSection.querySelector('.wizard-method-title')?.focus?.();
     wizardAppNavWrap?.classList.add('d-none');
   };
+  showMethodSelection();
 
   const updateStepperState = (currentStep = 1) => {
     stepperItems.forEach((item, index) => {
@@ -267,18 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
     manualStage.querySelector('.wizard-rooms-title')?.focus?.();
     updateStepperState(1);
   };
-
-  // Greeting → Method selection
-  if (startButton) {
-    startButton.addEventListener('click', () => {
-      showMethodSelection();
-      if (myBookingsToggle) {
-        myBookingsToggle.classList.remove('btn-bookings-active');
-        myBookingsToggle.setAttribute('aria-expanded', 'false');
-        myBookingsToggle.setAttribute('aria-pressed', 'false');
-      }
-    });
-  }
 
   // Method selection → branch to Smart or Manual
   document.querySelectorAll('.wizard-method-card').forEach(card => {

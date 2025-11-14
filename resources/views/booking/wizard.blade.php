@@ -63,50 +63,12 @@
       <div class="row justify-content-center">
         <div class="col-12 col-lg-10">
 
-          {{-- GREETING PANEL (first thing user sees on the booking wizard) --}}
-          <div class="wizard-greeting-panel d-flex flex-column justify-content-center align-items-center text-center p-4 p-md-5">
-
-            {{-- Main greeting copy --}}
-            <div class="wizard-greeting-body">
-              <h1 class="wizard-greeting-title mb-3">
-                Ready to plan something?
-              </h1>
-
-              <p class="wizard-greeting-subtitle mb-4">
-                Pick what you need, answer a few quick prompts, and we’ll prep everything for you.
-              </p>
-            </div>
-
-            {{-- Primary CTA --}}
-            <div class="wizard-greeting-cta">
-              <button
-                type="button"
-                id="wizardStartButton"
-                class="btn btn-primary btn-lg px-4 px-md-5 wizard-primary-cta"
-              >
-                Let’s Begin
-              </button>
-
-            </div>
-
-            {{-- Optional tiny hint about what’s next --}}
-            <div class="wizard-greeting-next-hint small mt-4 text-muted">
-              Next: Choose whether to use <strong>Smart Book Finder</strong> or
-              <strong>Browse All Rooms</strong>.
-            </div>
-
-          </div>
-
           {{-- Booking method selection --}}
           <section
             id="wizardMethodSection"
-            class="wizard-method-section d-none mt-4"
-            hidden
+            class="wizard-method-section mt-4"
           >
             <div class="text-center mb-4">
-              <p class="wizard-greeting-meta text-uppercase fw-semibold mb-2">
-                Step 1 — Choose how to book
-              </p>
               <h2 class="wizard-method-title mb-2" tabindex="-1">
                 What do you need to book today?
               </h2>
