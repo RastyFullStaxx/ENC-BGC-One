@@ -57,6 +57,7 @@
         aria-expanded="false"
         aria-pressed="false"
       >
+      <a href="{{ route('user.booking.index') }}" class="text-decoration-none text-reset">
         <span class="d-inline-flex align-items-center gap-2">
           {{-- Calendar icon --}}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -66,6 +67,9 @@
           </svg>
           <span>My Bookings</span>
         </span>
+      </a>
+
+
 
         @if($bookingsCount > 0)
           <span
