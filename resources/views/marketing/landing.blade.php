@@ -44,24 +44,24 @@
   @if (!view()->exists('partials.navbar'))
   <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
     <nav class="navbar navbar-expand-md bg-white">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ route('landing') }}">
-          <span class="d-inline-flex align-items-center justify-content-center rounded-3 border p-1 text-primary" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M8 2v4M16 2v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
+      <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('landing') }}">
+          <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
+            <span class="fw-bold small">ONE</span>
           </span>
-          ONE Services
+          <span class="brand-copy d-none d-md-inline text-start lh-sm">
+            <span class="d-block fw-semibold">ONE Services</span>
+            <span class="d-block text-muted small">Shared Services Portal</span>
+          </span>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
                 aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div id="topNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto align-items-center">
+        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0 w-100 w-md-auto">
+          <ul class="navbar-nav align-items-center ms-md-auto">
             <li class="nav-item me-2">
               <a class="nav-link" href="{{ url('/help') }}">Help/FAQ</a>
             </li>
@@ -83,7 +83,6 @@
     {{-- HERO --}}
     <section class="py-5 py-lg-5 text-center hero-full">
       <div class="container" style="max-width: 900px;">
-        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-3">Smart Booking System</span>
 
         <h1 class="display-5 fw-bold lh-1 mb-2">
           <span class="d-block">Manage Shared Facilities</span>
@@ -92,7 +91,6 @@
 
         <p class="lead text-secondary mx-auto" style="max-width: 720px;">
           Simplify how teams reserve meeting rooms, special facilities, and transport services.
-          Get instant approvals, avoid conflicts, and save time with real-time scheduling.
         </p>
 
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
@@ -114,12 +112,6 @@
             Book Now
           </a>
         </div>
-
-        <ul class="list-unstyled d-flex flex-wrap justify-content-center gap-3 text-secondary mt-3 small" aria-label="Key assurances">
-          <li>Real-time availability</li>
-          <li>Approval workflows</li>
-          <li>Full audit history</li>
-        </ul>
       </div>
     </section>
 
