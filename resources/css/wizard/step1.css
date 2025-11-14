@@ -1,0 +1,219 @@
+/* resources/css/wizard/step1.css */
+/* Step 1 — Browse All Rooms specific styling */
+
+#wizardRoomsPanel .wizard-rooms-card {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.wizard-stage-row.has-sidebar #wizardRoomsPanel .wizard-rooms-card {
+  margin: 0;
+}
+
+.wizard-rooms-card {
+  border-radius: 1.25rem;
+}
+
+.wizard-rooms-title {
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.wizard-room-card {
+  border-radius: 1.25rem;
+  border: 3px solid #FDFDFD !important;
+  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(0, 24, 64, 0.08);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.wizard-room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(0, 24, 64, 0.16);
+}
+
+.wizard-room-card .wizard-room-media,
+.wizard-room-card .wizard-room-media img {
+  border-top-left-radius: 1.25rem;
+  border-top-right-radius: 1.25rem;
+}
+
+.wizard-room-card.is-selected {
+  border-color: #00C950 !important;
+  box-shadow: 0 0 0 2px rgba(0, 201, 80, 0.35);
+}
+
+.wizard-room-media {
+  height: 210px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.wizard-room-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+}
+
+.wizard-room-body {
+  min-height: 300px;
+  position: relative;
+}
+
+.wizard-room-meta {
+  width: 100%;
+}
+
+.wizard-room-meta-chip {
+  border-radius: 999px;
+  color: #001840;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.wizard-room-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.8rem;
+}
+
+.wizard-room-amenity {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #1E2939;
+  padding: 0.3rem 0.55rem;
+  border-radius: 0.75rem;
+  background: rgba(229, 231, 235, 0.6);
+}
+
+.wizard-room-meta-outline {
+  background: transparent;
+}
+
+.wizard-room-status {
+  font-size: 0.8rem;
+  padding: 0.4rem 0.85rem;
+}
+
+.wizard-room-chip {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.75rem;
+  background-color: #eff1f3;
+  color: #001840;
+  border: 3px solid #FDFDFD;
+  flex: 0 0 auto;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.wizard-room-chip-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.wizard-room-card.is-selected .wizard-room-chip {
+  background-color: #00C950;
+  color: #fff;
+  border-color: #00C950;
+}
+
+.wizard-room-availability {
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.wizard-room-availability.is-success {
+  background: rgba(0, 201, 80, 0.12);
+  color: #006B2A;
+}
+
+.wizard-room-availability.is-warning {
+  background: rgba(255, 208, 0, 0.18);
+  color: #894B00;
+}
+
+.wizard-room-availability.is-danger {
+  background: rgba(210, 16, 16, 0.1);
+  color: #8F0909;
+}
+
+.wizard-room-availability-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(253, 253, 253, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.wizard-room-actions .btn {
+  border-radius: 0.85rem;
+  font-weight: 600;
+}
+
+.wizard-room-actions {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(253, 253, 253, 0) 0%, #fff 45%);
+  padding-top: 1rem;
+}
+
+.btn-room-occupied {
+  background: #E5E7EB;
+  color: #001840;
+  border: 1px solid #E5E7EB;
+}
+
+.btn-room-limited {
+  background: #001840;
+  color: #FDFDFD;
+}
+
+.btn-room-available {
+  background: #001840;
+  color: #FDFDFD;
+}
+
+.wizard-room-card.is-selected .btn-room-available {
+  background: #00C950;
+  border-color: #00C950;
+}
+
+.wizard-room-card.is-selected .wizard-room-image {
+  box-shadow: inset 0 0 0 2px rgba(0, 201, 80, 0.4);
+}
+
+.wizard-room-card.is-selected .wizard-room-availability.is-success {
+  background: rgba(0, 201, 80, 0.18);
+  color: #006B2A;
+}
+
+.btn-room-occupied:hover,
+.btn-room-occupied:focus-visible {
+  background: #d6dbe3;
+  color: #001840;
+}
+
+@media (max-width: 991.98px) {
+  .wizard-room-media {
+    height: 180px;
+  }
+
+  .wizard-room-image {
+    height: 150px;
+  }
+}

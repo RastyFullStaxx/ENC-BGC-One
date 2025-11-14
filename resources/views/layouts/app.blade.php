@@ -17,7 +17,11 @@
 <body class="enc-type-body">
 
   {{-- Optional: site navbar --}}
-  @includeIf('partials.nav')
+  @hasSection('app-navbar')
+    @yield('app-navbar')
+  @else
+    @includeIf('partials.nav')
+  @endif
 
   <main>@yield('content')</main>
 

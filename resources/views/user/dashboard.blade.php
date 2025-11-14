@@ -33,7 +33,7 @@
           <p class="mb-0 enc-text-strong">Jump into the Smart Booking Wizard to create a request.</p>
         </div>
 
-        <a href="{{ route('booking.wizard', ['start' => 'method']) }}"
+        <a href="{{ route('booking.wizard') }}"
         class="btn btn-primary d-inline-flex align-items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="17" rx="3"

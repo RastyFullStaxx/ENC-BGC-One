@@ -51,6 +51,7 @@ Route::get('/book', function () {
     return view('booking.wizard');
 })->name('booking.wizard');
 
+
 // --- Booking submit endpoint (placeholder) ---
 Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
     ->name('bookings.store');
