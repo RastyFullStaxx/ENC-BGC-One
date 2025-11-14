@@ -33,7 +33,7 @@
           <p class="mb-0 enc-text-strong">Jump into the Smart Booking Wizard to create a request.</p>
         </div>
 
-        <a href="{{ route('booking.wizard', ['start' => 'method']) }}"
+        <a href="{{ route('booking.wizard') }}"
         class="btn btn-primary d-inline-flex align-items-center gap-2">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <rect x="3" y="4" width="18" height="17" rx="3"
@@ -55,6 +55,25 @@
             </svg>
             View My Bookings
         </a>
+      </div>
+
+      <hr class="my-5">
+
+      <div class="row g-3 g-md-4">
+        <div class="col-md-6">
+          <a href="{{ route('user.profile') }}" class="enc-card text-decoration-none d-block h-100 p-4">
+            <p class="text-uppercase small fw-semibold text-muted mb-1">Profile</p>
+            <h5 class="mb-2 enc-text-strong">Review your profile + delegates</h5>
+            <p class="mb-0 text-muted">Update personal details, favorite rooms, and quick stats.</p>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{{ route('user.settings') }}" class="enc-card text-decoration-none d-block h-100 p-4">
+            <p class="text-uppercase small fw-semibold text-muted mb-1">Settings</p>
+            <h5 class="mb-2 enc-text-strong">Control notifications & security</h5>
+            <p class="mb-0 text-muted">Manage alerts, passwords, and session security for your account.</p>
+          </a>
+        </div>
       </div>
 
     </div>

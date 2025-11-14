@@ -72,13 +72,13 @@ class SignupController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Account created successfully! Please log in.',
-                    'loginUrl' => route('login.index'),
+                    'loginUrl' => route('login'),
                     'landingUrl' => route('landing')
                 ], 200);
             }
 
             // Redirect to login with success message
-            return redirect()->route('login.index')->with('success', 'Account created successfully! Please log in.');
+            return redirect()->route('login')->with('success', 'Account created successfully! Please log in.');
             
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle database errors (like unique constraint violations)

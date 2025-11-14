@@ -9,14 +9,13 @@ Route::get('/', function () {
     return view('marketing/landing');
 })->name('landing');
 
-Route::get('/faq', function () {
-    return view('user.faq');
-})->name('faq');
+// Facility catalog (public for preview)
+Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
 
 // --- Authentication pages ---
 // Login pages (guest middleware redirects authenticated users to dashboard)
 Route::middleware(['guest'])->group(function () {
-    Route::view('/login', 'auth.login.index')->name('login.index');     
+    Route::view('/login', 'auth.login.index')->name('login');     
     Route::get('/login/form', [LoginController::class, 'showLoginForm'])->name('login.form');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     
@@ -40,6 +39,10 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     
     // List of Bookings
     Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
+
+    // Profile & Settings
+    Route::view('/user/profile', 'user.profile')->name('user.profile');
+    Route::view('/user/settings', 'user.settings')->name('user.settings');
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
@@ -55,7 +58,7 @@ Route::get('/book', function () {
     return view('booking.wizard');
 })->name('booking.wizard');
 
+
 // --- Booking submit endpoint (placeholder) ---
 Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
     ->name('bookings.store');
-    

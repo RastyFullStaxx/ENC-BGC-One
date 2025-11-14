@@ -26,18 +26,10 @@
         <div class="fw-semibold mb-2">Quick Links</div>
         <ul class="list-unstyled mb-0 small">
           <li class="mb-1">
-            @if (Route::has('login'))
-              <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('login') }}">Login</a>
-            @else
-              <a class="link-secondary" href="{{ url('/login') }}">Login</a>
-            @endif
+            <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('login') }}">Login</a>
           </li>
           <li class="mb-1">
-            @if (Route::has('register'))
-              <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('register') }}">Sign Up</a>
-            @else
-              <a class="link-secondary" href="{{ url('/register') }}">Sign Up</a>
-            @endif
+            <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('signup.index') }}">Sign Up</a>
           </li>
           <li class="mb-1">
             <a class="link-secondary link-underline-opacity-0 link-underline-opacity-75-hover" href="{{ route('faq') }}">Help &amp; FAQ</a>
