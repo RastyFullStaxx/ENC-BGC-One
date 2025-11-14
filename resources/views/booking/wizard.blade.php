@@ -19,6 +19,16 @@
     ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'1:00 PM - 2:00 PM'],
     ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'2:30 PM - 3:30 PM'],
   ];
+
+  $timeSlots = [];
+  for ($hour = 7; $hour <= 20; $hour++) {
+    foreach ([0, 30] as $minute) {
+      if ($hour === 20 && $minute > 0) {
+        continue;
+      }
+      $timeSlots[] = sprintf('%02d:%02d', $hour, $minute);
+    }
+  }
 @endphp
 
 @section('app-navbar')
@@ -195,9 +205,12 @@
       hidden
     >
       <div class="wizard-stage-row" id="wizardStageRow">
-        {{-- Main column: room list --}}
+        {{-- Main column --}}
         <div class="wizard-stage-main" id="wizardStageMain">
-          <div class="wizard-rooms-card card border-0 shadow-sm h-100">
+
+          {{-- Step 1 panel --}}
+          <div id="wizardRoomsPanel">
+            <div class="wizard-rooms-card card border-0 shadow-sm h-100">
             <div class="card-body p-3 p-md-4">
               <div class="mb-3">
                 <h2 class="wizard-rooms-title h5 mb-1">
@@ -373,18 +386,79 @@
                 @endforeach
               </div>
 
-              <div class="d-flex justify-content-end mt-4">
-                <button
-                  type="button"
-                  class="btn btn-primary wizard-next-date"
-                  disabled
-                >
-                  Next: Select Date &amp; Time
-                </button>
+                <div class="d-flex justify-content-end mt-4" id="wizardRoomsActions">
+                  <button
+                    type="button"
+                    class="btn btn-room-available wizard-next-date"
+                    disabled
+                  >
+                    Next: Select Date &amp; Time
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </div> {{-- end wizardRoomsPanel --}}
+
+          {{-- Step 2 panel --}}
+          <div id="wizardDatePanel" class="d-none">
+            <div class="wizard-date-card card border-0 shadow-sm h-100">
+              <div class="card-body p-3 p-md-4">
+                <div class="mb-3">
+                  <p class="text-uppercase small fw-semibold text-muted mb-2">Step 2 — Date &amp; Time</p>
+                  <h2 class="wizard-rooms-title h5 mb-1">
+                    When will you need the room?
+                  </h2>
+                  <p class="text-muted small mb-0">
+                    Pick a date and time range. We’ll hold the slot while you complete the request.
+                  </p>
+                </div>
+
+                <div class="wizard-date-selected mb-3">
+                  <span class="text-muted small">Selected Room:</span>
+                  <span class="fw-semibold" id="wizardSelectedRoomName">None selected yet</span>
+                </div>
+
+                <div class="row g-3 wizard-date-grid">
+                  <div class="col-12 col-lg-4">
+                    <label for="bookingDate" class="form-label small text-muted mb-1">Preferred date</label>
+                    <input type="date" class="form-control" id="bookingDate">
+                  </div>
+                  <div class="col-6 col-lg-4">
+                    <label for="bookingStartTime" class="form-label small text-muted mb-1">Start time</label>
+                    <select id="bookingStartTime" class="form-select">
+                      <option value="">Select start</option>
+                      @foreach ($timeSlots as $slot)
+                        <option value="{{ $slot }}">{{ \Carbon\Carbon::createFromFormat('H:i', $slot)->format('g:i A') }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                  <div class="col-6 col-lg-4">
+                    <label for="bookingEndTime" class="form-label small text-muted mb-1">End time</label>
+                    <select id="bookingEndTime" class="form-select">
+                      <option value="">Select end</option>
+                      @foreach ($timeSlots as $slot)
+                        <option value="{{ $slot }}">{{ \Carbon\Carbon::createFromFormat('H:i', $slot)->format('g:i A') }}</option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+
+                <div class="wizard-duration-pill mt-3" id="wizardDurationPill">
+                  Duration: <span id="wizardDurationLabel">Select start and end time</span>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mt-4">
+                  <button type="button" class="btn btn-light wizard-back-button" id="wizardBackToRooms">&lt; Back</button>
+                  <button type="button" class="btn btn-room-available" id="wizardNextDetails" disabled>
+                    Next: Add Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div> {{-- end wizard-stage-main --}}
 
         {{-- Sidebar: Your Bookings (shown only when "My Bookings" is toggled in navbar) --}}
         <div class="wizard-stage-sidebar d-none" id="wizardStageSidebar">

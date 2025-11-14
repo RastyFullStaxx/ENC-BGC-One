@@ -168,7 +168,7 @@
           aria-current="{{ $currentStep === $n ? 'step' : 'false' }}"
         >
           <div class="enc-stepper-node d-flex flex-column align-items-center flex-shrink-0 w-100">
-            <span class="enc-stepper-circle d-inline-flex align-items-center justify-content-center">{{ $n }}</span>
+            <span class="enc-stepper-circle d-inline-flex align-items-center justify-content-center" data-step-number="{{ $n }}">{{ $n }}</span>
             <span class="enc-stepper-title mt-2 fw-semibold">{{ $step['title'] }}</span>
             @if(!empty($step['desc']))
               <span class="enc-stepper-desc small text-muted">{{ $step['desc'] }}</span>
