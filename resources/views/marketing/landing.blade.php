@@ -35,7 +35,7 @@
   @includeIf('partials.navbar', [
     'brand' => 'ONE Services',
     'actions' => [
-      ['label' => 'Help/FAQ', 'href' => url('/help')],
+      ['label' => 'Help/FAQ', 'href' => route('faq')],
       ['label' => 'Log In',   'href' => route('login')],
       ['label' => 'Sign Up',  'href' => route('signup.index')]
     ]

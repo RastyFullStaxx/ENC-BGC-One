@@ -12,6 +12,12 @@ Route::get('/', function () {
 // Facility catalog (public for preview)
 Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
 
+//Help/FAQ
+Route::get('/faq', function () {
+    return view('user.faq');
+})->name('faq');
+
+
 // --- Authentication pages ---
 // Login pages (guest middleware redirects authenticated users to dashboard)
 Route::middleware(['guest'])->group(function () {

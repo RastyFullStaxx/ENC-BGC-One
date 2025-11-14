@@ -15,6 +15,7 @@ export default defineConfig({
                 'resources/css/wizard/bookings.css',
                 'resources/js/wizard.js',
                 'resources/css/design-system.css',
+                'resources/css/user/account.css',
             ],
             refresh: true,
         }),

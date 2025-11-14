@@ -17,7 +17,7 @@
 
     <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0">
       <ul class="navbar-nav align-items-center ms-md-auto ms-lg-0 flex-row flex-md-row gap-2">
-        <li class="nav-item me-2"><a class="nav-link" href="{{ $actions[0]['href'] ?? url('/help') }}">Help/FAQ</a></li>
+        <li class="nav-item me-2"><a class="nav-link" href="{{ $actions[0]['href'] ?? route("faq") }}">Help/FAQ</a></li>
         <li class="nav-item me-2">
           <a class="btn btn-outline-secondary" href="{{ $actions[1]['href'] ?? route('login') }}">Log In</a>
         </li>
