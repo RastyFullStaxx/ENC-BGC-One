@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Bookings - Shared Services Portal</title>
-    <style>
+@extends('layouts.app')
+
+@section('title', 'My Bookings')
+
+@push('styles')
+    @vite(['resources/css/wizard/base.css'])
+<style>
         * {
             margin: 0;
             padding: 0;
@@ -15,194 +15,6 @@
             font-family: Arial, sans-serif;
             background-color: #f8fafc;
             color: #1f2937;
-        }
-
-        /* Header Styles */
-        .header {
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 16px 24px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
-
-        .logo-section {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .logo {
-            width: 70px;
-            height: 70px;
-            flex-shrink: 0;
-        }
-
-        .logo-text h1 {
-            font-size: 20px;
-            color: #1e40af;
-            font-weight: 500;
-        }
-
-        .logo-text p {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .header-right {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .mobile-menu-btn span {
-            width: 24px;
-            height: 2px;
-            background-color: #1f2937;
-            transition: all 0.3s;
-        }
-
-        .mobile-menu-btn.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .mobile-menu-btn.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-btn.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 85px;
-            left: 0;
-            right: 0;
-            background-color: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 16px;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .mobile-menu.active {
-            display: flex;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.2s;
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            background-color: #f8fafc;
-        }
-
-        .user-badge {
-            background-color: #2563eb;
-            color: white;
-            padding: 10px 25px 10px 25px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .user-profile:hover {
-            background-color: #f8fafc;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background-color: #1e3a8a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
-
-        .user-info p:first-child {
-            font-size: 14px;
-            color: #1e40af;
-            font-weight: 500;
-        }
-
-        .user-info p:last-child {
-            font-size: 12px;
-            color: #6b7280;
-        }
-
-        .notification {
-            position: relative;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background-color: #ef4444;
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 500;
         }
 
         /* Main Content */
@@ -715,84 +527,25 @@
             }
         }
     </style>
-</head>
-<body>
+@endpush
+
+@section('content')
+    <!-- Include Dashboard Navbar -->
+    @include('partials.dashboard-navbar', [
+        'currentStep' => 0,
+        'steps' => [],
+        'bookingsCount' => 2,
+        'notificationsCount' => 2,
+        'userName' => auth()->user()->name ?? 'User',
+        'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
+        'userRole' => auth()->user()->role ?? 'staff',
+        'brand' => 'ONE Services'
+    ])
+
     <!-- Toast Notification -->
     <div id="toast" class="toast">
         <span id="toastMessage"></span>
     </div>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo-section">
-                <a href="{{ route('user.dashboard', ['start' => 'method']) }}"><img src="{{ asset('images/enclogo.png') }}" alt="ENC Logo" class="logo"></a>
-                <div class="logo-text">
-                    <h1>Shared Services Portal</h1>
-                    <p>One-Stop Booking Platform</p>
-                </div>
-            </div>
-
-            <!-- Desktop Navigation -->
-            <div class="header-right">
-                <button class="btn">
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                    My Bookings
-                </button>
-                
-                <span class="user-badge"> User</span>
-
-                <div class="user-profile" onclick="toggleUserMenu()">
-                    <div class="user-avatar">CR</div>
-                    <div class="user-info">
-                        <p>Charles Ramos</p>
-                        <p>user.charles@enc.gov</p>
-                    </div>
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </div>
-
-                <div class="notification" onclick="showNotifications()">
-                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <span class="notification-badge">2</span>
-                </div>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="mobile-menu">
-            <div class="user-profile">
-                <div class="user-avatar">CR</div>
-                <div class="user-info">
-                    <p>Charles Ramos</p>
-                    <p>user.charles@enc.gov</p>
-                </div>
-            </div>
-            <button class="btn">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                My Bookings
-            </button>
-            <button class="btn" onclick="showNotifications()">
-                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-                Notifications (2)
-            </button>
-        </div>
-    </header>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -1142,5 +895,4 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', init);
     </script>
-</body>
-</html>
+@endsection

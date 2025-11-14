@@ -1,0 +1,542 @@
+/* resources/css/wizard/steps.css */
+/* Step 2 — Date & Time and future steps */
+
+#wizardDatePanel .wizard-date-card {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 1.25rem;
+}
+
+.wizard-stage-row.has-sidebar #wizardDatePanel .wizard-date-card {
+  margin: 0;
+}
+
+.wizard-date-selected {
+  background: #E5E7EB;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.wizard-step-subcard {
+  background: #fff;
+  border-radius: 1.1rem;
+  border: 1px solid #E5E7EB;
+  padding: 1.5rem;
+  height: 100%;
+  box-shadow: 0 18px 35px rgba(0, 24, 64, 0.08);
+}
+
+.wizard-step-subcard-header .h6 {
+  color: #001840;
+}
+
+.wizard-calendar {
+  border-radius: 1rem;
+  background: #E5E7EB;
+  padding: 1rem 1.25rem 1.5rem;
+  border: 1px solid #E5E7EB;
+}
+
+.wizard-calendar-nav {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border-color: transparent;
+  background: #fff;
+  color: #001840;
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 0;
+  box-shadow: 0 10px 24px rgba(0, 24, 64, 0.12);
+}
+
+.wizard-calendar-daynames {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(0, 24, 64, 0.6);
+  margin-bottom: 0.35rem;
+}
+
+.wizard-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.wizard-calendar-day {
+  border: 1px solid transparent;
+  background: #fff;
+  border-radius: 0.85rem;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #001840;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.wizard-calendar-day:focus-visible {
+  outline: 2px solid #75A3EB;
+  outline-offset: 2px;
+}
+
+.wizard-calendar-day.is-muted {
+  color: rgba(0, 24, 64, 0.35);
+}
+
+.wizard-calendar-day.is-today {
+  border-color: rgba(0, 24, 64, 0.35);
+}
+
+.wizard-calendar-day.is-selected {
+  background: #001840;
+  color: #FDFDFD;
+  border-color: #001840;
+  box-shadow: 0 12px 24px rgba(0, 24, 64, 0.25);
+}
+
+.wizard-calendar-selection {
+  border-top: 1px dashed rgba(0, 24, 64, 0.1);
+  padding-top: 0.75rem;
+}
+
+.wizard-time-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(0, 24, 64, 0.1);
+  border-radius: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  background: #fff;
+}
+
+.wizard-time-input span {
+  font-size: 1rem;
+}
+
+.wizard-time-input select {
+  border: none;
+  flex: 1 1 auto;
+  padding-left: 0;
+  box-shadow: none;
+}
+
+.wizard-duration-pill {
+  background: #001840;
+  color: #FDFDFD;
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 12px 24px rgba(0, 24, 64, 0.25);
+}
+
+.wizard-duration-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(253, 253, 253, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 767.98px) {
+  .wizard-step-subcard {
+    padding: 1.25rem;
+  }
+
+  .wizard-calendar-grid,
+  .wizard-calendar-daynames {
+    gap: 0.25rem;
+  }
+
+  .wizard-calendar-day {
+    height: 42px;
+  }
+}
+
+/* ---- Step 3 — Booking details ---- */
+
+#wizardDetailsPanel .wizard-details-card {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 1.25rem;
+}
+
+.wizard-details-grid .wizard-step-subcard {
+  height: auto;
+}
+
+.wizard-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: #E5E7EB;
+}
+
+.wizard-counter-compact {
+  background: #E5E7EB;
+  gap: 0.5rem;
+}
+
+.wizard-counter-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border-color: transparent;
+  background: #fff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #001840;
+  box-shadow: 0 10px 24px rgba(0, 24, 64, 0.12);
+  padding: 0;
+}
+
+.wizard-counter-value {
+  text-align: center;
+  min-width: 70px;
+}
+
+.wizard-counter-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1E2939;
+  line-height: 1;
+}
+
+.wizard-form-tip {
+  border-left: 3px solid #E5E7EB;
+  padding-left: 0.75rem;
+}
+
+.wizard-support-card {
+  background: #E5E7EB;
+}
+
+.wizard-support-toggle .form-check-input {
+  width: 3rem;
+  height: 1.5rem;
+  cursor: pointer;
+}
+
+.wizard-support-fields {
+  margin-top: 1.25rem;
+  border-radius: 1rem;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  padding: 1.25rem;
+  box-shadow: inset 0 1px 0 rgba(0, 24, 64, 0.04);
+}
+
+.wizard-support-fields.d-none {
+  display: none !important;
+}
+
+.wizard-support-field + .wizard-support-field {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px dashed #E5E7EB;
+}
+
+.wizard-equipment-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.wizard-equipment-chip {
+  border-radius: 999px;
+  border: 1px solid #E5E7EB;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #001840;
+  background: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.wizard-equipment-option .btn-check:checked + .wizard-equipment-chip,
+.wizard-equipment-chip:hover {
+  background: #001840;
+  color: #FDFDFD;
+  border-color: #001840;
+  box-shadow: 0 8px 18px rgba(0, 24, 64, 0.2);
+}
+
+.wizard-support-card textarea {
+  resize: vertical;
+}
+
+.wizard-attendees-card {
+  text-align: center;
+}
+
+.wizard-attendees-card .wizard-counter {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 320px;
+}
+
+.wizard-attendees-badge-wrap {
+  margin-top: 0.85rem;
+}
+
+.wizard-attendees-badge {
+  background: #1E2939;
+  color: #FDFDFD;
+  border-radius: 999px;
+  padding: 0.25rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-room-submit {
+  background: #00C950;
+  border-color: #00C950;
+  color: #FDFDFD;
+  box-shadow: 0 12px 24px rgba(0, 201, 80, 0.25);
+}
+
+.btn-room-submit:hover,
+.btn-room-submit:focus-visible {
+  background: #00b246;
+  border-color: #00b246;
+  color: #FDFDFD;
+}
+
+/* ---- Step 4 — Review & Confirm ---- */
+
+#wizardReviewPanel .wizard-review-card {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 1.25rem;
+}
+
+.wizard-review-list {
+  margin: 0;
+}
+
+.wizard-review-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.wizard-review-list div:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wizard-review-list dt {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1E2939;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.wizard-review-list dd {
+  margin: 0;
+  font-weight: 600;
+  color: #001840;
+  text-align: right;
+}
+
+.wizard-review-support {
+  background: #FDFDFD;
+}
+
+.wizard-review-support-summary {
+  border: 1px dashed #E5E7EB;
+  border-radius: 1rem;
+  padding: 1rem;
+  background: #fff;
+  color: #1E2939;
+}
+
+.wizard-review-support-summary ul {
+  padding-left: 1.1rem;
+  margin-bottom: 0.25rem;
+}
+
+.wizard-review-support-summary li {
+  margin-bottom: 0.2rem;
+}
+
+.wizard-review-actions .btn-lg {
+  padding-inline: 1.75rem;
+}
+
+/* ---- Success Panel ---- */
+
+.wizard-success-panel {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+  background: #FDFDFD;
+}
+
+.wizard-success-card {
+  max-width: 720px;
+  width: 100%;
+  border-radius: 1.5rem;
+  background: #001840;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 30px 60px rgba(0, 24, 64, 0.35);
+}
+
+.wizard-success-title {
+  color: #FDFDFD;
+  font-weight: 700;
+}
+
+.wizard-success-muted {
+  color: rgba(253, 253, 253, 0.75);
+}
+
+.wizard-success-icon {
+  width: 90px;
+  height: 90px;
+  border-radius: 999px;
+  background: rgba(0, 201, 80, 0.15);
+  color: #00C950;
+  font-size: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.wizard-success-reference {
+  text-transform: uppercase;
+}
+
+.wizard-success-code {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #00C950;
+}
+
+.wizard-success-summary {
+  border-radius: 1.25rem;
+  background: #E5F9EE;
+  color: #001840;
+}
+
+.wizard-success-summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  gap: 1rem;
+}
+
+.wizard-success-summary-row .label {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #1E2939;
+  font-weight: 600;
+}
+
+.wizard-success-summary-row .value {
+  font-weight: 600;
+  color: #001840;
+}
+
+.wizard-success-summary-row:last-child {
+  margin-bottom: 0;
+}
+
+.wizard-success-next .btn {
+  min-width: 220px;
+}
+
+.wizard-success-divider {
+  border-color: rgba(253, 253, 253, 0.2);
+  opacity: 1;
+}
+
+.wizard-success-light-btn {
+  color: #001840;
+}
+
+.wizard-success-outline {
+  color: #001840;
+  border: 1px solid rgba(253, 253, 253, 0.3);
+  background: #fff;
+}
+
+.wizard-success-outline:hover,
+.wizard-success-outline:focus-visible {
+  color: #001235;
+  border-color: #fff;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(253, 253, 253, 0.25);
+}
+
+@media (max-width: 767.98px) {
+  .wizard-success-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* SweetAlert customizations */
+.swal2-popup.wizard-swal {
+  border-radius: 1.25rem !important;
+  padding: 2rem !important;
+}
+
+.swal2-styled.wizard-swal-confirm {
+  background-color: #001840 !important;
+  border-radius: 999px !important;
+  padding-inline: 1.5rem !important;
+}
+
+.swal2-styled.wizard-swal-cancel {
+  border-radius: 999px !important;
+  background-color: #E5E7EB !important;
+  color: #1E2939 !important;
+  padding-inline: 1.5rem !important;
+}
+
+@media (max-width: 767.98px) {
+  .wizard-counter {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .wizard-support-fields {
+    padding: 1rem;
+  }
+
+  .wizard-review-list div {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .wizard-review-list dd {
+    text-align: left;
+  }
+}
+
+/* TODO: Add Step 3 and Step 4 specific styling as those panels are implemented. */

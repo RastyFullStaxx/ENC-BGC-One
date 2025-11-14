@@ -1,25 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Help & FAQ</title>
-    <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: Arial, sans-serif;
+@section('app-navbar')
+    @auth
+        @include('partials.dashboard-navbar', [
+            'currentStep' => 0,
+            'steps' => [],
+            'bookingsCount' => 0,
+            'notificationsCount' => 0,
+        ])
+    @else
+        @include('partials.navbar', [
+            'brand' => 'ONE Services',
+            'actions' => [
+                ['href' => route('faq')],
+                ['href' => route('login')],
+                ['href' => route('signup.index')]
+            ]
+        ])
+    @endauth
+@endsection
+
+@push('styles')
+  @vite(['resources/css/wizard/base.css'])
+  @vite(['resources/css/user/account.css'])
+  <style>
+    .account-hero {
+      margin-top: -2rem;
+    }
+  </style>
+@endpush
+
+
+@section('content')
+<style>
+        /* FAQ Page Wrapper */
+        .faq-page-wrapper {
             background-color: #f5f5f5;
+            min-height: calc(100vh - 200px);
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            align-items: flex-start;
+            padding: 40px 20px;
         }
 
         /* FAQ Container */
@@ -245,8 +266,8 @@
             }
         }
     </style>
-</head>
-<body>
+
+<div class="faq-page-wrapper">
     <div class="faq-container">
         <div class="faq-content">
             <!-- Header -->
@@ -459,14 +480,15 @@
             </div>
 
             <!-- Close Button -->
-            <button class="close-button" aria-label="Close">
+            {{-- <button class="close-button" aria-label="Close">
                 <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
                     <path d="M12 4L4 12" stroke="black" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
                     <path d="M4 4L12 12" stroke="black" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-            </button>
+            </button> --}}
         </div>
     </div>
+</div>
 
     <script>
         // FAQ Accordion Functionality
@@ -502,15 +524,13 @@
             const closeButton = document.querySelector('.close-button');
             if (closeButton) {
                 closeButton.addEventListener('click', () => {
-                    // You can customize this behavior
-                    // For example, hide the container or redirect
-                    const container = document.querySelector('.faq-container');
-                    container.style.display = 'none';
-                    
-                    // Or you could do:
-                    // window.history.back();
-                    // window.close();
-                    // Or navigate to another page
+                    // Redirect back to appropriate page based on authentication
+                    const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+                    if (isAuthenticated) {
+                        window.location.href = '{{ route('user.dashboard') }}';
+                    } else {
+                        window.location.href = '{{ route('landing') }}';
+                    }
                 });
             }
             
@@ -527,5 +547,5 @@
             });
         });
     </script>
-</body>
-</html>
+
+@endsection
