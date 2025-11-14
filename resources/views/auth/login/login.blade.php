@@ -21,7 +21,7 @@
 
         <!-- Back to login options -->
         <div class="mb-14">
-        <a href="{{ route('login.index') }}" 
+        <a href="{{ route('login') }}" 
             class="flex items-center text-m enc-text-muted hover:underline transition-colors duration-150 space-x-1"
             aria-label="Back to login options">
             <svg xmlns="http://www.w3.org/2000/svg" 

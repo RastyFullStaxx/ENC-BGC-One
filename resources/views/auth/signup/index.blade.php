@@ -77,7 +77,7 @@
         <!-- Footer -->
         <p class="enc-text-muted text-center mt-6 text-sm">
             Already have an account? 
-            <a href="{{ route('login.index') }}" class="enc-link">Back to Login</a>
+            <a href="{{ route('login') }}" class="enc-link">Back to Login</a>
         </p>
     </div>
 </div>

@@ -35,8 +35,8 @@
   @includeIf('partials.navbar', [
     'brand' => 'ONE Services',
     'actions' => [
-      ['label' => 'Help/FAQ', 'href' => url('/help')],
-      ['label' => 'Log In',   'href' => route('login.index')],
+      ['label' => 'Help/FAQ', 'href' => route('faq')],
+      ['label' => 'Log In',   'href' => route('login')],
       ['label' => 'Sign Up',  'href' => route('signup.index')]
     ]
   ])
@@ -44,24 +44,24 @@
   @if (!view()->exists('partials.navbar'))
   <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
     <nav class="navbar navbar-expand-md bg-white">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="{{ route('landing') }}">
-          <span class="d-inline-flex align-items-center justify-content-center rounded-3 border p-1 text-primary" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M8 2v4M16 2v4M3 9h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
+      <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap gap-3">
+        <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('landing') }}">
+          <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
+            <span class="fw-bold small">ONE</span>
           </span>
-          ONE Services
+          <span class="brand-copy d-none d-md-inline text-start lh-sm">
+            <span class="d-block fw-semibold">ONE Services</span>
+            <span class="d-block text-muted small">Shared Services Portal</span>
+          </span>
         </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
+        <button class="navbar-toggler ms-auto d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
                 aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div id="topNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav ms-auto align-items-center">
+        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0">
+          <ul class="navbar-nav align-items-center ms-md-auto ms-lg-0 flex-row flex-md-row gap-2">
             <li class="nav-item me-2">
               <a class="nav-link" href="{{ url('/help') }}">Help/FAQ</a>
             </li>
@@ -83,7 +83,6 @@
     {{-- HERO --}}
     <section class="py-5 py-lg-5 text-center hero-full">
       <div class="container" style="max-width: 900px;">
-        <span class="badge rounded-pill bg-primary-subtle text-primary-emphasis mb-3">Smart Booking System</span>
 
         <h1 class="display-5 fw-bold lh-1 mb-2">
           <span class="d-block">Manage Shared Facilities</span>
@@ -92,34 +91,79 @@
 
         <p class="lead text-secondary mx-auto" style="max-width: 720px;">
           Simplify how teams reserve meeting rooms, special facilities, and transport services.
-          Get instant approvals, avoid conflicts, and save time with real-time scheduling.
         </p>
 
         <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
-          <a class="btn btn-outline-secondary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ url('/rooms') }}" data-analytics="cta_find_room">
+
+          <a class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Find a Room
           </a>
 
           <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('booking.wizard', ['start' => 'method']) }}" data-analytics="cta_book_now">
+             href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
+             <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
               <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
             Book Now
           </a>
-        </div>
 
-        <ul class="list-unstyled d-flex flex-wrap justify-content-center gap-3 text-secondary mt-3 small" aria-label="Key assurances">
-          <li>Real-time availability</li>
-          <li>Approval workflows</li>
-          <li>Full audit history</li>
-        </ul>
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.users') }}" data-analytics="cta_admin_users">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Users & Roles
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.facilities') }}" data-analytics="cta_admin_facilities">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 21V9l8-5 8 5v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Facilities
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.analytics') }}" data-analytics="cta_admin_analytics">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 12h4v8H4zM10 6h4v14h-4zM16 3h4v17h-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Admin · Analytics
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.policies') }}" data-analytics="cta_admin_policies">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Policies
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.calendar') }}" data-analytics="cta_admin_calendar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 5h16v16H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Global Calendar
+          </a>
+
+          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
+             href="{{ route('admin.audit') }}" data-analytics="cta_admin_audit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 9h8M8 13h8M8 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Admin · Audit Log
+          </a>
+        </div>
       </div>
     </section>
 
@@ -435,7 +479,7 @@
         <div class="col-lg-4 text-lg-end">
           <div class="d-flex d-lg-inline-flex gap-2">
             @if (Route::has('register'))
-              <a href="{{ route('register') }}" class="btn btn-light">Create Account</a>
+              <a href="{{ route('signup.index') }}" class="btn btn-light">Create Account</a>
             @else
               <a href="{{ url('/register') }}" class="btn btn-light">Create Account</a>
             @endif
