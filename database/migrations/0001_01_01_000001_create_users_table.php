@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->unique()->nullable(); // Added phone
-            $table->string('department')->nullable(); // Optional department
+            $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('set null'); // Foreign key to departments
             $table->enum('role', ['staff', 'admin'])->default('staff'); // Added role
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password'); // Hashed password

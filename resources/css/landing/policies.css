@@ -1,0 +1,88 @@
+/* Booking policies teaser */
+.policy-teaser{background:#fdfdfd;}
+.policy-card{
+  background:#fff;
+  border-radius:28px;
+  padding:32px;
+  box-shadow:0 30px 60px -40px rgba(0,24,64,0.15);
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+}
+.policy-card-info{
+  flex:1 1 320px;
+}
+.policy-card-list{
+  flex:1 1 320px;
+  background:linear-gradient(180deg,#f9fbff 0%,#eef2ff 100%);
+  border-radius:22px;
+  padding:24px;
+  border:1px solid rgba(0,24,64,0.08);
+}
+.policy-eyebrow{
+  text-transform:uppercase;
+  font-size:12px;
+  letter-spacing:0.12em;
+  color:#00c950;
+  display:inline-block;
+  margin-bottom:6px;
+}
+.policy-card-info h2{color:#001840; margin-bottom:12px;}
+.policy-card-info p{color:#4b5563;}
+.policy-highlights{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin:16px 0;
+}
+.policy-highlight{
+  flex:1 1 160px;
+  min-width:160px;
+  background:rgba(0,24,64,0.03);
+  border:1px solid rgba(0,24,64,0.08);
+  border-radius:16px;
+  padding:14px;
+}
+.policy-highlight-label{
+  display:block;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:#6b7280;
+}
+.policy-highlight-value{
+  display:block;
+  font-size:15px;
+  font-weight:600;
+  color:#001840;
+}
+.policy-card-list ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.policy-card-list li{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  color:#1e2939;
+  font-size:14px;
+}
+.policy-check{
+  width:24px;
+  height:24px;
+  border-radius:10px;
+  background:rgba(0,201,80,0.15);
+  color:#00c950;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.policy-check svg{width:16px; height:16px;}
+
+@media (max-width: 768px){
+  .policy-card{padding:24px;}
+}

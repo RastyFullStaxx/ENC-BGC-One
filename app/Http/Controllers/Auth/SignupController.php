@@ -17,7 +17,8 @@ class SignupController extends Controller
      */
     public function showStaffForm()
     {
-        return view('auth.signup.staff-signup');
+        $departments = Department::orderBy('name')->get();
+        return view('auth.signup.staff-signup', compact('departments'));
     }
 
     /**
@@ -35,7 +36,7 @@ class SignupController extends Controller
                 'regex:/^[a-zA-Z0-9._-]+@ministry\.gov$/'
             ],
             'phone' => 'nullable|string|max:20|unique:users,phone',
-            'department_id' => 'required|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'password' => ['required', 'confirmed', Password::defaults()],
         ], [
             'email.regex' => 'Email must be in the format: your.name@ministry.gov',
@@ -62,7 +63,7 @@ class SignupController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'department' => $request->department_id, // Store department name directly
+                'department_id' => $request->department_id, // Store department foreign key
                 'role' => 'staff',
                 'password' => Hash::make($request->password),
             ]);
@@ -72,13 +73,13 @@ class SignupController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Account created successfully! Please log in.',
-                    'loginUrl' => route('login.index'),
+                    'loginUrl' => route('login'),
                     'landingUrl' => route('landing')
                 ], 200);
             }
 
             // Redirect to login with success message
-            return redirect()->route('login.index')->with('success', 'Account created successfully! Please log in.');
+            return redirect()->route('login')->with('success', 'Account created successfully! Please log in.');
             
         } catch (\Illuminate\Database\QueryException $e) {
             // Handle database errors (like unique constraint violations)

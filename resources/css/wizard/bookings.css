@@ -1,0 +1,35 @@
+/* resources/css/wizard/bookings.css */
+/* My Bookings sidebar styling */
+
+.wizard-bookings-sidebar .nav-pills .nav-link {
+  font-weight: 600;
+  color: #001840;
+  border: 1px solid rgba(0, 24, 64, 0.1);
+  border-radius: 999px;
+  padding-inline: 1rem;
+}
+
+.wizard-bookings-sidebar .nav-pills .nav-link.active {
+  background-color: #001840;
+  border-color: #001840;
+  color: #FDFDFD;
+}
+
+.wizard-bookings-sidebar {
+  border-radius: 1.25rem;
+  min-height: 100%;
+}
+
+.wizard-bookings-list {
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.wizard-bookings-list::-webkit-scrollbar {
+  display: none;
+}
+
+.wizard-booking-item {
+  font-size: 0.8rem;
+}

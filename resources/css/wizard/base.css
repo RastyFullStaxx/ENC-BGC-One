@@ -1,0 +1,592 @@
+/* resources/css/wizard/base.css */
+/* Uses design tokens from resources/css/design-system.css */
+
+/* ---- Booking wizard navbar + stepper ---- */
+.btn-primary {
+  background-color: #001840;
+  border-color: #001840;
+}
+
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background-color: #001235;
+  border-color: #001235;
+}
+
+.btn-outline-primary {
+  color: #001840;
+  border-color: #001840;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus-visible {
+  color: #fff;
+  background-color: #001840;
+  border-color: #001840;
+}
+
+.btn-check:checked + .btn,
+.btn-check:checked + .btn-outline-primary,
+.btn-check:active + .btn,
+.btn-check:active + .btn-outline-primary,
+.btn.active,
+.btn.show,
+.btn:active {
+  background-color: #001840 !important;
+  border-color: #001840 !important;
+  color: #FDFDFD !important;
+}
+
+.enc-app-navbar {
+  min-height: 72px;
+  box-shadow: none;
+  border-bottom: none;
+}
+
+.enc-app-navbar > .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.enc-app-navbar .navbar-brand {
+  font-weight: 600;
+  color: var(--enc-color-brand-primary, #001840);
+  margin-right: auto;
+  gap: 0.8rem;
+}
+
+.enc-app-navbar .brand-copy {
+  margin-left: 0.2rem;
+}
+
+.enc-app-navbar .brand-mark {
+  width: 42px;
+  height: 42px;
+  background: rgba(16, 42, 113, 0.08);
+  color: var(--enc-color-brand-secondary, #102A71);
+}
+
+.enc-app-navbar .brand-mark .small {
+  letter-spacing: 0.08em;
+}
+
+.enc-app-navbar .btn {
+  border-radius: 1rem;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1.1rem;
+  height: 44px;
+  border: 1px solid rgba(0, 24, 64, 0.2);
+  background-color: #fff;
+  color: #001840;
+}
+
+.enc-app-navbar .enc-user-menu-btn {
+  border-radius: 1rem;
+  padding: 0.4rem 1rem;
+  min-width: 180px;
+  height: 44px;
+  border: none;
+  box-shadow: none;
+  background-color: #fff;
+}
+
+.enc-app-navbar .enc-user-menu-btn .avatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.85rem;
+}
+
+.enc-app-navbar .enc-nav-icon-btn {
+  min-width: 0;
+  width: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#myBookingsToggle {
+  font-weight: 600;
+}
+
+#myBookingsToggle.btn-bookings-active {
+  background-color: #001840;
+  border-color: #001840;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(0, 24, 64, 0.2);
+}
+
+#myBookingsToggle .badge {
+  font-size: 0.65rem;
+  min-width: 20px;
+}
+
+.enc-app-navbar .enc-user-type,
+.enc-user-type {
+  border-radius: 1rem;
+  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  padding: 0 1.1rem;
+  min-width: 110px;
+  text-align: center;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background-color: #001840 !important;
+  color: #FDFDFD !important;
+}
+
+.enc-user-menu-btn {
+  border-radius: 1rem;
+  padding: 0.4rem 1rem;
+  min-width: 180px;
+  height: 44px;
+  border: none;
+  box-shadow: none;
+  background-color: #fff;
+}
+
+.enc-user-menu-btn .avatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.85rem;
+}
+
+.enc-stepper-wrap {
+  border-bottom: 0;
+  box-shadow: none;
+  background-color: var(--enc-color-light, #FDFDFD);
+  padding: 1.25rem 0 1rem;
+  margin-top: 0.75rem;
+}
+
+.enc-stepper {
+  gap: 1rem;
+}
+
+.enc-stepper-item {
+  position: relative;
+  padding-bottom: 0.5rem;
+  min-width: 0;
+  gap: 1rem;
+}
+
+.enc-stepper-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid rgba(0, 24, 64, 0.15);
+  font-weight: 600;
+  color: var(--enc-color-brand-primary, #001840);
+  background: #fff;
+}
+
+.enc-stepper-title {
+  font-size: 0.95rem;
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.enc-stepper-desc {
+  max-width: 220px;
+  white-space: normal;
+}
+
+.enc-stepper-line {
+  height: 4px;
+  min-width: 200px;
+  background: #E5E7EB;
+  border-radius: 999px;
+  opacity: 1;
+  align-self: center;
+  flex-grow: 1;
+  margin-left: 1rem;
+}
+
+.enc-stepper-item.is-active .enc-stepper-circle {
+  background: #001840;
+  color: #FDFDFD;
+  border-color: #001840;
+  box-shadow: 0 6px 14px rgba(0, 24, 64, 0.25);
+}
+
+.enc-stepper-item.is-complete .enc-stepper-circle {
+  background: #00C950;
+  border-color: #00C950;
+  color: #fff;
+}
+
+.enc-stepper-item.is-complete .enc-stepper-line {
+  background: #00C950;
+  opacity: 1;
+}
+
+.enc-stepper-item.is-active .enc-stepper-title,
+.enc-stepper-item.is-complete .enc-stepper-title {
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.enc-stepper-item.is-upcoming .enc-stepper-title,
+.enc-stepper-item.is-upcoming .enc-stepper-desc {
+  color: rgba(0, 24, 64, 0.5);
+}
+
+
+@media (max-width: 991.98px) {
+  .enc-stepper {
+    flex-wrap: wrap;
+  }
+
+  .enc-stepper-item {
+    flex: 1 1 calc(50% - 1.25rem);
+  }
+
+  .enc-stepper-line {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .enc-stepper {
+    flex-direction: column;
+  }
+
+  .enc-stepper-item {
+    flex: 1 1 auto;
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+}
+
+/* ---- Layout shell ---- */
+.wizard-shell {
+  min-height: calc(100vh - 140px); /* leave room for navbar/footer */
+  padding: clamp(2rem, 4vh, 4rem) 1rem;
+  background: var(--enc-color-light, #FDFDFD);
+}
+
+#wizardLandingShell {
+  min-height: calc(100vh - 240px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#wizardLandingShell .row {
+  width: 100%;
+}
+
+/* ---- Greeting panel ---- */
+.wizard-greeting-panel {
+  /* Remove card look; keep layout + spacing only */
+  border-radius: 0;          /* or keep a small radius if you like */
+  border: none;
+  background: transparent;
+  box-shadow: none;
+
+  color: var(--enc-color-text-strong, #00163A);
+  max-width: 960px;
+  margin-inline: auto;
+}
+
+/* keep content from hugging edges on small screens */
+.wizard-greeting-panel .wizard-greeting-body,
+.wizard-greeting-panel .wizard-greeting-cta,
+.wizard-greeting-panel .wizard-greeting-next-hint {
+  width: 100%;
+}
+
+.wizard-greeting-meta {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* ---- Main title & copy ---- */
+.wizard-greeting-title {
+  font-size: var(--enc-type-display, 48px);
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.wizard-greeting-subtitle {
+  font-size: var(--enc-type-primary, 24px);
+  line-height: 1.4;
+  color: var(--enc-color-text-strong, #00163A);
+}
+
+.wizard-greeting-subsubtitle {
+  font-size: var(--enc-type-secondary, 16px);
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* ---- CTA ---- */
+.wizard-primary-cta {
+  min-width: 210px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 12px 28px rgba(0, 24, 64, 0.18);
+}
+
+.wizard-primary-cta:focus-visible {
+  outline: 3px solid var(--enc-color-supporting, #75A3EB);
+  outline-offset: 2px;
+}
+
+.wizard-greeting-cta-note {
+  max-width: 360px;
+  margin-inline: auto;
+}
+
+/* ---- Next-step hint ---- */
+.wizard-greeting-next-hint {
+  max-width: 420px;
+  margin-inline: auto;
+}
+
+/* ---- Responsive tweaks ---- */
+@media (max-width: 991.98px) {
+  .wizard-shell {
+    min-height: auto;
+  }
+
+  .wizard-greeting-panel {
+    border-radius: 1.25rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .wizard-shell {
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+
+  .wizard-greeting-title {
+    font-size: 2rem; /* ~32px */
+  }
+
+  .wizard-greeting-subtitle {
+    font-size: 1.125rem; /* 18px */
+  }
+
+  .wizard-greeting-panel {
+    padding-inline: 1.5rem !important;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .wizard-primary-cta {
+    transition: none !important;
+    box-shadow: none;
+  }
+
+  .wizard-method-card {
+    transition: none !important;
+    animation: none;
+  }
+}
+
+/* ---- Method selection section ---- */
+.wizard-method-section {
+  max-width: 960px;
+  margin-inline: auto;
+  padding: 2.5rem 2rem 2rem;
+  border-radius: 1.5rem;
+  background: rgba(253, 253, 253, 0.96);
+  box-shadow: 0 18px 45px rgba(0, 24, 64, 0.18);
+}
+
+.wizard-method-title {
+  font-size: var(--enc-type-title, 32px);
+  font-weight: 600;
+  color: var(--enc-color-brand-primary, #001840);
+}
+
+.wizard-method-subtitle {
+  font-size: var(--enc-type-secondary, 16px);
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* Cards */
+.wizard-method-card {
+  border-radius: 1.25rem;
+  border: 2px solid transparent;
+  padding: 1.4rem 1.5rem;
+  background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(130deg, #155DFC, #001840);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 220% 220%;
+  background-position: 0 0, 0% 50%;
+  animation: wizard-border-flow 8s linear infinite;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 240px;
+  height: 100%;
+  transition: box-shadow 0.18s ease, transform 0.1s ease, background-position 0.6s ease;
+}
+
+.wizard-method-card:hover {
+  box-shadow: 0 14px 30px rgba(0, 24, 64, 0.16);
+  transform: translateY(-2px);
+  background-position: 0 0, 85% 50%;
+}
+
+.wizard-method-card:focus-visible {
+  outline: 3px solid var(--enc-color-supporting, #75A3EB);
+  outline-offset: 2px;
+}
+
+.wizard-method-card.is-recommended {
+  background-image: linear-gradient(#f8fbff, #ffffff), linear-gradient(130deg, #155DFC, #001840);
+}
+
+/* Card icon + text */
+.wizard-method-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.9rem;
+  background: rgba(117, 163, 235, 0.18);
+  color: var(--enc-color-brand-secondary, #102A71);
+}
+
+.wizard-method-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--enc-color-text-strong, #00163A);
+}
+
+.wizard-method-desc {
+  margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+/* Recommended badge */
+.wizard-method-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(21, 93, 252, 0.06);
+  color: var(--enc-color-brand-secondary, #102A71);
+}
+
+/* Footnote */
+.wizard-method-footnote {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--enc-color-text-muted, #CCD1D9);
+}
+
+@keyframes wizard-border-flow {
+  0% {
+    background-position: 0 0, 0% 50%;
+  }
+  50% {
+    background-position: 0 0, 100% 50%;
+  }
+  100% {
+    background-position: 0 0, 0% 50%;
+  }
+}
+
+/* Responsive */
+@media (max-width: 767.98px) {
+  .wizard-method-section {
+    padding-inline: 1.25rem;
+  }
+
+  .wizard-method-card {
+    padding: 1.1rem 1.2rem;
+  }
+}
+
+/* ---- Wizard stage layout (shared across steps) ---- */
+.wizard-stage {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  margin-top: 1rem;
+}
+
+.wizard-stage-row {
+  --wizard-sidebar-width: clamp(260px, 25vw, 340px);
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.wizard-stage-row.has-sidebar {
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+}
+
+.wizard-stage-main {
+  flex: 1 1 100%;
+  min-width: 0;
+  transition: flex-basis 0.2s ease;
+  display: flex;
+  justify-content: center;
+}
+
+.wizard-stage-row.has-sidebar .wizard-stage-main {
+  flex: 1 1 calc(100% - var(--wizard-sidebar-width));
+  justify-content: flex-start;
+}
+
+.wizard-stage-sidebar {
+  flex: 0 0 var(--wizard-sidebar-width);
+  max-width: var(--wizard-sidebar-width);
+  align-self: stretch;
+}
+
+.wizard-stage-sidebar.d-none {
+  display: none !important;
+}
+
+.wizard-shell .btn {
+  font-weight: 600;
+}
+
+/* Responsiveness */
+@media (max-width: 991.98px) {
+  .wizard-stage {
+    padding-inline: 1.25rem;
+  }
+
+  .wizard-stage-row,
+  .wizard-stage-row.has-sidebar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .wizard-stage-main,
+  .wizard-stage-row.has-sidebar .wizard-stage-main {
+    flex: 1 1 100%;
+  }
+
+  .wizard-stage-sidebar {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,28 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="a301Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#001840"/>
+      <stop offset="50%" stop-color="#0A2A60"/>
+      <stop offset="100%" stop-color="#155DFC"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#a301Gradient)" rx="32"/>
+  <g opacity="0.25">
+    <rect x="160" y="220" width="880" height="360" rx="28" fill="#0F1F3B"/>
+    <rect x="220" y="280" width="760" height="240" rx="20" fill="#112A52"/>
+  </g>
+  <rect x="200" y="260" width="800" height="280" rx="24" fill="#fdfdfd" fill-opacity="0.08" stroke="#8FB3FF" stroke-opacity="0.25"/>
+  <rect x="200" y="260" width="800" height="280" rx="24" fill="url(#beam)"/>
+  <circle cx="300" cy="520" r="45" fill="#00C950" fill-opacity="0.6"/>
+  <rect x="360" y="500" width="540" height="40" rx="20" fill="#fdfdfd" fill-opacity="0.08"/>
+  <text x="50%" y="140" text-anchor="middle" fill="#FFFFFF" font-size="48" font-family="'Inter', 'Segoe UI', sans-serif" font-weight="600">
+    Conference Room A-301
+  </text>
+  <text x="50%" y="190" text-anchor="middle" fill="#C7D7FF" font-size="22" font-family="'Inter', 'Segoe UI', sans-serif">
+    ENC Tower A · 3rd Floor · Hybrid Ready
+  </text>
+</svg>

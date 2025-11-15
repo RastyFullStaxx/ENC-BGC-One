@@ -1,159 +1,898 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shared Services Portal - My Bookings</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 text-gray-900">
+@extends('layouts.app')
 
-  <!-- Header -->
-  <header class="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-[1294px] mx-auto flex justify-between items-center px-6 py-4 md:flex-col md:gap-4">
-      <div class="flex items-center gap-3 w-full md:justify-between">
-        <div class="flex items-center gap-3">
-          <img src="https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=48&h=48&fit=crop" alt="ONE Logo" class="w-12 h-12 rounded-sm object-cover">
-          <div>
-            <h1 class="text-blue-900 text-lg font-normal">Shared Services Portal</h1>
-            <p class="text-gray-500 text-xs">One-Stop Booking Platform</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button class="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md text-sm hover:bg-gray-50">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 4.66667V14" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2 12C1.82319 12 1.65362 11.9298 1.5286 11.8047C1.40357 11.6797 1.33333 11.5101 1.33333 11.3333V2.66667C1.33333 2.48986 1.40357 2.32029 1.5286 2.19526C1.65362 2.07024 1.82319 2 2 2H5.33333C6.04058 2 6.71885 2.28095 7.21895 2.78105C7.71905 3.28115 8 3.95942 8 4.66667C8 3.95942 8.28095 3.28115 8.78105 2.78105C9.28115 2.28095 9.95942 2 10.6667 2H14C14.1768 2 14.3464 2.07024 14.4714 2.19526C14.5964 2.32029 14.6667 2.48986 14.6667 2.66667V11.3333C14.6667 11.5101 14.5964 11.6797 14.4714 11.8047C14.3464 11.9298 14.1768 12 14 12H10C9.46957 12 8.96086 12.2107 8.58579 12.5858C8.21071 12.9609 8 13.4696 8 14C8 13.4696 7.78929 12.9609 7.41421 12.5858C7.03914 12.2107 6.53043 12 6 12H2Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            My Bookings
-          </button>
-          <span class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-md">User</span>
-          <button class="relative w-9 h-9 flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M8.55667 17.5C8.70296 17.7533 8.91335 17.9637 9.16671 18.11C9.42006 18.2563 9.70746 18.3333 10 18.3333C10.2926 18.3333 10.5799 18.2563 10.8333 18.11C11.0867 17.9637 11.2971 17.7533 11.4433 17.5" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M2.71833 12.7717C2.60947 12.891 2.53763 13.0394 2.51155 13.1988C2.48547 13.3582 2.50627 13.5217 2.57142 13.6695C2.63658 13.8173 2.74328 13.943 2.87855 14.0312C3.01381 14.1195 3.17182 14.1665 3.33333 14.1667H16.6667C16.8282 14.1667 16.9862 14.1199 17.1216 14.0318C17.2569 13.9437 17.3637 13.8181 17.4291 13.6704C17.4944 13.5227 17.5154 13.3592 17.4895 13.1998C17.4637 13.0404 17.392 12.892 17.2833 12.7725C16.175 11.63 15 10.4158 15 6.66667C15 5.34058 14.4732 4.06881 13.5355 3.13113C12.5979 2.19345 11.3261 1.66667 10 1.66667C8.67392 1.66667 7.40215 2.19345 6.46447 3.13113C5.52679 4.06881 5 5.34058 5 6.66667C5 10.4158 3.82417 11.63 2.71833 12.7717Z" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">2</span>
-          </button>
-          <button class="flex items-center gap-2 px-3 py-1 rounded-md hover:bg-gray-50">
-            <div class="w-9 h-9 bg-blue-900 rounded-full flex items-center justify-center text-white">
-              <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
-                <path d="M15.8333 17.5V15.8333C15.8333 14.9493 15.4821 14.1014 14.857 13.4763C14.2319 12.8512 13.3841 12.5 12.5 12.5H7.5C6.61594 12.5 5.7681 12.8512 5.14298 13.4763C4.51786 14.1014 4.16667 14.9493 4.16667 15.8333V17.5" stroke="white" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10 9.16667C11.8409 9.16667 13.3333 7.67428 13.3333 5.83333C13.3333 3.99238 11.8409 2.5 10 2.5C8.15905 2.5 6.66667 3.99238 6.66667 5.83333C6.66667 7.67428 8.15905 9.16667 10 9.16667Z" stroke="white" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+@section('title', 'My Bookings')
+
+@push('styles')
+    @vite(['resources/css/wizard/base.css'])
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8fafc;
+            color: #1f2937;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1232px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            color: #101828;
+            margin-bottom: 4px;
+        }
+
+        .page-header p {
+            font-size: 14px;
+            color: #6a7282;
+        }
+
+        /* Tabs */
+        .tabs {
+            background-color: #f1f5f9;
+            border-radius: 12px;
+            padding: 3px;
+            display: flex;
+            gap: 3px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab.active {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-badge {
+            background-color: #f1f5f9;
+            color: #1e40af;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Search Card */
+        .search-card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-input input {
+            width: 100%;
+            height: 36px;
+            background-color: #f8fafc;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 0 12px 0 36px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .search-input input:focus {
+            background-color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            width: 16px;
+            height: 16px;
+            color: #9ca3af;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        select {
+            width: 100%;
+            height: 36px;
+            background-color: #f8fafc;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            padding: 0 32px 0 12px;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='%23666' d='M4 6l4 4 4-4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            transition: all 0.2s;
+        }
+
+        select:focus {
+            background-color: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Table */
+        .table-card {
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        th:last-child {
+            text-align: right;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        td {
+            padding: 12px 8px;
+            font-size: 14px;
+        }
+
+        .facility-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .facility-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #dbeafe;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .facility-info h4 {
+            font-size: 14px;
+            color: #101828;
+            margin-bottom: 2px;
+        }
+
+        .facility-info p {
+            font-size: 12px;
+            color: #6a7282;
+        }
+
+        .date-cell h4 {
+            font-size: 14px;
+            color: #101828;
+            margin-bottom: 2px;
+        }
+
+        .date-cell p {
+            font-size: 12px;
+            color: #6a7282;
+        }
+
+        .purpose-cell {
+            color: #4a5565;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: #fef3c7;
+            border: 1px solid #fde68a;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #92400e;
+        }
+
+        .status-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .actions-cell {
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: #f1f5f9;
+        }
+
+        .action-btn.cancel:hover {
+            background-color: #fee2e2;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* Mobile Card View */
+        .booking-card {
+            display: none;
+            background-color: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: box-shadow 0.2s;
+        }
+
+        .booking-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .booking-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .booking-card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-card-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .booking-card-value {
+            font-size: 14px;
+            color: #1f2937;
+            font-weight: 500;
+        }
+
+        .booking-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .mobile-cards {
+            display: none;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        .toast.success {
+            background-color: #059669;
+        }
+
+        .toast.error {
+            background-color: #dc2626;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .header-content {
+                padding: 0;
+            }
+
+            .main-content {
+                padding: 16px;
+            }
+
+            .search-filters {
+                flex-direction: column;
+            }
+
+            .search-input,
+            .filter-select {
+                width: 100%;
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo-text h1 {
+                font-size: 16px;
+            }
+
+            .logo-text p {
+                display: none;
+            }
+
+            .logo {
+                width: 36px;
+                height: 36px;
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .header-right {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-header h2 {
+                font-size: 20px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            /* Hide table on mobile, show cards */
+            table {
+                display: none;
+            }
+
+            .mobile-cards {
+                display: block;
+            }
+
+            .booking-card {
+                display: block;
+            }
+
+            .search-card {
+                padding: 16px;
+            }
+
+            .tabs {
+                flex-direction: row;
+            }
+
+            .tab {
+                font-size: 12px;
+                padding: 6px 8px;
+            }
+
+            .tab-badge {
+                font-size: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .main-content {
+                padding: 12px;
+            }
+
+            .search-card {
+                padding: 12px;
+            }
+
+            .page-header h2 {
+                font-size: 18px;
+            }
+
+            .page-header p {
+                font-size: 12px;
+            }
+        }
+    </style>
+@endpush
+
+@section('content')
+    <!-- Include Dashboard Navbar -->
+    @include('partials.dashboard-navbar', [
+        'currentStep' => 0,
+        'steps' => [],
+        'bookingsCount' => 2,
+        'notificationsCount' => 2,
+        'userName' => auth()->user()->name ?? 'User',
+        'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
+        'userRole' => auth()->user()->role ?? 'staff',
+        'brand' => 'ONE Services'
+    ])
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h2>My Bookings</h2>
+                <p>View and manage all your bookings</p>
             </div>
-            <div class="text-left">
-              <div class="text-blue-900 text-sm">Charles Ramos</div>
-              <div class="text-gray-500 text-xs">user.charles@enc.gov</div>
-            </div>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M4 6L8 10L12 6" stroke="#6A7282" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+            <button class="btn" onclick="exportCalendar()">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Export Calendar
+            </button>
         </div>
-      </div>
-    </div>
-  </header>
 
-  <!-- Main Content -->
-  <main class="max-w-[1294px] mx-auto pt-[108px] px-6 md:pt-[160px] pb-6">
-    <!-- Page Header -->
-    <div class="flex justify-between items-center mb-6 md:flex-col md:items-start md:gap-4">
-      <div>
-        <h2 class="text-2xl font-normal text-gray-900 mb-1">My Bookings</h2>
-        <p class="text-sm text-gray-500">View and manage all your bookings</p>
-      </div>
-      <!-- Export Calendar button on the right -->
-      <button class="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md text-sm hover:bg-gray-50">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 10V2" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M4.66667 6.66667L8 10L11.3333 6.66667" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Export Calendar
-      </button>
-    </div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(this, 'upcoming')">
+                Upcoming
+                <span class="tab-badge" id="upcomingCount">2</span>
+            </button>
+            <button class="tab" onclick="switchTab(this, 'past')">Past</button>
+            <button class="tab" onclick="switchTab(this, 'cancelled')">Cancelled</button>
+        </div>
 
-    <!-- Tabs -->
-    <div class="flex gap-1 bg-gray-200 rounded-xl p-1 mb-6">
-      <button class="flex-1 flex items-center justify-center gap-2 bg-white rounded-xl px-4 py-2 text-sm">
-        Upcoming <span class="bg-gray-200 text-blue-900 text-xs px-2 py-0.5 rounded-md">2</span>
-      </button>
-      <button class="flex-1 px-4 py-2 text-sm rounded-xl hover:bg-gray-100">Past</button>
-      <button class="flex-1 px-4 py-2 text-sm rounded-xl hover:bg-gray-100">Cancelled</button>
-    </div>
-
-    <!-- Filters Card -->
-    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6 flex flex-col md:flex-row md:items-center gap-3">
-      <div class="relative flex-1">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 16 16">
-          <path d="M14 14L11.1067 11.1067" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M7.33333 12.6667C10.2789 12.6667 12.6667 10.2789 12.6667 7.33333C12.6667 4.38781 10.2789 2 7.33333 2C4.38781 2 2 4.38781 2 7.33333C2 10.2789 4.38781 12.6667 7.33333 12.6667Z" stroke="currentColor" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <input type="text" placeholder="Search by purpose, room, or facility..." class="w-full pl-9 pr-3 py-2 rounded-md bg-gray-100 text-gray-600 text-sm border border-transparent focus:border-blue-500 focus:outline-none">
-      </div>
-      <select class="px-3 py-2 rounded-md bg-gray-100 text-gray-600 text-sm border border-transparent cursor-pointer w-full md:w-auto">
-        <option>All Facilities</option>
-        <option>Meeting Room</option>
-        <option>Conference Room</option>
-      </select>
-      <select class="px-3 py-2 rounded-md bg-gray-100 text-gray-600 text-sm border border-transparent cursor-pointer w-full md:w-auto">
-        <option>All Status</option>
-        <option>Pending</option>
-        <option>Confirmed</option>
-        <option>Cancelled</option>
-      </select>
-    </div>
-
-    <!-- Bookings Table -->
-    <div class="bg-white border border-gray-200 rounded-xl overflow-x-auto">
-      <table class="w-full table-auto border-collapse">
-        <thead class="border-b border-gray-200">
-          <tr>
-            <th class="px-2 py-2 text-left text-sm font-normal text-black">Facility</th>
-            <th class="px-2 py-2 text-left text-sm font-normal text-black">Date & Time</th>
-            <th class="px-2 py-2 text-left text-sm font-normal text-black">Purpose</th>
-            <th class="px-2 py-2 text-left text-sm font-normal text-black">Status</th>
-            <th class="px-2 py-2 text-right text-sm font-normal text-black">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Example Booking Row -->
-          <tr class="border-b border-gray-200 last:border-none">
-            <td class="px-2 py-2">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <!-- SVG icon -->
+        <!-- Search and Filters -->
+        <div class="search-card">
+            <div class="search-filters">
+                <div class="search-input">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search by purpose, room, or facility..." oninput="filterBookings()">
                 </div>
-                <div>
-                  <div class="text-sm text-gray-900">Meeting Room</div>
-                  <div class="text-xs text-gray-500">Meeting Room</div>
+                <div class="filter-select">
+                    <select id="facilityFilter" onchange="filterBookings()">
+                        <option value="">All Facilities</option>
+                        <option value="Meeting Room">Meeting Room</option>
+                        <option value="Conference Room">Conference Room</option>
+                    </select>
                 </div>
-              </div>
-            </td>
-            <td class="px-2 py-2">
-              <div class="flex flex-col gap-0.5 text-sm">
-                <div>Sat, Nov 29, 2025</div>
-                <div class="text-xs text-gray-500">09:00 - 10:00</div>
-              </div>
-            </td>
-            <td class="px-2 py-2 text-gray-600 text-sm">Victory Group</td>
-            <td class="px-2 py-2">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs rounded-md bg-yellow-100 text-yellow-800 border border-yellow-200 capitalize">pending</span>
-            </td>
-            <td class="px-2 py-2 flex justify-end gap-1">
-              <button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50">
-                <!-- View Icon -->
-              </button>
-              <button class="w-8 h-8 flex items-center justify-center rounded-md hover:bg-gray-50 text-red-600">
-                <!-- Cancel Icon -->
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+                <div class="filter-select">
+                    <select id="statusFilter" onchange="filterBookings()">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+        </div>
 
-  </main>
-</body>
-</html>
+        <!-- Bookings Table (Desktop) -->
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Facility</th>
+                        <th>Date & Time</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTable">
+                    <!-- Table rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div id="mobileCards" class="mobile-cards">
+            <!-- Cards will be inserted here by JavaScript -->
+        </div>
+    </main>
+
+    <script>
+        // Sample bookings data
+        let bookings = [
+            {
+                id: 1,
+                facility: 'Meeting Room',
+                facilityType: 'Meeting Room',
+                date: 'Sat, Nov 29, 2025',
+                time: '09:00 - 10:00',
+                purpose: 'Victory Group',
+                status: 'pending'
+            },
+            {
+                id: 2,
+                facility: 'Meeting Room',
+                facilityType: 'Meeting Room',
+                date: 'Sat, Nov 29, 2025',
+                time: '10:30 - 11:00',
+                purpose: 'Meeting',
+                status: 'pending'
+            }
+        ];
+
+        let currentTab = 'upcoming';
+        let filteredBookings = [...bookings];
+
+        // Initialize the page
+        function init() {
+            renderBookings();
+            updateBookingCount();
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const btn = document.querySelector('.mobile-menu-btn');
+            menu.classList.toggle('active');
+            btn.classList.toggle('active');
+        }
+
+        // Tab switching
+        function switchTab(element, tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            element.classList.add('active');
+            currentTab = tab;
+            filterBookings();
+            showToast(`Switched to ${tab} bookings`, 'success');
+        }
+
+        // Filter bookings
+        function filterBookings() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const facilityFilter = document.getElementById('facilityFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredBookings = bookings.filter(booking => {
+                const matchesSearch = !searchQuery || 
+                    booking.purpose.toLowerCase().includes(searchQuery) ||
+                    booking.facility.toLowerCase().includes(searchQuery);
+                
+                const matchesFacility = !facilityFilter || booking.facility === facilityFilter;
+                const matchesStatus = !statusFilter || booking.status === statusFilter;
+                
+                return matchesSearch && matchesFacility && matchesStatus;
+            });
+
+            renderBookings();
+        }
+
+        // Render bookings in both table and card view
+        function renderBookings() {
+            const tableBody = document.getElementById('bookingsTable');
+            const mobileCards = document.getElementById('mobileCards');
+
+            // Clear existing content
+            tableBody.innerHTML = '';
+            mobileCards.innerHTML = '';
+
+            if (filteredBookings.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No bookings found</td></tr>';
+                mobileCards.innerHTML = '<div class="empty-state">No bookings found</div>';
+                return;
+            }
+
+            filteredBookings.forEach(booking => {
+                // Render table row
+                const row = document.createElement('tr');
+                row.setAttribute('data-id', booking.id);
+                row.innerHTML = `
+                    <td>
+                        <div class="facility-cell">
+                            <div class="facility-icon">
+                                <svg width="20" height="20" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <div class="facility-info">
+                                <h4>${booking.facility}</h4>
+                                <p>${booking.facilityType}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="date-cell">
+                            <h4>${booking.date}</h4>
+                            <p>${booking.time}</p>
+                        </div>
+                    </td>
+                    <td class="purpose-cell">${booking.purpose}</td>
+                    <td>
+                        <span class="status-badge">
+                            <svg class="status-icon" fill="none" stroke="#92400e" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
+                            </svg>
+                            ${booking.status}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions-cell">
+                            <button class="action-btn" onclick="viewBooking(${booking.id})" title="View">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn cancel" onclick="cancelBooking(${booking.id})" title="Cancel">
+                                <svg class="icon" fill="none" stroke="#dc2626" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+
+                // Render mobile card
+                const card = document.createElement('div');
+                card.className = 'booking-card';
+                card.setAttribute('data-id', booking.id);
+                card.innerHTML = `
+                    <div class="booking-card-header">
+                        <div class="facility-icon">
+                            <svg width="20" height="20" fill="none" stroke="#2563eb" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="facility-info">
+                            <h4>${booking.facility}</h4>
+                            <p>${booking.facilityType}</p>
+                        </div>
+                    </div>
+                    <div class="booking-card-body">
+                        <div class="booking-card-row">
+                            <span class="booking-card-label">Date</span>
+                            <span class="booking-card-value">${booking.date}</span>
+                        </div>
+                        <div class="booking-card-row">
+                            <span class="booking-card-label">Time</span>
+                            <span class="booking-card-value">${booking.time}</span>
+                        </div>
+                        <div class="booking-card-row">
+                            <span class="booking-card-label">Purpose</span>
+                            <span class="booking-card-value">${booking.purpose}</span>
+                        </div>
+                    </div>
+                    <div class="booking-card-footer">
+                        <span class="status-badge">
+                            <svg class="status-icon" fill="none" stroke="#92400e" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/>
+                            </svg>
+                            ${booking.status}
+                        </span>
+                        <div class="actions-cell">
+                            <button class="action-btn" onclick="viewBooking(${booking.id})" title="View">
+                                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn cancel" onclick="cancelBooking(${booking.id})" title="Cancel">
+                                <svg class="icon" fill="none" stroke="#dc2626" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                mobileCards.appendChild(card);
+            });
+        }
+
+        // View booking
+        function viewBooking(id) {
+            const booking = bookings.find(b => b.id === id);
+            if (booking) {
+                showToast(`Viewing booking: ${booking.purpose}`, 'success');
+                // Here you would typically open a modal or navigate to details page
+                // For Laravel: window.location.href = `/bookings/${id}`;
+            }
+        }
+
+        // Cancel booking
+        function cancelBooking(id) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                const bookingIndex = bookings.findIndex(b => b.id === id);
+                if (bookingIndex !== -1) {
+                    bookings[bookingIndex].status = 'cancelled';
+                    filterBookings();
+                    updateBookingCount();
+                    showToast('Booking cancelled successfully', 'success');
+                    
+                    // For Laravel backend:
+                    // fetch(`/api/bookings/${id}/cancel`, {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    //     }
+                    // })
+                    // .then(response => response.json())
+                    // .then(data => {
+                    //     showToast('Booking cancelled successfully', 'success');
+                    //     filterBookings();
+                    // })
+                    // .catch(error => {
+                    //     showToast('Failed to cancel booking', 'error');
+                    // });
+                }
+            }
+        }
+
+        // Export calendar
+        function exportCalendar() {
+            showToast('Exporting calendar...', 'success');
+            // For Laravel: window.location.href = '/api/bookings/export';
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.className = `toast show ${type}`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Update booking count
+        function updateBookingCount() {
+            const upcomingCount = bookings.filter(b => b.status === 'pending').length;
+            document.getElementById('upcomingCount').textContent = upcomingCount;
+        }
+
+        // Toggle user menu
+        function toggleUserMenu() {
+            showToast('User menu clicked', 'success');
+        }
+
+        // Show notifications
+        function showNotifications() {
+            showToast('You have 2 new notifications', 'success');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+@endsection

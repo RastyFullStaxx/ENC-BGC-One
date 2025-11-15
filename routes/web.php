@@ -9,10 +9,19 @@ Route::get('/', function () {
     return view('marketing/landing');
 })->name('landing');
 
+// Facility catalog (public for preview)
+Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
+
+// Help/FAQ - Accessible to all users (guest and authenticated)
+Route::get('/faq', function () {
+    return view('user.faq');
+})->name('faq');
+
+
 // --- Authentication pages ---
 // Login pages (guest middleware redirects authenticated users to dashboard)
 Route::middleware(['guest'])->group(function () {
-    Route::view('/login', 'auth.login.index')->name('login.index');     
+    Route::view('/login', 'auth.login.index')->name('login');     
     Route::get('/login/form', [LoginController::class, 'showLoginForm'])->name('login.form');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
     
@@ -36,6 +45,13 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     
     // List of Bookings
     Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
+
+    // Profile & Settings
+    Route::view('/user/profile', 'user.profile')->name('user.profile');
+    Route::view('/user/settings', 'user.settings')->name('user.settings');
+
+    // Booking
+    Route::view('/user/booking/wizard', 'booking.wizard')->name('user.booking.wizard');
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
@@ -44,12 +60,31 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
 });
 
+// Temporary preview route for Admin Users & Roles tool
+Route::view('/admin/users', 'admin.users')->name('admin.users');
+
+// Temporary preview route for Admin Facilities Management
+Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
+
+// Temporary preview route for Admin Analytics
+Route::view('/admin/analytics', 'admin.analytics')->name('admin.analytics');
+
+// Temporary preview route for Admin Policies
+Route::view('/admin/policies', 'admin.policies')->name('admin.policies');
+
+// Temporary preview route for Admin Global Calendar
+Route::view('/admin/calendar', 'admin.calendar')->name('admin.calendar');
+
+// Temporary preview route for Admin Audit Log
+Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
+
 
 // --- Booking Wizard page ---
 Route::get('/book', function () {
     // Ensure the view path matches: resources/views/booking/wizard.blade.php
     return view('booking.wizard');
 })->name('booking.wizard');
+
 
 // --- Booking submit endpoint (placeholder) ---
 Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])

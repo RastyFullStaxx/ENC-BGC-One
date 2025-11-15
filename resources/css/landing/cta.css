@@ -1,0 +1,9 @@
+/* Ready to get started CTA */
+.cta-band{
+  background:linear-gradient(135deg,#001840 0%,#032456 45%,#0a4c9f 100%);
+  color:#fff;
+}
+.cta-band h2{color:#fff;}
+.cta-band p{color:rgba(255,255,255,0.8);}
+.cta-actions{display:flex; flex-wrap:wrap; justify-content:flex-end; gap:12px;}
+.cta-band .btn-light{color:#001840;}
