@@ -1,0 +1,21 @@
+/* How it works section */
+.how-it-works{background:#f8fafc;}
+.journey-card{
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  padding:24px;
+  background:#fff;
+  height:100%;
+}
+.journey-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:#001840;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:16px;
+  font-weight:600;
+}

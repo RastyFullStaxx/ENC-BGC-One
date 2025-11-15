@@ -9,7 +9,14 @@
 
   {{-- Vite entry with global design tokens + Bootstrap bundle --}}
   @vite(['resources/css/design-system.css'])
-  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+  @vite([
+    'resources/css/landing/base.css',
+    'resources/css/landing/hero.css',
+    'resources/css/landing/availability.css',
+    'resources/css/landing/facilities.css',
+    'resources/css/landing/how-it-works.css',
+    'resources/js/landing.js'
+  ])
 
   {{-- If you prefer CDN instead of Vite, uncomment: --}}
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
@@ -125,47 +132,67 @@
     </section>
 
     @php
-      $availabilityHeat = [
-        ['label' => '7:00 AM', 'value' => 32],
-        ['label' => '9:00 AM', 'value' => 58],
-        ['label' => '11:00 AM', 'value' => 76],
-        ['label' => '1:00 PM', 'value' => 41],
-        ['label' => '3:00 PM', 'value' => 88],
-        ['label' => '5:00 PM', 'value' => 63],
+      $scheduleStart = 7;  // 7 AM
+      $scheduleEnd   = 19; // 7 PM
+      $scheduleBlocks = [
+        [
+          'room' => 'Creative Studio B',
+          'status' => 'available',
+          'status_label' => 'Available',
+          'note' => 'Available until 10:00 AM',
+          'segments' => [
+            ['start' => 7,   'end' => 8.5, 'status' => 'occupied'],
+            ['start' => 8.5, 'end' => 10,  'status' => 'available'],
+            ['start' => 10,  'end' => 14,  'status' => 'limited'],
+            ['start' => 14,  'end' => 15,  'status' => 'occupied'],
+            ['start' => 15,  'end' => 17.5,'status' => 'available'],
+          ],
+        ],
+        [
+          'room' => 'Boardroom A-301',
+          'status' => 'limited-availability',
+          'status_label' => 'Limited availability',
+          'note' => 'Leadership sync until 12:30 PM',
+          'segments' => [
+            ['start' => 7,   'end' => 9,   'status' => 'available'],
+            ['start' => 9,   'end' => 12.5,'status' => 'occupied'],
+            ['start' => 12.5,'end' => 13.5,'status' => 'limited'],
+            ['start' => 13.5,'end' => 15,  'status' => 'limited'],
+            ['start' => 16,  'end' => 18.5,'status' => 'occupied'],
+          ],
+        ],
+        [
+          'room' => 'Innovation Lab C-401',
+          'status' => 'occupied',
+          'status_label' => 'Occupied',
+          'note' => 'Design sprint until 2:00 PM',
+          'segments' => [
+            ['start' => 7,   'end' => 9.5, 'status' => 'maintenance'],
+            ['start' => 9.5, 'end' => 12,  'status' => 'occupied'],
+            ['start' => 12,  'end' => 14,  'status' => 'occupied'],
+            ['start' => 14,  'end' => 15,  'status' => 'limited'],
+            ['start' => 15,  'end' => 19,  'status' => 'available'],
+          ],
+        ],
+        [
+          'room' => 'Atrium Lounge D-214',
+          'status' => 'under-maintenance',
+          'status_label' => 'Under maintenance',
+          'note' => 'Deep clean ongoing until 4:00 PM · reopening after QA.',
+          'segments' => [
+            ['start' => 7,   'end' => 11,  'status' => 'maintenance'],
+            ['start' => 11,  'end' => 14,  'status' => 'maintenance'],
+            ['start' => 14,  'end' => 16,  'status' => 'maintenance'],
+            ['start' => 16,  'end' => 19,  'status' => 'available'],
+          ],
+        ],
       ];
 
-      $availabilityOpen = [
-        [
-          'status' => 'Calm load',
-          'tone'   => 'good',
-          'time'   => 'Open now',
-          'window' => 'Free until 10:00 AM (60 min)',
-          'room'   => 'Creative Studio B',
-          'cap'    => 'Seats 6 · screen + writable wall',
-          'note'   => 'Great for stand-ups, retros, and quick approvals.',
-          'hold'   => 'Hold for 10 min',
-        ],
-        [
-          'status' => 'Clearing soon',
-          'tone'   => 'warn',
-          'time'   => 'Starts in 25 min',
-          'window' => 'Boardroom A-301 · 9:30–11:00 AM',
-          'room'   => 'Boardroom A-301',
-          'cap'    => 'Seats 12 · video conferencing ready',
-          'note'   => 'Ideal for leadership syncs or client calls.',
-          'hold'   => 'Hold for 5 min',
-        ],
-        [
-          'status' => 'High demand',
-          'tone'   => 'busy',
-          'time'   => 'Opens after 4:00 PM',
-          'window' => 'Innovation Lab C-401 · 4:00–6:30 PM',
-          'room'   => 'Innovation Lab C-401',
-          'cap'    => 'Workshop layout · writable walls + projectors',
-          'note'   => 'Best for design sprints and working sessions.',
-          'hold'   => 'Join waitlist',
-        ],
-      ];
+      $lastSync    = now();
+      $range       = max(1, $scheduleEnd - $scheduleStart);
+      $nowDecimal  = (int) $lastSync->format('G') + ((int) $lastSync->format('i') / 60);
+      $nowInRange  = $nowDecimal >= $scheduleStart && $nowDecimal <= $scheduleEnd;
+      $nowOffset   = max(0, min(100, (($nowDecimal - $scheduleStart) / $range) * 100));
     @endphp
 
     <section id="availability" class="availability-preview py-5">
@@ -173,59 +200,60 @@
         <div class="section-heading text-center mb-5">
           <span class="section-eyebrow">Quick availability glance</span>
           <h2>Today’s load at a glance</h2>
-          <p class="text-secondary">Check today’s busiest streaks plus the rooms that are open long enough for your next huddle.</p>
+          <p class="text-secondary">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
         </div>
 
         <div class="row g-4 align-items-start">
-          <div class="col-12 col-lg-6">
-            <article class="availability-panel availability-panel-heat h-100">
-              <div class="availability-panel-head">
-                <h5>Peak timeline</h5>
-                <span>Live utilization %</span>
+          <div class="col-12">
+            <article class="availability-panel availability-panel-schedule h-100">
+              <div class="availability-panel-head availability-panel-head-compact">
+                <span>Last sync {{ $lastSync->format('g:i A') }}</span>
               </div>
-              <div class="availability-heat">
-                @foreach ($availabilityHeat as $slot)
-                  <div class="heat-row">
-                    <span class="heat-label">{{ $slot['label'] }}</span>
-                    <div class="heat-track">
-                      <span class="heat-bar" style="--heat-width: {{ $slot['value'] }}%;"></span>
+              <div class="schedule-scale">
+                @for ($hour = $scheduleStart; $hour <= $scheduleEnd; $hour += 2)
+                  <span>{{ $hour <= 12 ? $hour : $hour - 12 }}{{ $hour < 12 ? ' AM' : ' PM' }}</span>
+                @endfor
+              </div>
+              @php
+                $stateLabels = [
+                  'available'   => 'Available',
+                  'limited'     => 'Limited availability',
+                  'occupied'    => 'Occupied',
+                  'maintenance' => 'Under maintenance',
+                ];
+              @endphp
+              <div class="schedule-board">
+                @foreach ($scheduleBlocks as $block)
+                  <div class="schedule-row">
+                    <div class="schedule-meta">
+                      <p class="schedule-room">{{ $block['room'] }}</p>
+                      <p class="schedule-status schedule-status-{{ $block['status'] ?? 'available' }}">{{ $block['status_label'] ?? ucwords(str_replace('-', ' ', $block['status'] ?? 'available')) }}</p>
+                      <p class="schedule-note">{{ $block['note'] }}</p>
                     </div>
-                    <span class="heat-value">{{ $slot['value'] }}%</span>
+                    <div class="schedule-track">
+                      @if ($nowInRange)
+                        <span class="schedule-now" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
+                      @endif
+                      @foreach ($block['segments'] as $segment)
+                        @php
+                          $state = $segment['status'] ?? 'available';
+                          $offset = (($segment['start'] - $scheduleStart) / $range) * 100;
+                          $width = (($segment['end'] - $segment['start']) / $range) * 100;
+                          $offset = max(0, min(100, $offset));
+                          $width = max(1, min(100, $width));
+                          $label = $stateLabels[$state] ?? ucwords($state);
+                        @endphp
+                        <span class="schedule-block schedule-block-{{ $state }}" style="--segment-offset: {{ $offset }}%; --segment-width: {{ $width }}%;" data-label="{{ $label }}" aria-label="{{ $label }}"></span>
+                      @endforeach
+                    </div>
                   </div>
                 @endforeach
               </div>
-            </article>
-          </div>
-
-          <div class="col-12 col-lg-6">
-            <article class="availability-panel availability-panel-open h-100">
-              <div class="availability-panel-head">
-                <h5>Ready-to-book rooms</h5>
-                <span>Auto-refreshes every 3 minutes · holds for you</span>
-              </div>
-              <ul class="availability-open-list">
-                @foreach ($availabilityOpen as $slot)
-                  <li>
-                    <div class="open-main">
-                      <span class="open-status open-status-{{ $slot['tone'] ?? 'good' }}">
-                        <span class="status-dot" aria-hidden="true"></span>
-                        {{ $slot['status'] }}
-                      </span>
-                      <p class="open-time">{{ $slot['time'] }}</p>
-                      <p class="open-room">{{ $slot['room'] }}</p>
-                      <p class="open-meta">{{ $slot['cap'] }}</p>
-                      <p class="open-note">{{ $slot['note'] }}</p>
-                    </div>
-                    <div class="open-window text-end">
-                      <p class="open-duration">{{ $slot['window'] }}</p>
-                      <span class="open-hold">{{ $slot['hold'] }}</span>
-                    </div>
-                  </li>
-                @endforeach
-              </ul>
-              <div class="availability-cta text-center mt-3">
-                <a href="{{ route('facilities.catalog') }}" class="btn btn-outline">View live board</a>
-                <p class="open-footnote text-secondary small mb-0 mt-2">Green slots stay reserved for you while you complete the request.</p>
+              <div class="schedule-legend">
+                <span><i class="legend-dot dot-available"></i> Available</span>
+                <span><i class="legend-dot dot-limited"></i> Limited availability</span>
+                <span><i class="legend-dot dot-occupied"></i> Occupied</span>
+                <span><i class="legend-dot dot-maintenance"></i> Under maintenance</span>
               </div>
             </article>
           </div>
@@ -235,48 +263,116 @@
   </main>
 
   {{-- SECTION: Featured Facilities --}}
-  <section id="facilities" class="py-5 bg-body-tertiary">
+  <section id="facilities" class="py-5 facility-feature">
+    @php
+      $facilityHero = [
+        'title' => 'Innovation Lab C-401',
+        'type' => 'Innovation Lab',
+        'status' => 'Limited availability this morning',
+        'window' => 'Wide open for workshops after 3:00 PM',
+        'image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop',
+        'summary' => 'Modular seating, writable walls, dual projectors, and embedded sensors to keep teams synced without tech anxiety.',
+        'chips' => ['Hybrid-ready', 'Workshop layout', 'Natural light'],
+        'metrics' => [
+          ['label' => 'Capacity', 'value' => '24 seats'],
+          ['label' => 'Amenities', 'value' => '2 displays · 4 mics'],
+          ['label' => 'Next slot', 'value' => 'Today · 3:15 PM'],
+        ],
+      ];
+
+      $facilityTiles = [
+        [
+          'title' => 'Creative Studio B',
+          'type' => 'Podcast & media suite',
+          'status' => 'Available until 10:00 AM',
+          'tone' => 'available',
+          'image' => 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Seats 6', '4K capture', 'Acoustic walls'],
+        ],
+        [
+          'title' => 'Executive Boardroom',
+          'type' => 'Leadership hub',
+          'status' => 'Occupied until 1:00 PM',
+          'tone' => 'occupied',
+          'image' => 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Seats 12', 'Coffee service', 'Poly Studio'],
+        ],
+        [
+          'title' => 'Atrium Lounge D-214',
+          'type' => 'Casual collaboration',
+          'status' => 'Under maintenance · back at 4:00 PM',
+          'tone' => 'maintenance',
+          'image' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Hoteling', 'Soft seating', 'Town hall ready'],
+        ],
+      ];
+    @endphp
     <div class="container">
-      <div class="text-center mb-4">
-        <h2 class="fw-semibold mb-1">Featured Facilities</h2>
-        <p class="text-secondary mb-0">Explore our premium meeting spaces and facilities</p>
+      <div class="text-center mb-5">
+        <span class="section-eyebrow">Featured facilities</span>
+        <h2 class="fw-semibold mb-1">Spotlight spaces handpicked for today</h2>
+        <p class="text-secondary mb-0">Curated from the live catalog so you can skip browsing and jump straight to the best-fit rooms.</p>
       </div>
 
-      <div class="row g-4">
-        @foreach ([
-          ['title'=>'Conference Room A','cap'=>10,'tags'=>['WiFi','Projector','Whiteboard'],'src'=>'https://images.unsplash.com/photo-1507209696998-3c532be9b2b1?q=80&w=1200&auto=format&fit=crop'],
-          ['title'=>'Conference Room B','cap'=>20,'tags'=>['Video Conferencing','Large Display','Sound System'],'src'=>'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop'],
-          ['title'=>'Executive Boardroom','cap'=>12,'tags'=>['Premium Setup','Coffee Service','Smart Board'],'src'=>'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop'],
-        ] as $room)
-          <div class="col-12 col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm overflow-hidden">
-              <div class="position-relative">
-                <img src="{{ $room['src'] }}" class="card-img-top" alt="{{ $room['title'] }} photo">
-                <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-primary">Meeting Room</span>
+      <div class="row g-4 facility-grid">
+        <div class="col-12 col-lg-7">
+          <article class="facility-hero-card" style="--facility-hero-img: url('{{ $facilityHero['image'] }}');">
+            <div class="facility-hero-overlay"></div>
+            <div class="facility-hero-content">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="facility-chip">{{ $facilityHero['type'] }}</span>
+                <span class="facility-chip chip-status">{{ $facilityHero['status'] }}</span>
               </div>
-              <div class="card-body">
-                <h5 class="card-title mb-2">{{ $room['title'] }}</h5>
-                <div class="small text-secondary d-flex align-items-center gap-2 mb-3">
-                  {{-- people icon --}}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 19v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
-                  </svg>
-                  Capacity: {{ $room['cap'] }} people
-                </div>
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                  @foreach ($room['tags'] as $t)
-                    <span class="badge rounded-pill text-bg-light border">{{ $t }}</span>
-                  @endforeach
-                </div>
-                <a href="{{ url('/rooms') }}" class="btn btn-outline-primary w-100">
-                  View Details &amp; Book
-                  <span class="ms-1" aria-hidden="true">→</span>
-                </a>
+              <div class="facility-hero-headings">
+                <h3 class="facility-hero-title">{{ $facilityHero['title'] }}</h3>
+                <p class="facility-hero-window">{{ $facilityHero['window'] }}</p>
+              </div>
+              <p class="facility-hero-summary">{{ $facilityHero['summary'] }}</p>
+              <ul class="facility-hero-stats">
+                @foreach ($facilityHero['metrics'] as $metric)
+                  <li>
+                    <span class="stat-label">{{ $metric['label'] }}</span>
+                    <span class="stat-value">{{ $metric['value'] }}</span>
+                  </li>
+                @endforeach
+              </ul>
+              <div class="facility-hero-tags">
+                @foreach ($facilityHero['chips'] as $chip)
+                  <span>{{ $chip }}</span>
+                @endforeach
+              </div>
+              <div class="facility-hero-actions">
+                <a href="{{ route('booking.wizard') }}" class="btn btn-light">Book this room</a>
+                <a href="{{ route('facilities.catalog') }}" class="btn btn-ghost text-white">View catalog</a>
               </div>
             </div>
+          </article>
+        </div>
+        <div class="col-12 col-lg-5">
+          <div class="facility-mini-stack">
+            @foreach ($facilityTiles as $tile)
+              <article class="facility-mini facility-mini-{{ $tile['tone'] ?? 'available' }}">
+                <div class="facility-mini-media" style="background-image:url('{{ $tile['image'] }}');"></div>
+                <div class="facility-mini-body">
+                  <div class="facility-mini-head">
+                    <h5>{{ $tile['title'] }}</h5>
+                    <span class="mini-type">{{ $tile['type'] }}</span>
+                  </div>
+                  <p class="mini-status">{{ $tile['status'] }}</p>
+                  <ul class="mini-details">
+                    @foreach ($tile['details'] as $detail)
+                      <li>{{ $detail }}</li>
+                    @endforeach
+                  </ul>
+                  <div class="mini-actions">
+                    <a href="{{ route('facilities.catalog') }}" class="btn btn-outline-light btn-sm">See details</a>
+                    <button type="button" class="btn btn-link text-white p-0">Add to plan</button>
+                  </div>
+                </div>
+              </article>
+            @endforeach
           </div>
-        @endforeach
+        </div>
       </div>
     </div>
   </section>
