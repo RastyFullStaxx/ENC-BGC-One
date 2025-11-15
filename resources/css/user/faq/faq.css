@@ -42,6 +42,27 @@
     text-align: center;
     color: var(--brand-white);
 }
+.faq-back{
+    display:flex;
+    justify-content:flex-start;
+    margin-bottom:24px;
+}
+.faq-back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color:var(--brand-white);
+    text-decoration:none;
+    font-weight:600;
+}
+.faq-back-link svg{
+    width:16px;
+    height:16px;
+    color:var(--brand-white);
+}
+.faq-back-link:hover{
+    color:var(--brand-yellow);
+}
 
 .faq-eyebrow {
     letter-spacing: 0.18em;
