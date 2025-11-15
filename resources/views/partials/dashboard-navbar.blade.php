@@ -20,6 +20,9 @@
   $userName    = $userName    ?? ($user?->name  ?? 'Charles Ramos');
   $userEmail   = $userEmail   ?? ($user?->email ?? 'user.charles@enc.gov');
   $userRole    = $userRole    ?? ($user?->role  ?? 'User');
+  $bookingsPanelTarget = $bookingsPanelTarget ?? '#wizardBookingsSidebar';
+  $bookingsPanelControlId = ltrim($bookingsPanelTarget, '#') ?: 'wizardBookingsSidebar';
+  $showBookingsToggle = $showBookingsToggle ?? true;
 
   // Helper for avatar initial
   $avatarSource = $userName ?: 'U';
@@ -47,40 +50,39 @@
     {{-- Right-side controls --}}
     <div class="ms-auto d-flex align-items-center gap-2">
 
-      {{-- My Bookings toggle (shows/hides the right sidebar panel) --}}
-      <button
-        type="button"
-        id="myBookingsToggle"
-        class="btn btn-outline-primary position-relative"
-        data-target="#wizardBookingsSidebar"
-        aria-controls="wizardBookingsSidebar"
-        aria-expanded="false"
-        aria-pressed="false"
-      >
-      <a href="{{ route('user.booking.index') }}" class="text-decoration-none text-reset">
-        <span class="d-inline-flex align-items-center gap-2">
-          {{-- Calendar icon --}}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M3 10h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span>My Bookings</span>
-        </span>
-      </a>
-
-
-
-        @if($bookingsCount > 0)
-          <span
-            id="myBookingsBadge"
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger"
-            aria-live="polite"
-          >
-            {{ $bookingsCount }}
+      @if($showBookingsToggle)
+        {{-- My Bookings toggle (shows/hides the right sidebar panel) --}}
+        <button
+          type="button"
+          id="myBookingsToggle"
+          class="btn btn-outline-primary position-relative"
+          data-target="{{ $bookingsPanelTarget }}"
+          aria-controls="{{ $bookingsPanelControlId }}"
+          aria-expanded="false"
+          aria-pressed="false"
+          data-action="toggle-bookings"
+        >
+          <span class="d-inline-flex align-items-center gap-2">
+            {{-- Calendar icon --}}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M3 10h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <span>My Bookings</span>
           </span>
-        @endif
-      </button>
+
+          @if($bookingsCount > 0)
+            <span
+              id="myBookingsBadge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-danger"
+              aria-live="polite"
+            >
+              {{ $bookingsCount }}
+            </span>
+          @endif
+        </button>
+      @endif
 
       {{-- Help/FAQ --}}
       <a

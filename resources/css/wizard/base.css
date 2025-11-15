@@ -86,7 +86,19 @@
 }
 
 .enc-app-navbar .enc-user-menu-btn {
+  border-radius: 1rem;
+  padding: 0.4rem 1rem;
+  min-width: 180px;
+  height: 44px;
   border: none;
+  box-shadow: none;
+  background-color: #fff;
+}
+
+.enc-app-navbar .enc-user-menu-btn .avatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 0.85rem;
 }
 
 .enc-app-navbar .enc-nav-icon-btn {
@@ -114,6 +126,7 @@
   min-width: 20px;
 }
 
+.enc-app-navbar .enc-user-type,
 .enc-user-type {
   border-radius: 1rem;
   letter-spacing: 0.08em;

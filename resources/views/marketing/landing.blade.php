@@ -81,261 +81,158 @@
   <main id="main" tabindex="-1">
 
     {{-- HERO --}}
-    <section class="py-5 py-lg-5 text-center hero-full">
-      <div class="container" style="max-width: 900px;">
-
-        <h1 class="display-5 fw-bold lh-1 mb-2">
-          <span class="d-block">Manage Shared Facilities</span>
-          <span class="d-block text-primary">Faster. Smarter. Seamless.</span>
-        </h1>
-
-        <p class="lead text-secondary mx-auto" style="max-width: 720px;">
-          Simplify how teams reserve meeting rooms, special facilities, and transport services.
-        </p>
-
-        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
-
-          <a class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Find a Room
-          </a>
-
-          <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-             <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Book Now
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.users') }}" data-analytics="cta_admin_users">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Users & Roles
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.facilities') }}" data-analytics="cta_admin_facilities">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 21V9l8-5 8 5v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Facilities
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.analytics') }}" data-analytics="cta_admin_analytics">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 12h4v8H4zM10 6h4v14h-4zM16 3h4v17h-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Analytics
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.policies') }}" data-analytics="cta_admin_policies">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Policies
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.calendar') }}" data-analytics="cta_admin_calendar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 5h16v16H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Global Calendar
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.audit') }}" data-analytics="cta_admin_audit">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 9h8M8 13h8M8 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Audit Log
-          </a>
+    <section class="hero hero-light full-height-hero">
+      <div class="container hero-grid hero-grid-light">
+        <div class="hero-text">
+          <span class="hero-pill hero-pill-light">ONE ENC · Shared Services Portal</span>
+          <h1 class="hero-title mb-3">
+            Book rooms, support, and shuttles with one modern workflow.
+          </h1>
+          <p class="hero-subtitle">
+            Browse live availability, send requests to facilities, or launch the booking
+            wizard for guided support. Everything follows the same modern workflow we use on the dashboard.
+          </p>
+          <div class="hero-actions" role="group" aria-label="Primary actions">
+            <a class="btn btn-primary d-inline-flex align-items-center gap-2"
+               href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              Start a Booking
+            </a>
+            <a class="btn btn-ghost d-inline-flex align-items-center gap-2"
+               href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Explore Facilities
+            </a>
+          </div>
+          <ul class="hero-highlights">
+            <li>Live usage signals across ENC</li>
+            <li>Guided requests with draft saves</li>
+            <li>Mirrors the in-app dashboard experience</li>
+          </ul>
         </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll to preview</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     </section>
 
-    {{-- Secondary content placeholder --}}
-    {{-- <section class="py-5 bg-light">…</section> --}}
+    @php
+      $availabilityHeat = [
+        ['label' => '7:00 AM', 'value' => 32],
+        ['label' => '9:00 AM', 'value' => 58],
+        ['label' => '11:00 AM', 'value' => 76],
+        ['label' => '1:00 PM', 'value' => 41],
+        ['label' => '3:00 PM', 'value' => 88],
+        ['label' => '5:00 PM', 'value' => 63],
+      ];
+
+      $availabilityOpen = [
+        [
+          'status' => 'Calm load',
+          'tone'   => 'good',
+          'time'   => 'Open now',
+          'window' => 'Free until 10:00 AM (60 min)',
+          'room'   => 'Creative Studio B',
+          'cap'    => 'Seats 6 · screen + writable wall',
+          'note'   => 'Great for stand-ups, retros, and quick approvals.',
+          'hold'   => 'Hold for 10 min',
+        ],
+        [
+          'status' => 'Clearing soon',
+          'tone'   => 'warn',
+          'time'   => 'Starts in 25 min',
+          'window' => 'Boardroom A-301 · 9:30–11:00 AM',
+          'room'   => 'Boardroom A-301',
+          'cap'    => 'Seats 12 · video conferencing ready',
+          'note'   => 'Ideal for leadership syncs or client calls.',
+          'hold'   => 'Hold for 5 min',
+        ],
+        [
+          'status' => 'High demand',
+          'tone'   => 'busy',
+          'time'   => 'Opens after 4:00 PM',
+          'window' => 'Innovation Lab C-401 · 4:00–6:30 PM',
+          'room'   => 'Innovation Lab C-401',
+          'cap'    => 'Workshop layout · writable walls + projectors',
+          'note'   => 'Best for design sprints and working sessions.',
+          'hold'   => 'Join waitlist',
+        ],
+      ];
+    @endphp
+
+    <section id="availability" class="availability-preview py-5">
+      <div class="container">
+        <div class="section-heading text-center mb-5">
+          <span class="section-eyebrow">Quick availability glance</span>
+          <h2>Today’s load at a glance</h2>
+          <p class="text-secondary">Check today’s busiest streaks plus the rooms that are open long enough for your next huddle.</p>
+        </div>
+
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-6">
+            <article class="availability-panel availability-panel-heat h-100">
+              <div class="availability-panel-head">
+                <h5>Peak timeline</h5>
+                <span>Live utilization %</span>
+              </div>
+              <div class="availability-heat">
+                @foreach ($availabilityHeat as $slot)
+                  <div class="heat-row">
+                    <span class="heat-label">{{ $slot['label'] }}</span>
+                    <div class="heat-track">
+                      <span class="heat-bar" style="--heat-width: {{ $slot['value'] }}%;"></span>
+                    </div>
+                    <span class="heat-value">{{ $slot['value'] }}%</span>
+                  </div>
+                @endforeach
+              </div>
+            </article>
+          </div>
+
+          <div class="col-12 col-lg-6">
+            <article class="availability-panel availability-panel-open h-100">
+              <div class="availability-panel-head">
+                <h5>Ready-to-book rooms</h5>
+                <span>Auto-refreshes every 3 minutes · holds for you</span>
+              </div>
+              <ul class="availability-open-list">
+                @foreach ($availabilityOpen as $slot)
+                  <li>
+                    <div class="open-main">
+                      <span class="open-status open-status-{{ $slot['tone'] ?? 'good' }}">
+                        <span class="status-dot" aria-hidden="true"></span>
+                        {{ $slot['status'] }}
+                      </span>
+                      <p class="open-time">{{ $slot['time'] }}</p>
+                      <p class="open-room">{{ $slot['room'] }}</p>
+                      <p class="open-meta">{{ $slot['cap'] }}</p>
+                      <p class="open-note">{{ $slot['note'] }}</p>
+                    </div>
+                    <div class="open-window text-end">
+                      <p class="open-duration">{{ $slot['window'] }}</p>
+                      <span class="open-hold">{{ $slot['hold'] }}</span>
+                    </div>
+                  </li>
+                @endforeach
+              </ul>
+              <div class="availability-cta text-center mt-3">
+                <a href="{{ route('facilities.catalog') }}" class="btn btn-outline">View live board</a>
+                <p class="open-footnote text-secondary small mb-0 mt-2">Green slots stay reserved for you while you complete the request.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-
-  {{-- SECTION: Quick Availability Glance (Upgraded) --}}
-  <section id="availability" class="py-5">
-    <div class="container">
-      <div class="text-center mb-2">
-        <h2 class="fw-semibold mb-1">Quick Availability Glance</h2>
-        <p class="text-secondary mb-0">See real-time availability and book instantly</p>
-      </div>
-
-      @php
-        // Example data; swap with live data later
-        $hours = [
-          ['label'=>'8AM','value'=>30],
-          ['label'=>'9AM','value'=>60],
-          ['label'=>'10AM','value'=>80],
-          ['label'=>'11AM','value'=>90],
-          ['label'=>'12PM','value'=>50],
-          ['label'=>'1PM','value'=>40],
-          ['label'=>'2PM','value'=>85],
-          ['label'=>'3PM','value'=>95],
-          ['label'=>'4PM','value'=>70],
-          ['label'=>'5PM','value'=>50],
-        ];
-
-        // Helper: map 0–100% → green(140deg) → red(0deg)
-        $heatColor = function($pct) {
-          $h = max(0, min(140, 140 - round($pct * 1.4))); // 0..140
-          return "hsl($h 90% 45%)";
-        };
-
-        // Build insight: peak window (>=80) & best times (<40)
-        $labels = array_column($hours,'label');
-        $vals   = array_column($hours,'value');
-
-        // Peak ranges (>=80) – get first..last contiguous range for readability
-        $peakIdx = array_keys(array_filter($vals, fn($v)=>$v>=80));
-        $peakText = count($peakIdx)
-          ? ($labels[min($peakIdx)].'–'.$labels[max($peakIdx)])
-          : 'None';
-
-        // Best times (<40)
-        $best = [];
-        foreach ($hours as $h) if ($h['value'] < 40) $best[] = $h['label'];
-        $bestText = count($best) ? implode(', ', $best) : 'Later today';
-
-      @endphp
-
-      {{-- Insight line --}}
-      <div class="alert alert-light border d-flex align-items-center gap-2 mb-4">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-          <path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6l8-3z" stroke="currentColor" stroke-width="1.6" fill="none"/>
-          <path d="M12 8v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        <div class="small">
-          <strong>Today’s trend:</strong> Peak <span class="text-danger">{{ $peakText }}</span>
-          • Best time(s): <span class="text-success">{{ $bestText }}</span>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        {{-- Left: Heat bars --}}
-        <div class="col-lg-6">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex align-items-center gap-2 mb-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-                  <path d="M3 17l6-6 4 4 7-7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h5 class="mb-0">Peak Hours Today</h5>
-              </div>
-
-              <div class="vstack gap-3">
-                @foreach ($hours as $h)
-                  @php
-                    $pct  = $h['value'];
-                    $heat = $heatColor($pct);
-                    $recommend = $pct < 40;
-                  @endphp
-                  <div class="d-flex align-items-center">
-                    <div class="me-3 text-secondary small" style="width:52px;">{{ $h['label'] }}</div>
-                    <div class="flex-grow-1">
-                      <div class="progress progress-heat" style="height: 24px;">
-                        <div
-                          class="progress-bar heatbar"
-                          role="progressbar"
-                          style="--heat: {{ $heat }}; width: {{ $pct }}%;"
-                          data-width="{{ $pct }}%"
-                          aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100"
-                        ></div>
-                      </div>
-                    </div>
-                    <div class="ms-3 small text-secondary text-nowrap">{{ $pct }}% booked
-                      @if ($recommend)
-                        <span class="badge bg-info-subtle text-info-emphasis ms-1">Recommended</span>
-                      @endif
-                    </div>
-                  </div>
-                @endforeach
-              </div>
-
-              <div class="d-flex align-items-center gap-3 small text-secondary mt-4">
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(140 90% 45%);"></span> Low
-                </span>
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(40 95% 50%);"></span> Medium
-                </span>
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(0 90% 50%);"></span> Peak
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{-- Right: Next Free Slots --}}
-        <div class="col-lg-6">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex align-items-center gap-2 mb-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
-                  <path d="M12 7v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h5 class="mb-0">Next Free Slots Today</h5>
-              </div>
-
-              <div class="vstack gap-3">
-                @foreach ([
-                  ['time'=>'10:00 AM','room'=>'Conference Room A','cap'=>10],
-                  ['time'=>'2:00 PM','room'=>'Meeting Room C','cap'=>8],
-                  ['time'=>'4:00 PM','room'=>'Conference Room B','cap'=>20],
-                ] as $slot)
-                  <div class="border rounded-3 p-3 bg-success-subtle">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <div class="d-flex align-items-center gap-2">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-success">
-                          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
-                          <path d="M12 7v6l4 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span class="fw-medium">{{ $slot['time'] }}</span>
-                      </div>
-                      <span class="badge text-bg-success">Available</span>
-                    </div>
-                    <div class="small">{{ $slot['room'] }}</div>
-                    <div class="text-secondary small d-flex align-items-center gap-1 mt-1">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M16 19v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
-                      </svg>
-                      Up to {{ $slot['cap'] }} people
-                    </div>
-                  </div>
-                @endforeach
-              </div>
-
-              <div class="mt-3">
-                <a href="{{ url('/rooms') }}" class="btn btn-primary w-100">View All Availability</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
 
   {{-- SECTION: Featured Facilities --}}
   <section id="facilities" class="py-5 bg-body-tertiary">

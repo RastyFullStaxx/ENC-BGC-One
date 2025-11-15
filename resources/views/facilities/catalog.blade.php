@@ -273,6 +273,16 @@
 
 @section('content')
   <div class="facility-catalog-page">
+    <div class="catalog-back-nav">
+      <a href="{{ route('user.dashboard') }}" class="catalog-back-link">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+
     <section class="facility-hero py-5">
       <div class="container">
         <div class="row align-items-center g-4">

@@ -52,6 +52,7 @@
       'currentStep'        => 1,
       'bookingsCount'      => count($wizardSampleBookings),
       'notificationsCount' => 2,
+      'showBookingsToggle' => false,
     ])
   </div>
 @endsection
@@ -59,6 +60,15 @@
 @section('content')
 
   <section class="wizard-shell py-4 py-md-5">
+    <div class="container d-flex justify-content-end mb-3">
+      <button type="button" class="btn btn-light border-0 d-inline-flex align-items-center gap-2" id="wizardBackToDashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M9 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to Dashboard
+      </button>
+    </div>
     <div class="container" id="wizardLandingShell">
       <div class="row justify-content-center">
         <div class="col-12 col-lg-10">

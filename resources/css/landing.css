@@ -196,6 +196,323 @@ img{max-width:100%;height:auto}
   display:flex; gap:18px; justify-content:center; flex-wrap:wrap; font-size:14px;
 }
 
+.section-heading h2{
+  font-weight:700;
+  margin-bottom:8px;
+  color:#001840;
+}
+.section-eyebrow{
+  text-transform:uppercase;
+  font-size:12px;
+  letter-spacing:0.12em;
+  color:#00c950;
+  display:inline-block;
+  margin-bottom:6px;
+}
+.availability-preview{
+  background:linear-gradient(180deg,#f8fbff 0%,#eef2ff 60%,#fdfdfd 100%);
+}
+.availability-panel{
+  background:#fff;
+  border-radius:20px;
+  border:1px solid #e5e7eb;
+  padding:28px;
+  box-shadow:0 24px 60px -35px rgba(0,24,64,0.6);
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+.availability-panel-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:0;
+}
+.availability-panel-head h5{
+  margin:0;
+  font-size:18px;
+}
+.availability-panel-head span{
+  font-size:12px;
+  color:#6b7280;
+}
+.availability-heat{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  flex:1;
+}
+.heat-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.heat-label{
+  width:70px;
+  font-size:13px;
+  color:#4b5563;
+}
+.heat-track{
+  flex:1;
+  height:18px;
+  background:rgba(0,24,64,0.08);
+  border-radius:999px;
+  overflow:hidden;
+}
+.heat-bar{
+  display:block;
+  height:100%;
+  width:var(--heat-width);
+  background:linear-gradient(90deg,#00c950,#155dfc);
+  border-radius:999px;
+}
+.heat-value{
+  width:50px;
+  font-size:13px;
+  color:#0f172a;
+  text-align:right;
+}
+.availability-open-list{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  flex:1;
+}
+.availability-open-list li{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:18px;
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  background:#fdfdfd;
+}
+.open-main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.open-window{
+  min-width:160px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:13px;
+  color:#1e2939;
+}
+.open-window .open-duration{
+  margin:0;
+  font-weight:600;
+  color:#001840;
+}
+.open-window .open-hold{
+  font-size:11px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:#6b7280;
+}
+.open-time{
+  margin:0;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  color:#6b7280;
+}
+.open-room{
+  margin:4px 0 0;
+  font-weight:600;
+  color:#001840;
+}
+.open-meta{
+  font-size:13px;
+  color:#155dfc;
+  text-transform:uppercase;
+}
+.open-note{
+  margin:0;
+  font-size:13px;
+  color:#475569;
+}
+.open-status{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0.02em;
+  text-transform:uppercase;
+}
+.open-status-good{color:#00c950;}
+.open-status-warn{color:#894b00;}
+.open-status-busy{color:#9f0712;}
+.status-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:currentColor;
+}
+.availability-cta .btn{
+  min-width:220px;
+}
+.open-footnote{
+  max-width:320px;
+  margin:12px auto 0;
+}
+
+@media (max-width: 575.98px){
+  .availability-open-list li{flex-direction:column;}
+  .open-window{min-width:auto;width:100%;align-items:flex-start;}
+}
+
+.availability-alert{
+  background:#fff;
+  border:1px solid rgba(0,24,64,0.08);
+  border-radius:14px;
+  padding:12px 16px;
+}
+.facility-feature{
+  background:#fdfdfd;
+}
+.facility-card{
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  padding:20px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  height:100%;
+}
+.facility-card header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:8px;
+}
+.facility-card h5{
+  margin:0;
+  font-size:18px;
+}
+.facility-status{
+  font-size:12px;
+  color:#155dfc;
+  background:rgba(21,93,252,0.12);
+  border-radius:999px;
+  padding:4px 10px;
+}
+.facility-copy{
+  margin:0;
+  color:#4b5563;
+}
+.facility-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.facility-tags span{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#1e293b;
+}
+.facility-link{
+  margin-top:auto;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  text-decoration:none;
+  color:#001840;
+  font-weight:600;
+}
+.how-it-works{
+  background:#f8fafc;
+}
+.journey-card{
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  padding:24px;
+  background:#fff;
+  height:100%;
+}
+.journey-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  background:#001840;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin-bottom:16px;
+  font-weight:600;
+}
+
+.hero-light{
+  background:linear-gradient(180deg,#ffffff 0%,#f9fbff 60%,#f3f5fb 100%);
+  background-size: 250% 250%;
+  animation: adminGradientFlow 2s ease infinite;
+  color:#001840;
+  border-bottom:1px solid #e5e7eb;
+}
+@keyframes adminGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  00% { background-position: 0% 50%; }
+}
+.full-height-hero{
+  min-height:calc(100vh - 80px);
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+.hero-grid{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  align-items:center;
+  text-align:center;
+}
+.hero-text{
+  max-width:720px;
+}
+.hero-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(253,253,253,0.15);
+  color:#fff085;
+  font-size:12px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
+.hero-pill-light{
+  background:rgba(0,24,64,0.08);
+  color:#001840;
+}
+.hero-title{
+  font-size:clamp(30px,4vw,44px);
+  color:currentColor;
+}
+.hero-subtitle{
+  color:#4b5563;
+}
+.hero-actions{
+  justify-content:center;
+}
+.hero-highlights{
+  justify-content:center;
+  color:#475569;
+}
+
 /* ---------- Footer ---------- */
 .site-footer{border-top:1px solid var(--line); margin-top:80px; background:#fff;}
 .footer-inner{display:flex; align-items:center; justify-content:space-between; padding:22px 0; gap:12px; flex-wrap:wrap;}
@@ -292,3 +609,16 @@ section + section { scroll-margin-top: 72px; } /* nice anchor jumps under a fixe
 
 /* Optional: subtle card hover (keeps from earlier suggestion) */
 .card:hover { transform: translateY(-2px); transition: transform .2s ease; }
+.scroll-cue{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:12px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:#4b5563;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
