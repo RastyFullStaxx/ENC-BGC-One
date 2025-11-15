@@ -159,7 +159,7 @@
           </li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="{{ route('user.profile') }}">Profile</a></li>
-          <li><a class="dropdown-item" href="{{ route('faq') }}">Faq</a></li>
+          {{-- <li><a class="dropdown-item" href="{{ route('faq') }}">Faq</a></li> --}}
           <li><a class="dropdown-item" href="{{ route('user.settings') }}">Settings</a></li>
           @auth
             <li><hr class="dropdown-divider"></li>

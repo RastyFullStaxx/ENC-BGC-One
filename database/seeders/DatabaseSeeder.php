@@ -17,11 +17,18 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DepartmentsSeeder::class,
             AdminSeeder::class,
+            BuildingsTableSeeder::class,
+            EquipmentTableSeeder::class,
+            FacilitiesTableSeeder::class,
+            OperatingHoursTableSeeder::class,
+            FacilityPhotosTableSeeder::class,
+            FacilityEquipmentTableSeeder::class,
         ]);
 
         User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'test@ministry.gov',
+            'password' => bcrypt('user123!'),
         ]);
     }
 }
