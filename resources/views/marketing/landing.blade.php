@@ -201,7 +201,7 @@
         <div class="section-heading text-center mb-5">
           <span class="section-eyebrow">Quick availability glance</span>
           <h2>Today’s load at a glance</h2>
-          <p class="text-secondary">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
+          <p class="workflow-subtext mb-0">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
         </div>
 
         <div class="row g-4 align-items-start">
@@ -330,7 +330,7 @@
     <div class="container">
       <div class="text-center mb-5">
         <span class="section-eyebrow">Featured services &amp; spaces</span>
-        <h2 class="fw-semibold mb-1">Start with the right service, then pick the perfect room</h2>
+        <h2 class="fw-semibold mb-1">The right room with the perfect services</h2>
         <p class="text-secondary mb-0">Go straight to the booking flow you need and see the rooms we’re spotlighting today.</p>
       </div>
 
@@ -518,7 +518,7 @@
       <div class="row align-items-center g-3">
         <div class="col-lg-8">
           <h2 class="fw-semibold mb-1 text-white">Ready to Get Started?</h2>
-          <p class="mb-0 opacity-75">Sign up and let's find you a room quickly!</p>
+          <p class="workflow-subtext mb-0">Sign up and let's find you a room quickly!</p>
         </div>
         <div class="col-lg-4 text-lg-end">
           <div class="d-flex d-lg-inline-flex gap-2">
