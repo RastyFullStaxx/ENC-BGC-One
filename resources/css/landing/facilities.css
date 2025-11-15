@@ -1,6 +1,40 @@
 /* Featured facilities module */
 .facility-feature{background:linear-gradient(180deg,#f9fbff 0%,#fdfdfd 70%);}
 .facility-grid{align-items:stretch;}
+.facility-services{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+.facility-divider{
+  height:1px;
+  background:rgba(0,24,64,0.08);
+  margin:24px 0;
+}
+.service-card{
+  background:linear-gradient(135deg,rgba(0,24,64,0.9),rgba(0,24,64,0.8));
+  color:#fff;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 20px 45px -32px rgba(0,24,64,0.5);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+.service-card h4{margin:0; font-size:18px; color:#fff;}
+.service-icon{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  background:rgba(253,253,253,0.18);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  margin-inline:auto;
+}
+.service-card p{margin:0; font-size:14px; color:rgba(255,255,255,0.85);}
 .facility-hero-card{
   position:relative;
   border-radius:32px;

@@ -15,6 +15,8 @@
     'resources/css/landing/availability.css',
     'resources/css/landing/facilities.css',
     'resources/css/landing/how-it-works.css',
+    'resources/css/landing/policies.css',
+    'resources/css/landing/cta.css',
     'resources/js/landing.js'
   ])
 
@@ -93,11 +95,10 @@
         <div class="hero-text">
           <span class="hero-pill hero-pill-light">ONE ENC · Shared Services Portal</span>
           <h1 class="hero-title mb-3">
-            Book rooms, support, and shuttles with one modern workflow.
+            Service at your fingertips.
           </h1>
           <p class="hero-subtitle">
-            Browse live availability, send requests to facilities, or launch the booking
-            wizard for guided support. Everything follows the same modern workflow we use on the dashboard.
+            Book rooms, support, and shuttles with one modern workflow.
           </p>
           <div class="hero-actions" role="group" aria-label="Primary actions">
             <a class="btn btn-primary d-inline-flex align-items-center gap-2"
@@ -117,9 +118,9 @@
             </a>
           </div>
           <ul class="hero-highlights">
-            <li>Live usage signals across ENC</li>
-            <li>Guided requests with draft saves</li>
-            <li>Mirrors the in-app dashboard experience</li>
+            <li></li>
+            <li></li>
+            <li></li>
           </ul>
         </div>
       </div>
@@ -307,12 +308,42 @@
         ],
       ];
     @endphp
+    @php
+      $featuredServices = [
+        [
+          'name' => 'Meeting room booking',
+          'summary' => 'Live availability, instant approvals, and guided forms for every huddle or town hall.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        ],
+        [
+          'name' => 'SEI facilities',
+          'summary' => 'Innovation labs, studios, and special venues with concierge prep and equipment support.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 10l8-6 8 6v8a2 2 0 0 1-2 2h-1v-5h-4v5H6a2 2 0 0 1-2-2v-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+        ],
+        [
+          'name' => 'Shuttle service',
+          'summary' => 'Reserve point-to-point or loop shuttles with passenger manifests and live tracking.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="10" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M6 17v2M18 17v2M4 12h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        ],
+      ];
+    @endphp
     <div class="container">
       <div class="text-center mb-5">
-        <span class="section-eyebrow">Featured facilities</span>
-        <h2 class="fw-semibold mb-1">Spotlight spaces handpicked for today</h2>
-        <p class="text-secondary mb-0">Curated from the live catalog so you can skip browsing and jump straight to the best-fit rooms.</p>
+        <span class="section-eyebrow">Featured services &amp; spaces</span>
+        <h2 class="fw-semibold mb-1">Start with the right service, then pick the perfect room</h2>
+        <p class="text-secondary mb-0">Go straight to the booking flow you need and see the rooms we’re spotlighting today.</p>
       </div>
+
+      <div class="facility-services mb-4">
+        @foreach ($featuredServices as $service)
+          <article class="service-card">
+            <div class="service-icon" aria-hidden="true">{!! $service['icon'] !!}</div>
+            <h4>{{ $service['name'] }}</h4>
+            <p>{{ $service['summary'] }}</p>
+          </article>
+        @endforeach
+      </div>
+      <div class="facility-divider" aria-hidden="true"></div>
 
       <div class="row g-4 facility-grid">
         <div class="col-12 col-lg-7">
@@ -378,96 +409,116 @@
   </section>
 
   {{-- SECTION: How It Works --}}
-  <section id="how-it-works" class="py-5 bg-primary text-white">
+  @php
+    $workflowSteps = [
+      [
+        'title' => 'Browse fast',
+        'summary' => 'Use live signals to see which rooms are open now.',
+        'eta' => '~2 min',
+        'signal' => 'Live catalog',
+        'icon' => 'search'
+      ],
+      [
+        'title' => 'Submit once',
+        'summary' => 'Launch the wizard, auto-fill the form, and drop in your agenda.',
+        'eta' => '~4 min',
+        'signal' => 'Smart request',
+        'icon' => 'form'
+      ],
+      [
+        'title' => 'Get the go',
+        'summary' => 'Instant notifications, holds, and check-in reminders keep you on track.',
+        'eta' => 'Instant',
+        'signal' => 'Concierge watch',
+        'icon' => 'bolt'
+      ],
+    ];
+
+    $workflowIcons = [
+      'search' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M16 16L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      'form'   => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h12l2 2v16H6z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      'bolt'   => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 13h6l-1 9 9-12h-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    ];
+  @endphp
+  <section id="how-it-works" class="py-5 how-it-works">
     <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="fw-semibold mb-1 text-white">How It Works</h2>
-        <p class="opacity-75 mb-0">Simple 3-step process to book your resources</p>
+      <div class="workflow-heading text-center mb-5">
+        <span class="workflow-eyebrow">How it works</span>
+        <h2 class="fw-semibold mb-2">Three quick beats from idea to confirmed booking</h2>
+        <p class="workflow-subtext mb-0">No heavy reading—just the cues you need.</p>
       </div>
 
-      <div class="row g-4 text-center">
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- search icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M14.5 14.5L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            <h5 class="mb-1">Find</h5>
-            <p class="mb-0 small">Browse available rooms, facilities, and shuttle services. Check real-time availability and select your preferred option.</p>
-          </div>
-        </div>
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- doc icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <path d="M6 3h8l4 4v14H6z" stroke="currentColor" stroke-width="1.8" fill="none"/>
-              <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.8" fill="none"/>
-            </svg>
-            <h5 class="mb-1">Request &amp; Approve</h5>
-            <p class="mb-0 small">Submit your booking with details. Our team reviews and confirms quickly.</p>
-          </div>
-        </div>
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- bolt icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
-            </svg>
-            <h5 class="mb-1">Use</h5>
-            <p class="mb-0 small">Receive confirmation and access your booked resource. Track everything in your dashboard.</p>
-          </div>
-        </div>
+      <div class="workflow-grid">
+        @foreach ($workflowSteps as $step)
+          <article class="workflow-step">
+            <div class="workflow-icon" aria-hidden="true">{!! $workflowIcons[$step['icon']] ?? '' !!}</div>
+            <span class="workflow-step-number">Step {{ $loop->iteration }}</span>
+            <h5>{{ $step['title'] }}</h5>
+            <p class="workflow-step-summary">{{ $step['summary'] }}</p>
+          </article>
+        @endforeach
       </div>
     </div>
   </section>
 
   {{-- SECTION: Booking Policies (Teaser) --}}
-  <section id="policies" class="py-5">
-    <div class="container">
-      <div class="card shadow-sm border-0">
-        <div class="card-body p-4 p-md-5">
-          <div class="text-center mb-4">
-            {{-- shield icon --}}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary mb-2">
-              <path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6l8-3z" stroke="currentColor" stroke-width="1.8" fill="none"/>
-            </svg>
-            <h3 class="fw-semibold mb-1">Booking Policies</h3>
-            <p class="text-secondary mb-0">Simple guidelines for a smooth booking experience</p>
-          </div>
+  @php
+    $policyHighlights = [
+      ['label' => 'Lead times', 'value' => '24h rooms · 48h special'],
+      ['label' => 'Cancellations', 'value' => '12h before start'],
+      ['label' => 'Support hours', 'value' => '7AM – 7PM concierge'],
+    ];
 
-          <ul class="list-group list-group-flush mb-4">
-            @foreach ([
-              'Food & beverages allowed only in designated rooms. Light refreshments permitted in Executive Boardroom.',
-              'Meeting room bookings limited to 4 hours per session. Extended time requires manager approval.',
-              'Lead Times: 24 hours for meeting rooms, 48 hours for special facilities, 72 hours for shuttle services.',
-              'Cancellation: at least 12 hours before schedule to avoid restrictions.',
-              'Cleanup: return rooms to original condition and report equipment issues immediately.'
-            ] as $rule)
-              <li class="list-group-item d-flex align-items-start">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-primary me-2 mt-1 flex-shrink-0">
-                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="small">{{ $rule }}</span>
+    $policyRules = [
+      'Food & drinks only in approved spaces. Light refreshments welcome in Executive Boardroom.',
+      'Standard room bookings max at 4 hours. Longer holds need manager approval.',
+      'Special facilities (lab, shuttle, studio) require the published lead times.',
+      'Cancel or update at least 12 hours before the slot to avoid cooldowns.',
+      'Leave rooms tidy, return keycards, and log any equipment issues with Facilities.'
+    ];
+  @endphp
+  <section id="policies" class="py-5 policy-teaser">
+    <div class="container">
+      <div class="policy-card">
+        <div class="policy-card-info">
+          <span class="policy-eyebrow">Booking policies</span>
+          <h2>Quick reminders to know before you request</h2>
+          <p>Nothing complicated—just the essentials so every space stays ready for the next team.</p>
+          <div class="policy-highlights">
+            @foreach ($policyHighlights as $highlight)
+              <div class="policy-highlight">
+                <span class="policy-highlight-label">{{ $highlight['label'] }}</span>
+                <span class="policy-highlight-value">{{ $highlight['value'] }}</span>
+              </div>
+            @endforeach
+          </div>
+          <a href="{{ route('faq') }}" class="btn btn-primary mt-3">View FAQ &amp; full policy guide</a>
+        </div>
+        <div class="policy-card-list">
+          <ul>
+            @foreach ($policyRules as $rule)
+              <li>
+                <span class="policy-check" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <span>{{ $rule }}</span>
               </li>
             @endforeach
           </ul>
-
-          <div class="text-center">
-            <a href="{{ url('/policies') }}" class="btn btn-outline-primary">View Full Policies &amp; FAQ</a>
-          </div>
         </div>
       </div>
     </div>
   </section>
 
   {{-- SECTION: Ready to Get Started --}}
-  <section id="cta" class="py-5 bg-primary text-white">
+  <section id="cta" class="py-5 cta-band">
     <div class="container">
       <div class="row align-items-center g-3">
         <div class="col-lg-8">
           <h2 class="fw-semibold mb-1 text-white">Ready to Get Started?</h2>
-          <p class="mb-0 opacity-75">Join hundreds of employees already using our smart booking system</p>
+          <p class="mb-0 opacity-75">Sign up and let's find you a room quickly!</p>
         </div>
         <div class="col-lg-4 text-lg-end">
           <div class="d-flex d-lg-inline-flex gap-2">

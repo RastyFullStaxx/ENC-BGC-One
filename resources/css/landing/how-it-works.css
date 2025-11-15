@@ -1,21 +1,60 @@
-/* How it works section */
-.how-it-works{background:#f8fafc;}
-.journey-card{
-  border-radius:18px;
-  border:1px solid #e5e7eb;
-  padding:24px;
-  background:#fff;
-  height:100%;
+/* How it works timeline */
+.how-it-works{background:linear-gradient(135deg,#001840 0%,#03102c 60%,#05235c 100%); color:#fff;}
+.workflow-heading h2{color:#fff;}
+.workflow-subtext{color:rgba(255,255,255,0.75);}
+.workflow-eyebrow{
+  text-transform:uppercase;
+  font-size:12px;
+  letter-spacing:0.12em;
+  color:#00c950;
+  display:inline-block;
+  margin-bottom:6px;
 }
-.journey-icon{
-  width:42px;
-  height:42px;
-  border-radius:12px;
+.workflow-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+}
+.workflow-step{
+  background:rgba(253,253,253,0.96);
+  border-radius:24px;
+  padding:32px 26px;
+  border:1px solid rgba(255,255,255,0.18);
+  box-shadow:0 28px 60px -32px rgba(0,24,64,0.65);
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  text-align:center;
+}
+.workflow-icon{
+  width:74px;
+  height:74px;
+  border-radius:24px;
   background:#001840;
   color:#fff;
-  display:flex;
+  display:inline-flex;
   align-items:center;
   justify-content:center;
-  margin-bottom:16px;
-  font-weight:600;
+  margin-inline:auto;
 }
+.workflow-icon svg{width:34px; height:34px;}
+.workflow-step-number{
+  font-size:12px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:#001840;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  justify-content:center;
+}
+.workflow-step-number::before,
+.workflow-step-number::after{
+  content:"";
+  width:20px;
+  height:2px;
+  background:#001840;
+  display:inline-block;
+}
+.workflow-step h5{margin:0; font-size:18px; color:#001840;}
+.workflow-step-summary{margin:0; color:#4b5563; font-size:14px;}

@@ -1,5 +1,10 @@
 /* Availability timeline + quick glance */
-.availability-preview{background:linear-gradient(180deg,#f8fbff 0%,#eef2ff 60%,#fdfdfd 100%);}
+.availability-preview{
+  background:linear-gradient(135deg,#001840 0%,#032a63 60%,#073e8f 100%);
+  color:#fff;
+}
+.availability-preview .section-heading h2{color:#fff;}
+.availability-preview .section-heading p{color:rgba(255,255,255,0.75);}
 .availability-panel{
   background:#fff;
   border-radius:20px;
@@ -19,8 +24,8 @@
 
 .availability-panel-schedule{
   gap:12px;
-  background:linear-gradient(160deg,rgba(0,24,64,0.08) 0%,rgba(0,24,64,0.02) 65%,#fdfdfd 100%);
-  border-color:rgba(0,24,64,0.1);
+  background:#fdfdfd;
+  border-color:rgba(0,24,64,0.15);
 }
 .schedule-scale{
   display:flex;

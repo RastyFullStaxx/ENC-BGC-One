@@ -13,7 +13,7 @@
 .hero-title{
   font-size: clamp(32px, 4.2vw, 46px);
   line-height:1.15; margin:16px 0 12px; letter-spacing:-.02em; font-weight:800;
-  color:var(--ink);
+  color:#001840;
 }
 .hero-line{display:block}
 .hero-line.accent{color:var(--brand)}
