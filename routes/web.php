@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserBookingController;
 
 
 Route::get('/', function () {
@@ -41,10 +43,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 // User Pages (Protected - requires authentication and staff role)
 Route::middleware(['auth', 'role:staff'])->group(function () {
     // Dashboard
-    Route::view('/user/dashboard', 'user.dashboard')->name('user.dashboard');
+    Route::get('/user/dashboard', \App\Http\Controllers\UserDashboardController::class)->name('user.dashboard');
     
     // List of Bookings
-    Route::view('/user/booking', 'user.booking.index')->name('user.booking.index');
+    Route::get('/user/booking', [\App\Http\Controllers\UserBookingController::class, 'index'])->name('user.booking.index');
 
     // Profile & Settings
     Route::view('/user/profile', 'user.profile')->name('user.profile');

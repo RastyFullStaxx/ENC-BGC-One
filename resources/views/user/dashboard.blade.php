@@ -146,25 +146,30 @@ body {
 
 .dashboard-top-actions {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
+    justify-content: flex-start;
+    margin-bottom: 12px;
 }
 
 .btn-back-home {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 24, 64, 0.2);
-    color: #001840;
+    gap: 0.5rem;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    color: rgba(0, 24, 64, 0.75);
     text-decoration: none;
-    background: white;
+    background: transparent;
     font-weight: 600;
 }
 
 .btn-back-home:hover {
-    background: #f1f5f9;
+    color: #001840;
+}
+
+.btn-back-home svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Hero Section */
@@ -359,6 +364,42 @@ body {
     font-size: 14px;
     line-height: 20px;
     color: #6a7282;
+}
+
+.upcoming-booking {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upcoming-date {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #99a1af;
+    margin: 0;
+}
+
+.upcoming-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.upcoming-purpose {
+    margin: 0;
+    color: #4b5563;
+    font-size: 14px;
+}
+
+.upcoming-meta {
+    margin: 0;
+    font-size: 14px;
+    color: #6b7280;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 /* My Bookings Widget */
@@ -837,17 +878,23 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 @endpush
 
+@php
+    $bookingStats = $bookingStats ?? ['pending' => 0, 'confirmed' => 0, 'cancelled' => 0, 'total' => 0];
+    $upcomingBookingCard = $upcomingBookingCard ?? null;
+@endphp
+
 @section('app-navbar')
     @include('partials.dashboard-navbar', [
         'currentStep' => 0,
         'steps' => [],
-        'bookingsCount' => 3,
+        'bookingsCount' => $bookingStats['total'] ?? 0,
         'notificationsCount' => 2,
         'userName' => auth()->user()->name ?? 'Charles Ramos',
         'userEmail' => auth()->user()->email ?? 'user.charles@enc.gov',
         'userRole' => auth()->user()->role ?? 'staff',
         'brand' => 'ONE Services',
         'bookingsPanelTarget' => '#dashboardBookingsPanel',
+        'showStepper' => false,
     ])
 @endsection
 
@@ -897,11 +944,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
-                        <p class="stat-value stat-pending">3</p>
+                        <p class="stat-value stat-pending">{{ $bookingStats['pending'] ?? 0 }}</p>
                         <p class="stat-label">Pending approvals</p>
                     </div>
                     <div class="stat-item">
-                        <p class="stat-value stat-confirmed">0</p>
+                        <p class="stat-value stat-confirmed">{{ $bookingStats['confirmed'] ?? 0 }}</p>
                         <p class="stat-label">Confirmed today</p>
                     </div>
                 </div>
@@ -920,62 +967,40 @@ document.addEventListener('DOMContentLoaded', function() {
                         </svg>
                         <h3>Upcoming</h3>
                     </div>
-                    <div class="badge-count">0</div>
+                    <div class="badge-count">{{ $upcomingBookingCard ? 1 : 0 }}</div>
                 </div>
-                <div class="card-empty">
-                    <div class="empty-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <path d="M8 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M16 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M3 10H21" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                @if($upcomingBookingCard)
+                    <div class="upcoming-booking">
+                        <p class="upcoming-date">{{ $upcomingBookingCard['date'] }}</p>
+                        <h4 class="upcoming-title">{{ $upcomingBookingCard['facility'] }}</h4>
+                        <p class="upcoming-purpose">{{ $upcomingBookingCard['purpose'] }}</p>
+                        <p class="upcoming-meta">
+                            <span>{{ $upcomingBookingCard['time'] }}</span>
+                            @if(!empty($upcomingBookingCard['location']))
+                                <span aria-hidden="true">•</span>
+                                <span>{{ $upcomingBookingCard['location'] }}</span>
+                            @endif
+                        </p>
                     </div>
-                    <p>No upcoming bookings</p>
-                </div>
+                @else
+                    <div class="card-empty">
+                        <div class="empty-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M3 10H21" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <p>No upcoming bookings</p>
+                    </div>
+                @endif
             </div>
 
             <section id="dashboardBookingsPanel" class="dashboard-bookings-panel is-visible" data-panel-state="visible" aria-live="polite">
-                @php
-                    $dashboardBookings = [
-                        'eyebrow' => 'Bookings snapshot',
-                        'subtitle' => 'Monitor requests and keep your schedule aligned with ENC services.',
-                        'userName' => auth()->user()->name ?? 'Charles Ramos',
-                        'userEmail' => auth()->user()->email ?? 'user.charles@enc.gov',
-                        'totalBookings' => 3,
-                        'ctaLabel' => 'Manage bookings',
-                        'viewAllUrl' => route('user.booking.index'),
-                        'tabs' => [
-                            ['key' => 'all', 'label' => 'All', 'count' => 3],
-                            ['key' => 'pending', 'label' => 'Pending', 'count' => 3],
-                            ['key' => 'confirmed', 'label' => 'Confirmed', 'count' => 0],
-                        ],
-                        'bookings' => [
-                            [
-                                'status' => 'pending',
-                                'date' => 'Sat, Nov 29',
-                                'title' => 'Meeting Room · Strategy Sync',
-                                'time' => '11:00 AM – 12:00 PM',
-                                'location' => 'Victory Pioneer',
-                            ],
-                            [
-                                'status' => 'pending',
-                                'date' => 'Sat, Nov 29',
-                                'title' => 'Creative Studio · Content Capture',
-                                'time' => '10:30 AM – 11:00 AM',
-                                'location' => 'BGC Studio B',
-                            ],
-                            [
-                                'status' => 'pending',
-                                'date' => 'Sat, Nov 29',
-                                'title' => 'Multipurpose Hall · Volunteers Briefing',
-                                'time' => '9:00 AM – 10:00 AM',
-                                'location' => 'ENC Main',
-                            ],
-                        ],
-                    ];
-                @endphp
-                @include('partials.my-bookings-card', $dashboardBookings)
+                @if(!empty($dashboardBookings))
+                    @include('partials.my-bookings-card', $dashboardBookings)
+                @endif
             </section>
         </div>
     </div>

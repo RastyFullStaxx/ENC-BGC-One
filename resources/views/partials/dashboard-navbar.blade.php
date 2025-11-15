@@ -10,6 +10,7 @@
     ['title' => 'Details',      'desc' => 'Add booking information'],
     ['title' => 'Confirm',      'desc' => 'Review and submit'],
   ];
+  $showStepper = $showStepper ?? true;
 
   /** Optional counts for badges */
   $bookingsCount      = $bookingsCount      ?? 0;
@@ -178,6 +179,7 @@
 </nav>
 
 {{-- Progress indicator (directly under the navbar, not in a card) --}}
+@if($showStepper && count($steps))
 <nav class="enc-stepper-wrap bg-body" aria-label="Booking progress">
   <div class="container-fluid px-3 px-lg-4 px-xxl-5">
     <ol class="enc-stepper list-unstyled d-flex align-items-stretch justify-content-between gap-3 m-0 py-3">
@@ -208,3 +210,4 @@
     </ol>
   </div>
 </nav>
+@endif
