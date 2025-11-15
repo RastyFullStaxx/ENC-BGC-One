@@ -167,6 +167,11 @@
   margin-top: 0.75rem;
 }
 
+.enc-stepper-wrap .container-fluid {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 .enc-stepper {
   gap: 1rem;
 }

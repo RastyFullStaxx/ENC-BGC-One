@@ -6,6 +6,7 @@ let roomsGrid = null;
 export const initBookingWizard = () => {
   const methodSection     = document.getElementById('wizardMethodSection');
   const landingShell      = document.getElementById('wizardLandingShell');
+  const landingSection    = landingShell?.closest('.wizard-shell');
   const manualStage       = document.getElementById('wizardManualStage');
   const wizardAppNavWrap  = document.getElementById('wizardAppNav');
   roomsGrid               = document.getElementById('wizardRoomsGrid'); // Set module-level reference
@@ -193,6 +194,8 @@ export const initBookingWizard = () => {
 
     methodSection.classList.remove('d-none');
     methodSection.hidden = false;
+    landingShell?.classList.remove('d-none');
+    landingSection?.classList.remove('d-none');
 
     methodSection.querySelector('.wizard-method-title')?.focus?.();
     wizardAppNavWrap?.classList.add('d-none');
@@ -228,6 +231,7 @@ export const initBookingWizard = () => {
     }
 
     landingShell?.classList.add('d-none');
+    landingSection?.classList.add('d-none');
     manualStage.classList.remove('d-none');
     manualStage.hidden = false;
     wizardAppNavWrap?.classList.remove('d-none');

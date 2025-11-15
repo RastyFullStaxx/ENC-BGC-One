@@ -182,7 +182,14 @@ async function submitBooking() {
 function showSuccessPanel(bookingData) {
     // Hide all wizard stages
     document.getElementById('wizardManualStage').classList.add('d-none');
-    document.getElementById('wizardLandingShell').classList.add('d-none');
+    const landingShell = document.getElementById('wizardLandingShell');
+    if (landingShell) {
+        landingShell.classList.add('d-none');
+        const landingSection = landingShell.closest('.wizard-shell');
+        if (landingSection) {
+            landingSection.classList.add('d-none');
+        }
+    }
     
     // Show success panel
     const successPanel = document.getElementById('wizardSuccessPanel');
