@@ -19,12 +19,13 @@
     @include('partials.dashboard-navbar', [
         'currentStep' => 0,
         'steps' => [],
-        'bookingsCount' => 2,
+        'bookingsCount' => ($bookingStats['pending'] ?? 0) + ($bookingStats['confirmed'] ?? 0) + ($bookingStats['cancelled'] ?? 0),
         'notificationsCount' => 2,
         'userName' => auth()->user()->name ?? 'User',
         'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
         'userRole' => auth()->user()->role ?? 'staff',
-        'brand' => 'ONE Services'
+        'brand' => 'ONE Services',
+        'showStepper' => false,
     ])
 
     <div id="toast" class="toast" role="status" aria-live="polite">
@@ -45,7 +46,7 @@
                 <p class="bookings-hero__subtitle">Track upcoming rooms, review approvals, and export quick summaries for your team.</p>
             </div>
             <div class="bookings-hero__actions">
-                <a href="{{ route('user.booking.wizard') }}#wizardMethodSection" class="btn-pill btn-pill--primary">
+                <a href="{{ route('user.booking.wizard', [], false) }}#wizardMethodSection" class="btn-pill btn-pill--primary">
                     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/>
                     </svg>
@@ -237,12 +238,12 @@
                     </td>
                     <td class="table-actions-cell">
                         <div class="table-actions">
-                            <button class="icon-btn" onclick="viewBooking(${booking.id})" title="View booking">
+                            <a class="icon-btn" href="${booking.viewUrl || '#'}" title="View booking">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
-                            </button>
+                            </a>
                             <button class="icon-btn icon-btn--danger" onclick="cancelBooking(${booking.id})" title="Cancel booking">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -279,12 +280,12 @@
                         <span>${booking.purpose}</span>
                     </div>
                     <div class="table-actions">
-                        <button class="icon-btn" onclick="viewBooking(${booking.id})" title="View booking">
+                        <a class="icon-btn" href="${booking.viewUrl || '#'}" title="View booking">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
-                        </button>
+                        </a>
                         <button class="icon-btn icon-btn--danger" onclick="cancelBooking(${booking.id})" title="Cancel booking">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -304,16 +305,6 @@
                 completed: { label: 'Completed', tone: 'is-neutral' },
             };
             return map[status] || { label: status, tone: 'is-neutral' };
-        }
-
-        // View booking
-        function viewBooking(id) {
-            const booking = bookings.find(b => b.id === id);
-            if (booking) {
-                showToast(`Viewing booking: ${booking.purpose}`, 'success');
-                // Here you would typically open a modal or navigate to details page
-                // For Laravel: window.location.href = `/bookings/${id}`;
-            }
         }
 
         // Cancel booking

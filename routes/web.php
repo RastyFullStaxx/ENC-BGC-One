@@ -47,6 +47,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     
     // List of Bookings
     Route::get('/user/booking', [\App\Http\Controllers\UserBookingController::class, 'index'])->name('user.booking.index');
+    Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
     // Profile & Settings
     Route::view('/user/profile', 'user.profile')->name('user.profile');
