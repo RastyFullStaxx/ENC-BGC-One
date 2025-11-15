@@ -1,0 +1,97 @@
+/* Hero section styles */
+.hero{
+  padding:96px 0 84px;
+  text-align:center;
+  background:linear-gradient(180deg, rgba(0,24,64,0.02) 0%, rgba(0,24,64,0.0) 55%), var(--bg);
+}
+.hero-inner{max-width:880px; margin-inline:auto;}
+.badge{
+  display:inline-block; padding:6px 10px; border-radius:999px;
+  background:var(--badge); color:var(--badge-ink);
+  font-size:12px; line-height:1; border:1px solid #E5E7EB;
+}
+.hero-title{
+  font-size: clamp(32px, 4.2vw, 46px);
+  line-height:1.15; margin:16px 0 12px; letter-spacing:-.02em; font-weight:800;
+  color:#001840;
+}
+.hero-line{display:block}
+.hero-line.accent{color:var(--brand)}
+.hero-subtitle{
+  margin: 10px auto 22px; max-width:720px; color:var(--muted); font-size:18px;
+}
+.hero-actions{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:12px}
+.hero-highlights{
+  margin:18px 0 0; padding:0; list-style:none; color:#475569;
+  display:flex; gap:18px; justify-content:center; flex-wrap:wrap; font-size:14px;
+}
+
+.hero-light{
+  background:linear-gradient(180deg,#ffffff 0%,#f9fbff 60%,#f3f5fb 100%);
+  background-size: 250% 250%;
+  animation: adminGradientFlow 2s ease infinite;
+  color:#001840;
+  border-bottom:1px solid #e5e7eb;
+}
+@keyframes adminGradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  00% { background-position: 0% 50%; }
+}
+.full-height-hero{
+  min-height:calc(100vh - 80px);
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+.hero-grid{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+  align-items:center;
+  text-align:center;
+}
+.hero-text{max-width:720px;}
+.hero-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(253,253,253,0.15);
+  color:#fff085;
+  font-size:12px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+}
+.hero-pill-light{
+  background:rgba(0,24,64,0.08);
+  color:#001840;
+}
+.scroll-cue{
+  position:absolute;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:12px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  color:#4b5563;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.hero-full{
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@media (max-width: 900px){
+  .hero{padding:64px 0 56px}
+  .hero-actions{flex-direction:column; gap:12px}
+}

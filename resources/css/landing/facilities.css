@@ -1,0 +1,132 @@
+/* Featured facilities module */
+.facility-feature{background:linear-gradient(180deg,#f9fbff 0%,#fdfdfd 70%);}
+.facility-grid{align-items:stretch;}
+.facility-services{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:16px;
+}
+.facility-divider{
+  height:1px;
+  background:rgba(0,24,64,0.08);
+  margin:24px 0;
+}
+.service-card{
+  background:linear-gradient(135deg,rgba(0,24,64,0.9),rgba(0,24,64,0.8));
+  color:#fff;
+  border-radius:20px;
+  padding:18px;
+  box-shadow:0 20px 45px -32px rgba(0,24,64,0.5);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:center;
+}
+.service-card h4{margin:0; font-size:18px; color:#fff;}
+.service-icon{
+  width:68px;
+  height:68px;
+  border-radius:50%;
+  background:rgba(253,253,253,0.18);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  margin-inline:auto;
+}
+.service-card p{margin:0; font-size:14px; color:rgba(255,255,255,0.85);}
+.facility-hero-card{
+  position:relative;
+  border-radius:32px;
+  padding:32px;
+  min-height:420px;
+  overflow:hidden;
+  background:rgba(0,24,64,0.9);
+  color:#fff;
+  box-shadow:0 30px 70px -45px rgba(0,24,64,0.65);
+}
+.facility-hero-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:var(--facility-hero-img);
+  background-size:cover;
+  background-position:center;
+  opacity:0.35;
+}
+.facility-hero-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(0,24,64,0.9),rgba(0,24,64,0.4));
+}
+.facility-hero-content{position:relative; z-index:2; display:flex; flex-direction:column; gap:12px;}
+.facility-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 14px;
+  border-radius:999px;
+  background:rgba(253,253,253,0.18);
+  border:1px solid rgba(253,253,253,0.3);
+  font-size:12px;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+.chip-status{background:rgba(0,201,80,0.15); border-color:rgba(0,201,80,0.4); color:#00f082;}
+.facility-hero-title{margin:0; font-size:32px; font-weight:700;}
+.facility-hero-window{margin:4px 0 0; font-size:16px; color:#d2d9ff;}
+.facility-hero-summary{margin:0; color:#f5f7ff; max-width:560px;}
+.facility-hero-stats{list-style:none; padding:0; margin:8px 0 0; display:flex; flex-wrap:wrap; gap:18px;}
+.facility-hero-stats li{
+  min-width:140px;
+  padding:12px 16px;
+  border-radius:18px;
+  background:rgba(0,24,64,0.5);
+  border:1px solid rgba(255,255,255,0.12);
+}
+.stat-label{display:block; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:#c7d2fe;}
+.stat-value{display:block; font-size:18px; font-weight:600;}
+.facility-hero-tags{display:flex; flex-wrap:wrap; gap:10px;}
+.facility-hero-tags span{
+  padding:8px 14px;
+  border-radius:14px;
+  background:rgba(253,253,253,0.15);
+  border:1px solid rgba(255,255,255,0.18);
+  font-size:13px;
+}
+.facility-hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;}
+
+.facility-mini-stack{display:flex; flex-direction:column; gap:16px;}
+.facility-mini{
+  display:flex;
+  gap:16px;
+  border-radius:22px;
+  padding:16px;
+  background:linear-gradient(135deg,rgba(0,24,64,0.9),rgba(0,24,64,0.8));
+  color:#fff;
+  box-shadow:0 20px 40px -35px rgba(0,24,64,0.6);
+}
+.facility-mini-media{
+  width:110px;
+  height:110px;
+  border-radius:18px;
+  background-size:cover;
+  background-position:center;
+  flex-shrink:0;
+  border:2px solid rgba(255,255,255,0.2);
+}
+.facility-mini-body{flex:1; display:flex; flex-direction:column; gap:6px;}
+.facility-mini-head{display:flex; justify-content:space-between; gap:8px; align-items:flex-start;}
+.facility-mini-head h5{margin:0; font-size:18px;}
+.mini-type{font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.7);}
+.mini-status{margin:0; font-size:14px; color:rgba(255,255,255,0.9);}
+.mini-details{display:flex; flex-wrap:wrap; gap:8px 14px; padding:0; margin:0; list-style:none; font-size:12px; color:rgba(255,255,255,0.75);}
+.mini-actions{margin-top:auto; display:flex; gap:12px; align-items:center;}
+.facility-mini-available{background:linear-gradient(135deg,rgba(0,201,80,0.2),rgba(0,24,64,0.7));}
+.facility-mini-occupied{background:linear-gradient(135deg,rgba(159,7,18,0.5),rgba(0,24,64,0.8));}
+.facility-mini-maintenance{background:linear-gradient(135deg,rgba(137,75,0,0.4),rgba(0,24,64,0.85));}
+
+@media (max-width: 991.98px){
+  .facility-hero-card{min-height:360px; padding:28px;}
+  .facility-mini{flex-direction:column;}
+  .facility-mini-media{width:100%; height:160px;}
+}

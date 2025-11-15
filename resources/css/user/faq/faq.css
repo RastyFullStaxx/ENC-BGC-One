@@ -17,14 +17,15 @@
 .faq-stage {
     font-family: 'Inter', sans-serif;
     background: linear-gradient(135deg, rgba(0, 36, 99, 0.95), #001840, rgba(0, 20, 59, 0.95));
+    background-size: 250% 250%;
     min-height: calc(100vh - 120px);
     display: flex;
     justify-content: center;
-    animation: facilitiesGradient 18s ease infinite;
+    animation: adminGradientFlow 18s ease infinite;
     padding: 72px 24px 120px;
 }
 
-@keyframes facilitiesGradient {
+@keyframes adminGradientFlow {
     0% {
         background-position: 0% 50%;
     }

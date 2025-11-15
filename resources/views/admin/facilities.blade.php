@@ -7,6 +7,13 @@
 @endpush
 
 @section('content')
+<a href="{{ route('user.dashboard') }}" class="admin-back-button mb-3">
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Back to Dashboard
+</a>
 @php
     $facilities = [
         [

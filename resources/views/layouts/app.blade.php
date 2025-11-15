@@ -8,8 +8,17 @@
 
   {{-- Default assets --}}
   @vite(['resources/css/app.css', 'resources/js/app.js'])
-  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
-  @vite(['resources/css/design-system.css'])
+  @vite([
+    'resources/css/design-system.css',
+    'resources/css/landing/base.css',
+    'resources/css/landing/hero.css',
+    'resources/css/landing/availability.css',
+    'resources/css/landing/facilities.css',
+    'resources/css/landing/how-it-works.css',
+    'resources/css/landing/policies.css',
+    'resources/css/landing/cta.css',
+    'resources/js/landing.js'
+  ])
 
   {{-- Page-specific assets --}}
   @stack('styles')

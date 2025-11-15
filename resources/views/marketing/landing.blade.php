@@ -9,7 +9,16 @@
 
   {{-- Vite entry with global design tokens + Bootstrap bundle --}}
   @vite(['resources/css/design-system.css'])
-  @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+  @vite([
+    'resources/css/landing/base.css',
+    'resources/css/landing/hero.css',
+    'resources/css/landing/availability.css',
+    'resources/css/landing/facilities.css',
+    'resources/css/landing/how-it-works.css',
+    'resources/css/landing/policies.css',
+    'resources/css/landing/cta.css',
+    'resources/js/landing.js'
+  ])
 
   {{-- If you prefer CDN instead of Vite, uncomment: --}}
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
@@ -81,400 +90,435 @@
   <main id="main" tabindex="-1">
 
     {{-- HERO --}}
-    <section class="py-5 py-lg-5 text-center hero-full">
-      <div class="container" style="max-width: 900px;">
-
-        <h1 class="display-5 fw-bold lh-1 mb-2">
-          <span class="d-block">Manage Shared Facilities</span>
-          <span class="d-block text-primary">Faster. Smarter. Seamless.</span>
-        </h1>
-
-        <p class="lead text-secondary mx-auto" style="max-width: 720px;">
-          Simplify how teams reserve meeting rooms, special facilities, and transport services.
-        </p>
-
-        <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center align-items-center mt-3" role="group" aria-label="Primary actions">
-
-          <a class="btn btn-dark btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Find a Room
-          </a>
-
-          <a class="btn btn-primary btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-             <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Book Now
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.users') }}" data-analytics="cta_admin_users">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M12 12a5 5 0 100-10 5 5 0 000 10zM3 22a9 9 0 0118 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Users & Roles
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.facilities') }}" data-analytics="cta_admin_facilities">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 21V9l8-5 8 5v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Facilities
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.analytics') }}" data-analytics="cta_admin_analytics">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 12h4v8H4zM10 6h4v14h-4zM16 3h4v17h-4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Admin · Analytics
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.policies') }}" data-analytics="cta_admin_policies">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Policies
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.calendar') }}" data-analytics="cta_admin_calendar">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M4 5h16v16H4z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Global Calendar
-          </a>
-
-          <a class="btn btn-outline-light btn-lg d-inline-flex align-items-center gap-2"
-             href="{{ route('admin.audit') }}" data-analytics="cta_admin_audit">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 5h14v14H5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 9h8M8 13h8M8 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            Admin · Audit Log
-          </a>
+    <section class="hero hero-light full-height-hero">
+      <div class="container hero-grid hero-grid-light">
+        <div class="hero-text">
+          <span class="hero-pill hero-pill-light">ONE ENC · Shared Services Portal</span>
+          <h1 class="hero-title mb-3">
+            Service at your fingertips.
+          </h1>
+          <p class="hero-subtitle">
+            Book rooms, support, and shuttles with one modern workflow.
+          </p>
+          <div class="hero-actions" role="group" aria-label="Primary actions">
+            <a class="btn btn-primary d-inline-flex align-items-center gap-2"
+               href="{{ route('booking.wizard') }}" data-analytics="cta_book_now">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M8 2v4M16 2v4M3 9h18M12 12v6M9 15h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              Start a Booking
+            </a>
+            <a class="btn btn-ghost d-inline-flex align-items-center gap-2"
+               href="{{ route('facilities.catalog') }}" data-analytics="cta_facility_catalog">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Explore Facilities
+            </a>
+          </div>
+          <ul class="hero-highlights">
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
         </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll to preview</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     </section>
 
-    {{-- Secondary content placeholder --}}
-    {{-- <section class="py-5 bg-light">…</section> --}}
+    @php
+      $scheduleStart = 7;  // 7 AM
+      $scheduleEnd   = 19; // 7 PM
+      $scheduleBlocks = [
+        [
+          'room' => 'Creative Studio B',
+          'status' => 'available',
+          'status_label' => 'Available',
+          'note' => 'Available until 10:00 AM',
+          'segments' => [
+            ['start' => 7,   'end' => 8.5, 'status' => 'occupied'],
+            ['start' => 8.5, 'end' => 10,  'status' => 'available'],
+            ['start' => 10,  'end' => 14,  'status' => 'limited'],
+            ['start' => 14,  'end' => 15,  'status' => 'occupied'],
+            ['start' => 15,  'end' => 17.5,'status' => 'available'],
+          ],
+        ],
+        [
+          'room' => 'Boardroom A-301',
+          'status' => 'limited-availability',
+          'status_label' => 'Limited availability',
+          'note' => 'Leadership sync until 12:30 PM',
+          'segments' => [
+            ['start' => 7,   'end' => 9,   'status' => 'available'],
+            ['start' => 9,   'end' => 12.5,'status' => 'occupied'],
+            ['start' => 12.5,'end' => 13.5,'status' => 'limited'],
+            ['start' => 13.5,'end' => 15,  'status' => 'limited'],
+            ['start' => 16,  'end' => 18.5,'status' => 'occupied'],
+          ],
+        ],
+        [
+          'room' => 'Innovation Lab C-401',
+          'status' => 'occupied',
+          'status_label' => 'Occupied',
+          'note' => 'Design sprint until 2:00 PM',
+          'segments' => [
+            ['start' => 7,   'end' => 9.5, 'status' => 'maintenance'],
+            ['start' => 9.5, 'end' => 12,  'status' => 'occupied'],
+            ['start' => 12,  'end' => 14,  'status' => 'occupied'],
+            ['start' => 14,  'end' => 15,  'status' => 'limited'],
+            ['start' => 15,  'end' => 19,  'status' => 'available'],
+          ],
+        ],
+        [
+          'room' => 'Atrium Lounge D-214',
+          'status' => 'under-maintenance',
+          'status_label' => 'Under maintenance',
+          'note' => 'Deep clean ongoing until 4:00 PM · reopening after QA.',
+          'segments' => [
+            ['start' => 7,   'end' => 11,  'status' => 'maintenance'],
+            ['start' => 11,  'end' => 14,  'status' => 'maintenance'],
+            ['start' => 14,  'end' => 16,  'status' => 'maintenance'],
+            ['start' => 16,  'end' => 19,  'status' => 'available'],
+          ],
+        ],
+      ];
+
+      $lastSync    = now();
+      $range       = max(1, $scheduleEnd - $scheduleStart);
+      $nowDecimal  = (int) $lastSync->format('G') + ((int) $lastSync->format('i') / 60);
+      $nowInRange  = $nowDecimal >= $scheduleStart && $nowDecimal <= $scheduleEnd;
+      $nowOffset   = max(0, min(100, (($nowDecimal - $scheduleStart) / $range) * 100));
+    @endphp
+
+    <section id="availability" class="availability-preview py-5">
+      <div class="container">
+        <div class="section-heading text-center mb-5">
+          <span class="section-eyebrow">Quick availability glance</span>
+          <h2>Today’s load at a glance</h2>
+          <p class="workflow-subtext mb-0">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
+        </div>
+
+        <div class="row g-4 align-items-start">
+          <div class="col-12">
+            <article class="availability-panel availability-panel-schedule h-100">
+              <div class="availability-panel-head availability-panel-head-compact">
+                <span>Last sync {{ $lastSync->format('g:i A') }}</span>
+              </div>
+              <div class="schedule-scale">
+                @for ($hour = $scheduleStart; $hour <= $scheduleEnd; $hour += 2)
+                  <span>{{ $hour <= 12 ? $hour : $hour - 12 }}{{ $hour < 12 ? ' AM' : ' PM' }}</span>
+                @endfor
+              </div>
+              @php
+                $stateLabels = [
+                  'available'   => 'Available',
+                  'limited'     => 'Limited availability',
+                  'occupied'    => 'Occupied',
+                  'maintenance' => 'Under maintenance',
+                ];
+              @endphp
+              <div class="schedule-board">
+                @foreach ($scheduleBlocks as $block)
+                  <div class="schedule-row">
+                    <div class="schedule-meta">
+                      <p class="schedule-room">{{ $block['room'] }}</p>
+                      <p class="schedule-status schedule-status-{{ $block['status'] ?? 'available' }}">{{ $block['status_label'] ?? ucwords(str_replace('-', ' ', $block['status'] ?? 'available')) }}</p>
+                      <p class="schedule-note">{{ $block['note'] }}</p>
+                    </div>
+                    <div class="schedule-track">
+                      @if ($nowInRange)
+                        <span class="schedule-now" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
+                      @endif
+                      @foreach ($block['segments'] as $segment)
+                        @php
+                          $state = $segment['status'] ?? 'available';
+                          $offset = (($segment['start'] - $scheduleStart) / $range) * 100;
+                          $width = (($segment['end'] - $segment['start']) / $range) * 100;
+                          $offset = max(0, min(100, $offset));
+                          $width = max(1, min(100, $width));
+                          $label = $stateLabels[$state] ?? ucwords($state);
+                        @endphp
+                        <span class="schedule-block schedule-block-{{ $state }}" style="--segment-offset: {{ $offset }}%; --segment-width: {{ $width }}%;" data-label="{{ $label }}" aria-label="{{ $label }}"></span>
+                      @endforeach
+                    </div>
+                  </div>
+                @endforeach
+              </div>
+              <div class="schedule-legend">
+                <span><i class="legend-dot dot-available"></i> Available</span>
+                <span><i class="legend-dot dot-limited"></i> Limited availability</span>
+                <span><i class="legend-dot dot-occupied"></i> Occupied</span>
+                <span><i class="legend-dot dot-maintenance"></i> Under maintenance</span>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  {{-- SECTION: Quick Availability Glance (Upgraded) --}}
-  <section id="availability" class="py-5">
-    <div class="container">
-      <div class="text-center mb-2">
-        <h2 class="fw-semibold mb-1">Quick Availability Glance</h2>
-        <p class="text-secondary mb-0">See real-time availability and book instantly</p>
-      </div>
-
-      @php
-        // Example data; swap with live data later
-        $hours = [
-          ['label'=>'8AM','value'=>30],
-          ['label'=>'9AM','value'=>60],
-          ['label'=>'10AM','value'=>80],
-          ['label'=>'11AM','value'=>90],
-          ['label'=>'12PM','value'=>50],
-          ['label'=>'1PM','value'=>40],
-          ['label'=>'2PM','value'=>85],
-          ['label'=>'3PM','value'=>95],
-          ['label'=>'4PM','value'=>70],
-          ['label'=>'5PM','value'=>50],
-        ];
-
-        // Helper: map 0–100% → green(140deg) → red(0deg)
-        $heatColor = function($pct) {
-          $h = max(0, min(140, 140 - round($pct * 1.4))); // 0..140
-          return "hsl($h 90% 45%)";
-        };
-
-        // Build insight: peak window (>=80) & best times (<40)
-        $labels = array_column($hours,'label');
-        $vals   = array_column($hours,'value');
-
-        // Peak ranges (>=80) – get first..last contiguous range for readability
-        $peakIdx = array_keys(array_filter($vals, fn($v)=>$v>=80));
-        $peakText = count($peakIdx)
-          ? ($labels[min($peakIdx)].'–'.$labels[max($peakIdx)])
-          : 'None';
-
-        // Best times (<40)
-        $best = [];
-        foreach ($hours as $h) if ($h['value'] < 40) $best[] = $h['label'];
-        $bestText = count($best) ? implode(', ', $best) : 'Later today';
-
-      @endphp
-
-      {{-- Insight line --}}
-      <div class="alert alert-light border d-flex align-items-center gap-2 mb-4">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-          <path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6l8-3z" stroke="currentColor" stroke-width="1.6" fill="none"/>
-          <path d="M12 8v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-        </svg>
-        <div class="small">
-          <strong>Today’s trend:</strong> Peak <span class="text-danger">{{ $peakText }}</span>
-          • Best time(s): <span class="text-success">{{ $bestText }}</span>
-        </div>
-      </div>
-
-      <div class="row g-4">
-        {{-- Left: Heat bars --}}
-        <div class="col-lg-6">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex align-items-center gap-2 mb-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-                  <path d="M3 17l6-6 4 4 7-7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h5 class="mb-0">Peak Hours Today</h5>
-              </div>
-
-              <div class="vstack gap-3">
-                @foreach ($hours as $h)
-                  @php
-                    $pct  = $h['value'];
-                    $heat = $heatColor($pct);
-                    $recommend = $pct < 40;
-                  @endphp
-                  <div class="d-flex align-items-center">
-                    <div class="me-3 text-secondary small" style="width:52px;">{{ $h['label'] }}</div>
-                    <div class="flex-grow-1">
-                      <div class="progress progress-heat" style="height: 24px;">
-                        <div
-                          class="progress-bar heatbar"
-                          role="progressbar"
-                          style="--heat: {{ $heat }}; width: {{ $pct }}%;"
-                          data-width="{{ $pct }}%"
-                          aria-valuenow="{{ $pct }}" aria-valuemin="0" aria-valuemax="100"
-                        ></div>
-                      </div>
-                    </div>
-                    <div class="ms-3 small text-secondary text-nowrap">{{ $pct }}% booked
-                      @if ($recommend)
-                        <span class="badge bg-info-subtle text-info-emphasis ms-1">Recommended</span>
-                      @endif
-                    </div>
-                  </div>
-                @endforeach
-              </div>
-
-              <div class="d-flex align-items-center gap-3 small text-secondary mt-4">
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(140 90% 45%);"></span> Low
-                </span>
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(40 95% 50%);"></span> Medium
-                </span>
-                <span class="d-inline-flex align-items-center gap-1">
-                  <span class="legend-dot" style="--legend: hsl(0 90% 50%);"></span> Peak
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{-- Right: Next Free Slots --}}
-        <div class="col-lg-6">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex align-items-center gap-2 mb-3">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-primary">
-                  <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8" />
-                  <path d="M12 7v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <h5 class="mb-0">Next Free Slots Today</h5>
-              </div>
-
-              <div class="vstack gap-3">
-                @foreach ([
-                  ['time'=>'10:00 AM','room'=>'Conference Room A','cap'=>10],
-                  ['time'=>'2:00 PM','room'=>'Meeting Room C','cap'=>8],
-                  ['time'=>'4:00 PM','room'=>'Conference Room B','cap'=>20],
-                ] as $slot)
-                  <div class="border rounded-3 p-3 bg-success-subtle">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <div class="d-flex align-items-center gap-2">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-success">
-                          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
-                          <path d="M12 7v6l4 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span class="fw-medium">{{ $slot['time'] }}</span>
-                      </div>
-                      <span class="badge text-bg-success">Available</span>
-                    </div>
-                    <div class="small">{{ $slot['room'] }}</div>
-                    <div class="text-secondary small d-flex align-items-center gap-1 mt-1">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path d="M16 19v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                        <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
-                      </svg>
-                      Up to {{ $slot['cap'] }} people
-                    </div>
-                  </div>
-                @endforeach
-              </div>
-
-              <div class="mt-3">
-                <a href="{{ url('/rooms') }}" class="btn btn-primary w-100">View All Availability</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-
   {{-- SECTION: Featured Facilities --}}
-  <section id="facilities" class="py-5 bg-body-tertiary">
+  <section id="facilities" class="py-5 facility-feature">
+    @php
+      $facilityHero = [
+        'title' => 'Innovation Lab C-401',
+        'type' => 'Innovation Lab',
+        'status' => 'Limited availability this morning',
+        'window' => 'Wide open for workshops after 3:00 PM',
+        'image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop',
+        'summary' => 'Modular seating, writable walls, dual projectors, and embedded sensors to keep teams synced without tech anxiety.',
+        'chips' => ['Hybrid-ready', 'Workshop layout', 'Natural light'],
+        'metrics' => [
+          ['label' => 'Capacity', 'value' => '24 seats'],
+          ['label' => 'Amenities', 'value' => '2 displays · 4 mics'],
+          ['label' => 'Next slot', 'value' => 'Today · 3:15 PM'],
+        ],
+      ];
+
+      $facilityTiles = [
+        [
+          'title' => 'Creative Studio B',
+          'type' => 'Podcast & media suite',
+          'status' => 'Available until 10:00 AM',
+          'tone' => 'available',
+          'image' => 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Seats 6', '4K capture', 'Acoustic walls'],
+        ],
+        [
+          'title' => 'Executive Boardroom',
+          'type' => 'Leadership hub',
+          'status' => 'Occupied until 1:00 PM',
+          'tone' => 'occupied',
+          'image' => 'https://images.unsplash.com/photo-1523475472560-d2df97ec485c?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Seats 12', 'Coffee service', 'Poly Studio'],
+        ],
+        [
+          'title' => 'Atrium Lounge D-214',
+          'type' => 'Casual collaboration',
+          'status' => 'Under maintenance · back at 4:00 PM',
+          'tone' => 'maintenance',
+          'image' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop',
+          'details' => ['Hoteling', 'Soft seating', 'Town hall ready'],
+        ],
+      ];
+    @endphp
+    @php
+      $featuredServices = [
+        [
+          'name' => 'Meeting room booking',
+          'summary' => 'Live availability, instant approvals, and guided forms for every huddle or town hall.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="4" y="6" width="16" height="12" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 10h16M10 14h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        ],
+        [
+          'name' => 'SEI facilities',
+          'summary' => 'Innovation labs, studios, and special venues with concierge prep and equipment support.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M4 10l8-6 8 6v8a2 2 0 0 1-2 2h-1v-5h-4v5H6a2 2 0 0 1-2-2v-8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+        ],
+        [
+          'name' => 'Shuttle service',
+          'summary' => 'Reserve point-to-point or loop shuttles with passenger manifests and live tracking.',
+          'icon' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="7" width="18" height="10" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M6 17v2M18 17v2M4 12h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+        ],
+      ];
+    @endphp
     <div class="container">
-      <div class="text-center mb-4">
-        <h2 class="fw-semibold mb-1">Featured Facilities</h2>
-        <p class="text-secondary mb-0">Explore our premium meeting spaces and facilities</p>
+      <div class="text-center mb-5">
+        <span class="section-eyebrow">Featured services &amp; spaces</span>
+        <h2 class="fw-semibold mb-1">The right room with the perfect services</h2>
+        <p class="text-secondary mb-0">Go straight to the booking flow you need and see the rooms we’re spotlighting today.</p>
       </div>
 
-      <div class="row g-4">
-        @foreach ([
-          ['title'=>'Conference Room A','cap'=>10,'tags'=>['WiFi','Projector','Whiteboard'],'src'=>'https://images.unsplash.com/photo-1507209696998-3c532be9b2b1?q=80&w=1200&auto=format&fit=crop'],
-          ['title'=>'Conference Room B','cap'=>20,'tags'=>['Video Conferencing','Large Display','Sound System'],'src'=>'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop'],
-          ['title'=>'Executive Boardroom','cap'=>12,'tags'=>['Premium Setup','Coffee Service','Smart Board'],'src'=>'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop'],
-        ] as $room)
-          <div class="col-12 col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm overflow-hidden">
-              <div class="position-relative">
-                <img src="{{ $room['src'] }}" class="card-img-top" alt="{{ $room['title'] }} photo">
-                <span class="position-absolute top-0 end-0 m-3 badge rounded-pill text-bg-primary">Meeting Room</span>
+      <div class="facility-services mb-4">
+        @foreach ($featuredServices as $service)
+          <article class="service-card">
+            <div class="service-icon" aria-hidden="true">{!! $service['icon'] !!}</div>
+            <h4>{{ $service['name'] }}</h4>
+            <p>{{ $service['summary'] }}</p>
+          </article>
+        @endforeach
+      </div>
+      <div class="facility-divider" aria-hidden="true"></div>
+
+      <div class="row g-4 facility-grid">
+        <div class="col-12 col-lg-7">
+          <article class="facility-hero-card" style="--facility-hero-img: url('{{ $facilityHero['image'] }}');">
+            <div class="facility-hero-overlay"></div>
+            <div class="facility-hero-content">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                <span class="facility-chip">{{ $facilityHero['type'] }}</span>
+                <span class="facility-chip chip-status">{{ $facilityHero['status'] }}</span>
               </div>
-              <div class="card-body">
-                <h5 class="card-title mb-2">{{ $room['title'] }}</h5>
-                <div class="small text-secondary d-flex align-items-center gap-2 mb-3">
-                  {{-- people icon --}}
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M16 19v-1a4 4 0 00-4-4H8a4 4 0 00-4 4v1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/>
-                  </svg>
-                  Capacity: {{ $room['cap'] }} people
-                </div>
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                  @foreach ($room['tags'] as $t)
-                    <span class="badge rounded-pill text-bg-light border">{{ $t }}</span>
-                  @endforeach
-                </div>
-                <a href="{{ url('/rooms') }}" class="btn btn-outline-primary w-100">
-                  View Details &amp; Book
-                  <span class="ms-1" aria-hidden="true">→</span>
-                </a>
+              <div class="facility-hero-headings">
+                <h3 class="facility-hero-title">{{ $facilityHero['title'] }}</h3>
+                <p class="facility-hero-window">{{ $facilityHero['window'] }}</p>
+              </div>
+              <p class="facility-hero-summary">{{ $facilityHero['summary'] }}</p>
+              <ul class="facility-hero-stats">
+                @foreach ($facilityHero['metrics'] as $metric)
+                  <li>
+                    <span class="stat-label">{{ $metric['label'] }}</span>
+                    <span class="stat-value">{{ $metric['value'] }}</span>
+                  </li>
+                @endforeach
+              </ul>
+              <div class="facility-hero-tags">
+                @foreach ($facilityHero['chips'] as $chip)
+                  <span>{{ $chip }}</span>
+                @endforeach
+              </div>
+              <div class="facility-hero-actions">
+                <a href="{{ route('booking.wizard') }}" class="btn btn-light">Book this room</a>
+                <a href="{{ route('facilities.catalog') }}" class="btn btn-ghost text-white">View catalog</a>
               </div>
             </div>
+          </article>
+        </div>
+        <div class="col-12 col-lg-5">
+          <div class="facility-mini-stack">
+            @foreach ($facilityTiles as $tile)
+              <article class="facility-mini facility-mini-{{ $tile['tone'] ?? 'available' }}">
+                <div class="facility-mini-media" style="background-image:url('{{ $tile['image'] }}');"></div>
+                <div class="facility-mini-body">
+                  <div class="facility-mini-head">
+                    <h5>{{ $tile['title'] }}</h5>
+                    <span class="mini-type">{{ $tile['type'] }}</span>
+                  </div>
+                  <p class="mini-status">{{ $tile['status'] }}</p>
+                  <ul class="mini-details">
+                    @foreach ($tile['details'] as $detail)
+                      <li>{{ $detail }}</li>
+                    @endforeach
+                  </ul>
+                  <div class="mini-actions">
+                    <a href="{{ route('facilities.catalog') }}" class="btn btn-outline-light btn-sm">See details</a>
+                    <button type="button" class="btn btn-link text-white p-0">Add to plan</button>
+                  </div>
+                </div>
+              </article>
+            @endforeach
           </div>
-        @endforeach
+        </div>
       </div>
     </div>
   </section>
 
   {{-- SECTION: How It Works --}}
-  <section id="how-it-works" class="py-5 bg-primary text-white">
+  @php
+    $workflowSteps = [
+      [
+        'title' => 'Browse fast',
+        'summary' => 'Use live signals to see which rooms are open now.',
+        'eta' => '~2 min',
+        'signal' => 'Live catalog',
+        'icon' => 'search'
+      ],
+      [
+        'title' => 'Submit once',
+        'summary' => 'Launch the wizard, auto-fill the form, and drop in your agenda.',
+        'eta' => '~4 min',
+        'signal' => 'Smart request',
+        'icon' => 'form'
+      ],
+      [
+        'title' => 'Get the go',
+        'summary' => 'Instant notifications, holds, and check-in reminders keep you on track.',
+        'eta' => 'Instant',
+        'signal' => 'Concierge watch',
+        'icon' => 'bolt'
+      ],
+    ];
+
+    $workflowIcons = [
+      'search' => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.8"/><path d="M16 16L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      'form'   => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h12l2 2v16H6z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+      'bolt'   => '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2L4 13h6l-1 9 9-12h-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    ];
+  @endphp
+  <section id="how-it-works" class="py-5 how-it-works">
     <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="fw-semibold mb-1 text-white">How It Works</h2>
-        <p class="opacity-75 mb-0">Simple 3-step process to book your resources</p>
+      <div class="workflow-heading text-center mb-5">
+        <span class="workflow-eyebrow">How it works</span>
+        <h2 class="fw-semibold mb-2">Three quick beats from idea to confirmed booking</h2>
+        <p class="workflow-subtext mb-0">No heavy reading—just the cues you need.</p>
       </div>
 
-      <div class="row g-4 text-center">
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- search icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M14.5 14.5L21 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-            <h5 class="mb-1">Find</h5>
-            <p class="mb-0 small">Browse available rooms, facilities, and shuttle services. Check real-time availability and select your preferred option.</p>
-          </div>
-        </div>
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- doc icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <path d="M6 3h8l4 4v14H6z" stroke="currentColor" stroke-width="1.8" fill="none"/>
-              <path d="M14 3v5h5" stroke="currentColor" stroke-width="1.8" fill="none"/>
-            </svg>
-            <h5 class="mb-1">Request &amp; Approve</h5>
-            <p class="mb-0 small">Submit your booking with details. Our team reviews and confirms quickly.</p>
-          </div>
-        </div>
-        <div class="col-12 col-md-4">
-          <div class="p-4 h-100 bg-primary-subtle rounded-4 text-primary-emphasis">
-            {{-- bolt icon --}}
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="mb-2">
-              <path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linejoin="round"/>
-            </svg>
-            <h5 class="mb-1">Use</h5>
-            <p class="mb-0 small">Receive confirmation and access your booked resource. Track everything in your dashboard.</p>
-          </div>
-        </div>
+      <div class="workflow-grid">
+        @foreach ($workflowSteps as $step)
+          <article class="workflow-step">
+            <div class="workflow-icon" aria-hidden="true">{!! $workflowIcons[$step['icon']] ?? '' !!}</div>
+            <span class="workflow-step-number">Step {{ $loop->iteration }}</span>
+            <h5>{{ $step['title'] }}</h5>
+            <p class="workflow-step-summary">{{ $step['summary'] }}</p>
+          </article>
+        @endforeach
       </div>
     </div>
   </section>
 
   {{-- SECTION: Booking Policies (Teaser) --}}
-  <section id="policies" class="py-5">
-    <div class="container">
-      <div class="card shadow-sm border-0">
-        <div class="card-body p-4 p-md-5">
-          <div class="text-center mb-4">
-            {{-- shield icon --}}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-primary mb-2">
-              <path d="M12 3l8 3v6c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V6l8-3z" stroke="currentColor" stroke-width="1.8" fill="none"/>
-            </svg>
-            <h3 class="fw-semibold mb-1">Booking Policies</h3>
-            <p class="text-secondary mb-0">Simple guidelines for a smooth booking experience</p>
-          </div>
+  @php
+    $policyHighlights = [
+      ['label' => 'Lead times', 'value' => '24h rooms · 48h special'],
+      ['label' => 'Cancellations', 'value' => '12h before start'],
+      ['label' => 'Support hours', 'value' => '7AM – 7PM concierge'],
+    ];
 
-          <ul class="list-group list-group-flush mb-4">
-            @foreach ([
-              'Food & beverages allowed only in designated rooms. Light refreshments permitted in Executive Boardroom.',
-              'Meeting room bookings limited to 4 hours per session. Extended time requires manager approval.',
-              'Lead Times: 24 hours for meeting rooms, 48 hours for special facilities, 72 hours for shuttle services.',
-              'Cancellation: at least 12 hours before schedule to avoid restrictions.',
-              'Cleanup: return rooms to original condition and report equipment issues immediately.'
-            ] as $rule)
-              <li class="list-group-item d-flex align-items-start">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-primary me-2 mt-1 flex-shrink-0">
-                  <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="small">{{ $rule }}</span>
+    $policyRules = [
+      'Food & drinks only in approved spaces. Light refreshments welcome in Executive Boardroom.',
+      'Standard room bookings max at 4 hours. Longer holds need manager approval.',
+      'Special facilities (lab, shuttle, studio) require the published lead times.',
+      'Cancel or update at least 12 hours before the slot to avoid cooldowns.',
+      'Leave rooms tidy, return keycards, and log any equipment issues with Facilities.'
+    ];
+  @endphp
+  <section id="policies" class="py-5 policy-teaser">
+    <div class="container">
+      <div class="policy-card">
+        <div class="policy-card-info">
+          <span class="policy-eyebrow">Booking policies</span>
+          <h2>Quick reminders to know before you request</h2>
+          <p>Nothing complicated—just the essentials so every space stays ready for the next team.</p>
+          <div class="policy-highlights">
+            @foreach ($policyHighlights as $highlight)
+              <div class="policy-highlight">
+                <span class="policy-highlight-label">{{ $highlight['label'] }}</span>
+                <span class="policy-highlight-value">{{ $highlight['value'] }}</span>
+              </div>
+            @endforeach
+          </div>
+          <a href="{{ route('faq') }}" class="btn btn-primary mt-3">View FAQ &amp; full policy guide</a>
+        </div>
+        <div class="policy-card-list">
+          <ul>
+            @foreach ($policyRules as $rule)
+              <li>
+                <span class="policy-check" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <span>{{ $rule }}</span>
               </li>
             @endforeach
           </ul>
-
-          <div class="text-center">
-            <a href="{{ url('/policies') }}" class="btn btn-outline-primary">View Full Policies &amp; FAQ</a>
-          </div>
         </div>
       </div>
     </div>
   </section>
 
   {{-- SECTION: Ready to Get Started --}}
-  <section id="cta" class="py-5 bg-primary text-white">
+  <section id="cta" class="py-5 cta-band">
     <div class="container">
       <div class="row align-items-center g-3">
         <div class="col-lg-8">
           <h2 class="fw-semibold mb-1 text-white">Ready to Get Started?</h2>
-          <p class="mb-0 opacity-75">Join hundreds of employees already using our smart booking system</p>
+          <p class="workflow-subtext mb-0">Sign up and let's find you a room quickly!</p>
         </div>
         <div class="col-lg-4 text-lg-end">
           <div class="d-flex d-lg-inline-flex gap-2">

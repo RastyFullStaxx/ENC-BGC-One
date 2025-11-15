@@ -138,3 +138,22 @@ body {
 .enc-fill-screen > * {
     width: 100%;
 }
+.admin-back-button{
+    display:inline-flex;
+    align-items:center;
+    gap:0.4rem;
+    color:#fff;
+    background:none;
+    border:none;
+    font-weight:600;
+    font-size:0.95rem;
+    padding:0;
+    text-decoration:none;
+}
+.admin-back-button svg{
+    width:16px;
+    height:16px;
+}
+.admin-back-button:hover{
+    color:var(--enc-color-blue-light);
+}

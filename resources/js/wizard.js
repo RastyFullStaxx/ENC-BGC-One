@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const bookingsSidebar   = document.getElementById('wizardBookingsSidebar');
   const stageSidebarWrap  = document.getElementById('wizardStageSidebar');
   const stageRow          = document.getElementById('wizardStageRow');
+  const backToDashboardBtn = document.getElementById('wizardBackToDashboard');
   const myBookingsToggle  = document.getElementById('myBookingsToggle');
   const roomsPanel        = document.getElementById('wizardRoomsPanel');
   const datePanel         = document.getElementById('wizardDatePanel');
@@ -292,6 +293,32 @@ document.addEventListener('DOMContentLoaded', () => {
       stageSidebarWrap.classList.toggle('d-none', !nextState);
       stageRow.classList.toggle('has-sidebar', nextState);
     });
+  }
+
+  const promptBackToDashboard = () => {
+    Swal.fire({
+      title: 'Return to dashboard?',
+      text: 'We will save your booking progress as a draft so you can pick up where you left off.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Save draft & go back',
+      cancelButtonText: 'Stay here',
+      customClass: {
+        popup: 'enc-swal-popup',
+        confirmButton: 'btn btn-primary',
+        cancelButton: 'btn btn-link text-dark',
+      },
+      buttonsStyling: false,
+    }).then(result => {
+      if (result.isConfirmed) {
+        // TODO: Hook draft persistence here.
+        window.location.href = '/user/dashboard';
+      }
+    });
+  };
+
+  if (backToDashboardBtn) {
+    backToDashboardBtn.addEventListener('click', promptBackToDashboard);
   }
 
   // Step 1 (manual): enable "Next: Select Date & Time" after selecting a room
