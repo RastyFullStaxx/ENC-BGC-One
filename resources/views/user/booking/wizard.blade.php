@@ -14,18 +14,51 @@
 
 @push('scripts') {{-- JS will come after CSS --}}
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    // API endpoints configuration
+    window.bookingAPI = {
+      getFacilities: '{{ route('api.bookings.facilities') }}',
+      checkAvailability: '{{ route('api.bookings.check-availability') }}',
+      store: '{{ route('api.bookings.store') }}',
+      getUserBookings: '{{ route('api.bookings.user-bookings') }}',
+      csrfToken: '{{ csrf_token() }}',
+    };
+    
+    // User info for success message
+    @auth
+      window.currentUser = {
+        name: '{{ auth()->user()->name }}',
+        firstName: '{{ explode(" ", auth()->user()->name)[0] }}',
+        email: '{{ auth()->user()->email }}',
+        id: {{ auth()->user()->id }}
+      };
+    @endauth
+  </script>
   @vite(['resources/js/wizard.js'])
 @endpush
 
 @php
-  $wizardSampleBookings = [
-    ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'9:00 AM - 10:00 AM'],
-    ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'10:30 AM - 11:00 AM'],
-    ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'11:00 AM - 12:00 PM'],
-    ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'1:00 PM - 2:00 PM'],
-    ['status'=>'Pending','room'=>'Meeting Room B','date'=>'11/29/2025','time'=>'2:30 PM - 3:30 PM'],
-  ];
+  // Get user bookings if authenticated
+  $userBookings = [];
+  if (auth()->check()) {
+    $userBookings = \App\Models\Booking::with(['facility.building', 'details'])
+      ->where('requester_id', auth()->id())
+      ->whereIn('status', ['pending', 'approved'])
+      ->orderBy('date', 'desc')
+      ->orderBy('start_at', 'desc')
+      ->limit(10)
+      ->get()
+      ->map(function($booking) {
+        return [
+          'status' => ucfirst($booking->status),
+          'room' => $booking->facility->name,
+          'date' => \Carbon\Carbon::parse($booking->date)->format('m/d/Y'),
+          'time' => \Carbon\Carbon::parse($booking->start_at)->format('g:i A') . ' - ' . \Carbon\Carbon::parse($booking->end_at)->format('g:i A'),
+        ];
+      })->toArray();
+  }
 
+  // Generate time slots (7:00 AM to 8:00 PM, 30-minute intervals)
   $timeSlots = [];
   for ($hour = 7; $hour <= 20; $hour++) {
     foreach ([0, 30] as $minute) {
@@ -36,21 +69,33 @@
     }
   }
 
-  $wizardSupportEquipment = [
-    ['id' => 'projector',    'label' => 'Projector'],
-    ['id' => 'tv-monitor',   'label' => 'TV Monitor'],
-    ['id' => 'whiteboard',   'label' => 'Whiteboard'],
-    ['id' => 'microphone',   'label' => 'Microphone'],
-    ['id' => 'speaker',      'label' => 'Speaker System'],
-    ['id' => 'refreshments', 'label' => 'Refreshments'],
-  ];
+  // Get all equipment from database for SFI support section
+  $allEquipment = \App\Models\Equipment::all();
+  $wizardSupportEquipment = $allEquipment->map(function($equip) {
+    return [
+      'id' => $equip->id,
+      'label' => $equip->name,
+    ];
+  })->toArray();
+  
+  // Fallback if no equipment in database
+  if (empty($wizardSupportEquipment)) {
+    $wizardSupportEquipment = [
+      ['id' => 'projector',    'label' => 'Projector'],
+      ['id' => 'tv-monitor',   'label' => 'TV Monitor'],
+      ['id' => 'whiteboard',   'label' => 'Whiteboard'],
+      ['id' => 'microphone',   'label' => 'Microphone'],
+      ['id' => 'speaker',      'label' => 'Speaker System'],
+      ['id' => 'refreshments', 'label' => 'Refreshments'],
+    ];
+  }
 @endphp
 
 @section('app-navbar')
   <div id="wizardAppNav">
     @include('partials.dashboard-navbar', [
       'currentStep'        => 1,
-      'bookingsCount'      => count($wizardSampleBookings),
+      'bookingsCount'      => count($userBookings),
       'notificationsCount' => 2,
     ])
   </div>
@@ -250,152 +295,13 @@
 
               {{-- Room cards --}}
               <div class="row g-3" id="wizardRoomsGrid">
-                @php
-                  $rooms = [
-                    [
-                      'name' => 'Conference Room A-301',
-                      'capacity' => 12,
-                      'status' => 'Available Now',
-                      'status_variant' => 'success',
-                      'location' => 'ENC Tower A · 3rd Floor',
-                      'tags' => ['Projector', 'Whiteboard', 'VC setup', 'HDMI', 'WiFi'],
-                      'image' => asset('images/rooms/conference-room-a301.svg'),
-                      'availability' => [
-                        'text' => 'Available until 5:00 PM',
-                        'subtext' => null,
-                        'variant' => 'success',
-                      ],
-                    ],
-                    [
-                      'name' => 'Conference Room B-305',
-                      'capacity' => 10,
-                      'status' => 'Occupied',
-                      'status_variant' => 'danger',
-                      'location' => 'ENC Tower B · 3rd Floor',
-                      'tags' => ['Projector', 'Whiteboard', 'VC setup', 'HDMI'],
-                      'image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop',
-                      'availability' => [
-                        'text' => 'Q4 Planning Meeting',
-                        'subtext' => 'by Maria Santos (Finance)',
-                        'next' => 'Next available at 2:00 PM',
-                        'variant' => 'danger',
-                      ],
-                    ],
-                    [
-                      'name' => 'BGC-302 Training Room',
-                      'capacity' => 20,
-                      'status' => 'Limited Availability',
-                      'status_variant' => 'warning',
-                      'location' => 'ENC Tower A · 4th Floor',
-                      'tags' => ['Projector', 'TV', 'Whiteboard', 'VC setup', 'HDMI'],
-                      'image' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop',
-                      'availability' => [
-                        'text' => 'Free until 12:30 PM',
-                        'subtext' => 'Next booking at 1:00 PM',
-                        'variant' => 'warning',
-                      ],
-                    ],
-                    [
-                      'name' => 'Conference Room A-302',
-                      'capacity' => 12,
-                      'status' => 'Available Now',
-                      'status_variant' => 'success',
-                      'location' => 'ENC Tower A · 3rd Floor',
-                      'tags' => ['Projector', 'Whiteboard', 'VC setup', 'HDMI'],
-                      'image' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop',
-                      'availability' => [
-                        'text' => 'Open all afternoon',
-                        'variant' => 'success',
-                      ],
-                    ],
-                  ];
-                @endphp
-
-                @foreach ($rooms as $room)
-                  <div class="col-12 col-md-6 col-xl-4">
-                    <article class="wizard-room-card card h-100 border-0">
-                      <div class="wizard-room-media position-relative">
-                        <img
-                          src="{{ $room['image'] }}"
-                          alt="{{ $room['name'] }} photo"
-                          class="wizard-room-image"
-                        >
-                        <span class="wizard-room-status badge rounded-pill text-bg-{{ $room['status_variant'] }} position-absolute top-0 end-0 m-3">
-                          {{ $room['status'] }}
-                        </span>
-                      </div>
-                      <div class="card-body wizard-room-body d-flex flex-column">
-                        <div class="wizard-room-heading mb-2">
-                          <h3 class="h5 mb-1">{{ $room['name'] }}</h3>
-                        </div>
-
-                        <div class="wizard-room-meta d-flex flex-wrap gap-2 mb-3">
-                          <span class="wizard-room-meta-chip">
-                            {{ $room['location'] }}
-                          </span>
-                          <span class="wizard-room-meta-chip wizard-room-meta-outline">
-                            Up to {{ $room['capacity'] }} people
-                          </span>
-                        </div>
-
-                        <div class="wizard-room-amenities mb-3">
-                          @php
-                            $amenityIcons = [
-                              'Projector' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="6" rx="2" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="11" r="1" fill="currentColor"/><circle cx="12" cy="11" r="1" fill="currentColor"/></svg>',
-                              'Whiteboard' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M4 16l-2 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
-                              'VC setup' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" stroke="currentColor" stroke-width="1.4"/><path d="M4 19c0-2.761 3.582-5 8-5s8 2.239 8 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
-                              'HDMI' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="9" width="18" height="6" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M6 9v-3h12v3" stroke="currentColor" stroke-width="1.4"/></svg>',
-                              'WiFi' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 8a13 13 0 0120 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M5 12a8 8 0 0114 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M9 16a3 3 0 016 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>',
-                              'TV' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 21h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
-                              'TV Monitor' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 21h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
-                            ];
-                          @endphp
-                          @foreach ($room['tags'] as $tag)
-                            <span class="wizard-room-amenity" title="{{ $tag }}">
-                              <span class="wizard-room-amenity-icon" aria-hidden="true">{!! $amenityIcons[$tag] ?? '' !!}</span>
-                              <span class="wizard-room-amenity-label">{{ $tag }}</span>
-                            </span>
-                          @endforeach
-                        </div>
-
-                        @isset($room['availability'])
-                          <div class="wizard-room-availability is-{{ $room['availability']['variant'] }} mb-3">
-                            <div class="wizard-room-availability-icon" aria-hidden="true"></div>
-                            <div>
-                              <div class="fw-semibold">{{ $room['availability']['text'] }}</div>
-                              @if(!empty($room['availability']['subtext']))
-                                <div class="small text-muted">{{ $room['availability']['subtext'] }}</div>
-                              @endif
-                              @if(!empty($room['availability']['next']))
-                                <div class="small text-muted">{{ $room['availability']['next'] }}</div>
-                              @endif
-                            </div>
-                          </div>
-                        @endisset
-
-                        <div class="wizard-room-actions mt-auto pt-2">
-                          @php
-                            $action = match ($room['status_variant']) {
-                              'danger'  => ['label' => 'View Schedule', 'class' => 'btn btn-room-occupied', 'data-action' => 'schedule'],
-                              'warning' => ['label' => 'Book for Available Time', 'class' => 'btn btn-room-limited', 'data-action' => 'limited'],
-                              default   => ['label' => 'Book This Room', 'class' => 'btn btn-room-available', 'data-action' => 'book'],
-                            };
-                          @endphp
-
-                          <button
-                            type="button"
-                            class="{{ $action['class'] }} w-100 wizard-room-select"
-                            data-room-name="{{ $room['name'] }}"
-                            data-room-action="{{ $action['data-action'] }}"
-                            data-default-label="{{ $action['label'] }}"
-                          >
-                            {{ $action['label'] }}
-                          </button>
-                        </div>
-                      </div>
-                    </article>
+                {{-- Room cards will be loaded dynamically via JavaScript --}}
+                <div class="col-12 text-center py-5">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading facilities...</span>
                   </div>
-                @endforeach
+                  <p class="text-muted mt-2">Loading available facilities...</p>
+                </div>
               </div>
 
                 <div class="d-flex align-items-center flex-wrap gap-3 mt-4" id="wizardRoomsActions">
@@ -687,7 +593,8 @@
                                   class="btn-check"
                                   id="{{ $inputId }}"
                                   name="supportEquipment[]"
-                                  value="{{ $equipment['label'] }}"
+                                  value="{{ $equipment['id'] }}"
+                                  data-equipment-name="{{ $equipment['label'] }}"
                                   autocomplete="off"
                                 >
                                 <label class="wizard-equipment-chip" for="{{ $inputId }}">
@@ -840,37 +747,66 @@
             <div class="card-body p-3 p-md-4">
               <div class="d-flex justify-content-between align-items-center mb-2">
                 <h2 class="h6 mb-0">Your Bookings</h2>
-                <span class="badge rounded-pill bg-light text-secondary small">5</span>
+                <span class="badge rounded-pill bg-light text-secondary small">{{ count($userBookings) }}</span>
               </div>
               <p class="small text-muted mb-3">
-                Logged in as <strong>user.charles@enc.gov</strong><br>
-                Total Bookings: 5
+                @auth
+                  Logged in as <strong>{{ auth()->user()->email }}</strong><br>
+                  Total Bookings: {{ count($userBookings) }}
+                @else
+                  Please log in to view your bookings
+                @endauth
               </p>
 
               <ul class="nav nav-pills small mb-3" role="tablist">
+                @php
+                  $pendingCount = collect($userBookings)->where('status', 'Pending')->count();
+                  $approvedCount = collect($userBookings)->where('status', 'Approved')->count();
+                @endphp
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link active" data-bs-toggle="pill" type="button">
-                    Pending (5)
+                  <button class="nav-link active" data-bs-toggle="pill" type="button" data-status="pending">
+                    Pending ({{ $pendingCount }})
                   </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link" data-bs-toggle="pill" type="button">
-                    Confirmed (0)
+                  <button class="nav-link" data-bs-toggle="pill" type="button" data-status="approved">
+                    Confirmed ({{ $approvedCount }})
                   </button>
                 </li>
               </ul>
 
               <div class="wizard-bookings-list small">
-                @foreach ($wizardSampleBookings as $booking)
-                  <div class="wizard-booking-item border rounded-3 p-2 mb-2 bg-warning-subtle">
+                @forelse ($userBookings as $booking)
+                  @php
+                    $statusClass = match(strtolower($booking['status'])) {
+                      'pending' => 'bg-warning text-dark',
+                      'approved' => 'bg-success text-white',
+                      'rejected' => 'bg-danger text-white',
+                      'cancelled' => 'bg-secondary text-white',
+                      default => 'bg-light text-dark',
+                    };
+                    $bgClass = match(strtolower($booking['status'])) {
+                      'pending' => 'bg-warning-subtle',
+                      'approved' => 'bg-success-subtle',
+                      'rejected' => 'bg-danger-subtle',
+                      'cancelled' => 'bg-secondary-subtle',
+                      default => 'bg-light',
+                    };
+                  @endphp
+                  <div class="wizard-booking-item border rounded-3 p-2 mb-2 {{ $bgClass }}" data-booking-status="{{ strtolower($booking['status']) }}">
                     <div class="d-flex justify-content-between">
-                      <span class="badge bg-warning text-dark me-2">{{ $booking['status'] }}</span>
+                      <span class="badge {{ $statusClass }} me-2">{{ $booking['status'] }}</span>
                       <span class="text-muted">{{ $booking['date'] }}</span>
                     </div>
                     <div class="fw-semibold mt-1">{{ $booking['room'] }}</div>
                     <div class="text-muted">{{ $booking['time'] }}</div>
                   </div>
-                @endforeach
+                @empty
+                  <div class="text-center py-4 text-muted">
+                    <p class="mb-0">No bookings yet</p>
+                    <small>Your booking requests will appear here</small>
+                  </div>
+                @endforelse
               </div>
             </div>
           </aside>
@@ -885,9 +821,9 @@
       hidden
       aria-live="polite"
     >
-      <div class="wizard-success-card text-center shadow-sm border-0 mx-auto text-white">
+            <div class="wizard-success-card text-center shadow-sm border-0 mx-auto text-white">
         <p class="text-uppercase small fw-semibold wizard-success-muted mb-2">Booking success!</p>
-        <h2 class="wizard-success-title mb-2">You’re booked, <span id="wizardSuccessUser">Charles</span>!</h2>
+        <h2 class="wizard-success-title mb-2">You're booked, <span id="wizardSuccessUser">{{ auth()->check() ? explode(' ', auth()->user()->name)[0] : 'User' }}</span>!</h2>
         <p class="wizard-success-muted mb-4">We’ve sent your request to the facilities team. You’ll get updates via email.</p>
 
         <div class="wizard-success-icon mb-4" aria-hidden="true">

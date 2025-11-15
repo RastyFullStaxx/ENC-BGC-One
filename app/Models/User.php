@@ -64,4 +64,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Department::class, 'user_departments', 'user_id', 'department_id');
     }
+
+    /**
+     * Get the user's first name.
+     */
+    public function getFirstNameAttribute()
+    {
+        return explode(' ', $this->name)[0];
+    }
 }

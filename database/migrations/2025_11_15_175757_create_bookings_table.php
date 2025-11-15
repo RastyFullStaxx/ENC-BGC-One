@@ -26,6 +26,9 @@ return new class extends Migration
             // Booking workflow status
             $table->enum('status', ['pending','approved','rejected','cancelled','noshow'])->default('pending');
 
+            // Reference code
+            $table->string('reference_code', 20)->unique();
+
             // Timestamps
             $table->timestamps();
 

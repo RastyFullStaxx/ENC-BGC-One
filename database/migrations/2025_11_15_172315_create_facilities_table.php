@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('floor', ['ground', '2nd', '3rd']);
             $table->integer('capacity');
             $table->enum('type', ['meeting','training','multipurpose']);
-            $table->enum('status', ['Available','Occupied'])->default('Available');
+            $table->enum('status', ['Available','Occupied', 'Limited_Availability'])->default('Available');
             $table->timestamps();
         });
     }

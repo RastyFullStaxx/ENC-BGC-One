@@ -50,8 +50,18 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::view('/user/profile', 'user.profile')->name('user.profile');
     Route::view('/user/settings', 'user.settings')->name('user.settings');
 
-    // Booking
-    Route::view('/user/booking/wizard', 'booking.wizard')->name('user.booking.wizard');
+    // Booking Wizard
+    Route::get('/user/booking/wizard', [\App\Http\Controllers\BookingController::class, 'index'])->name('user.booking.wizard');
+    
+    // Booking API endpoints
+    Route::prefix('api/bookings')->group(function () {
+        Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])->name('api.bookings.facilities');
+        Route::post('/check-availability', [\App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
+        Route::post('/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('api.bookings.store');
+        Route::get('/user-bookings', [\App\Http\Controllers\BookingController::class, 'getUserBookings'])->name('api.bookings.user-bookings');
+        Route::get('/{id}', [\App\Http\Controllers\BookingController::class, 'show'])->name('api.bookings.show');
+        Route::post('/{id}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('api.bookings.cancel');
+    });
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
@@ -79,13 +89,7 @@ Route::view('/admin/calendar', 'admin.calendar')->name('admin.calendar');
 Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
 
 
-// --- Booking Wizard page ---
+// --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {
-    // Ensure the view path matches: resources/views/booking/wizard.blade.php
-    return view('booking.wizard');
+    return view('user.booking.wizard');
 })->name('booking.wizard');
-
-
-// --- Booking submit endpoint (placeholder) ---
-Route::post('/bookings', [\App\Http\Controllers\BookingController::class, 'store'])
-    ->name('bookings.store');

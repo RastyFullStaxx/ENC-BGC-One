@@ -21,8 +21,8 @@ class OperatingHoursTableSeeder extends Seeder
         foreach ($facilities as $facility_id) {
             DB::table('operating_hours')->insert([
                 'facility_id' => $facility_id,
-                'open_time' => '08:00:00',
-                'close_time' => '22:00:00',
+                'open_time' => '07:00:00',
+                'close_time' => '20:00:00',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
