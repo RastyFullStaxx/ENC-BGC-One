@@ -22,6 +22,7 @@ export default defineConfig({
                 'resources/js/wizard.js',
                 'resources/css/design-system.css',
                 'resources/css/user/account.css',
+                'resources/css/wizard/base.css',
             ],
             refresh: true,
         }),
