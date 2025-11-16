@@ -915,7 +915,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         Good evening
                     </div>
                     <h2 class="hero-heading">Let's plan your next booking</h2>
-                    <p class="hero-subtitle">Plan smarter with up-to-the-minute availability across ENC facilities.</p>
+                    <p  class="text-white-50">Plan smarter with up-to-the-minute availability across ENC facilities.</p>
                     <div class="hero-actions">
                         <a href="{{ route('facilities.catalog') }}" class="btn-browse">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

@@ -27,6 +27,7 @@
         'userRole' => auth()->user()->role ?? 'staff',
         'brand' => 'ONE Services',
         'showStepper' => false,
+        'showBookingsToggle' => false,
     ])
 
     <section class="booking-detail-shell">

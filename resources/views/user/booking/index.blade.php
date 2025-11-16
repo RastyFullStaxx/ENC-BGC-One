@@ -26,6 +26,7 @@
         'userRole' => auth()->user()->role ?? 'staff',
         'brand' => 'ONE Services',
         'showStepper' => false,
+        'showBookingsToggle' => false,
     ])
 
     <div id="toast" class="toast" role="status" aria-live="polite">

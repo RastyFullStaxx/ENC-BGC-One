@@ -97,6 +97,7 @@
       'currentStep'        => 1,
       'bookingsCount'      => count($userBookings),
       'notificationsCount' => 2,
+      'showBookingsToggle' => false,
     ])
   </div>
 @endsection
