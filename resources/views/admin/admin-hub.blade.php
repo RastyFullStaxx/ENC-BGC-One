@@ -12,19 +12,6 @@
 
 @php
     $user = auth()->user();
-    $approvals = [
-        ['title' => 'Creative Studio · Broadcast taping', 'team' => 'Comms', 'date' => 'Dec 2 · 10:00 AM', 'status' => 'pending'],
-        ['title' => 'Victory Room 4 · Pastoral sync', 'team' => 'Pastoral', 'date' => 'Dec 2 · 1:00 PM', 'status' => 'verify'],
-        ['title' => 'Multipurpose Hall · Leaders rally', 'team' => 'Operations', 'date' => 'Dec 3 · 9:00 AM', 'status' => 'ready'],
-        ['title' => 'Studio B · Music capture', 'team' => 'Production', 'date' => 'Dec 3 · 3:00 PM', 'status' => 'pending'],
-    ];
-
-    $rooms = [
-        ['room' => 'Studio A', 'purpose' => 'Video capture', 'time' => '8:00 – 10:00 AM', 'owner' => 'Comms'],
-        ['room' => 'Victory Room 2', 'purpose' => 'Board meeting', 'time' => '10:30 – 12:00 NN', 'owner' => 'Executive'],
-        ['room' => 'Multipurpose Hall', 'purpose' => 'Volunteer training', 'time' => '1:00 – 4:00 PM', 'owner' => 'Operations'],
-        ['room' => 'Creative Lab', 'purpose' => 'Podcast demo', 'time' => '2:00 – 3:30 PM', 'owner' => 'Media'],
-    ];
 @endphp
 
 @section('content')
@@ -57,135 +44,139 @@
                     <a href="{{ route('admin.analytics') }}" class="btn-pill">Analytics</a>
                 </div>
             </div>
-            <div class="hub-chart-card">
-                <p class="mb-1">Live request load</p>
-                <p class="h4 mb-3">27 open approvals</p>
-                <div class="chart-placeholder">Chart placeholder</div>
-            </div>
         </header>
 
-        <div class="hub-grid">
-            <div class="hub-grid-card">
-                <h3>Staff on shift</h3>
-                <p class="text-muted">Logistics · Facilities · SFI</p>
+        <div class="hub-health-row">
+            <div class="hub-health-card hub-health-card--plum">
+                <span class="hub-health-label">Campus utilization</span>
+                <strong>86%</strong>
+                <span class="hub-health-meta">↑ 4% vs last week</span>
+                <div class="hub-progress">
+                    <span style="width: 86%"></span>
+                </div>
+            </div>
+            <div class="hub-health-card hub-health-card--navy">
+                <span class="hub-health-label">Approvals SLA</span>
+                <strong>42 mins</strong>
+                <span class="hub-health-meta">Target · 45 mins</span>
+                <div class="hub-progress is-info">
+                    <span style="width: 93%"></span>
+                </div>
+            </div>
+            <div class="hub-health-card hub-health-card--rust">
+                <span class="hub-health-label">Live incidents</span>
+                <strong>02</strong>
+                <span class="hub-health-meta text-warning">1 critical · 1 maintenance</span>
+                <div class="hub-progress is-warning">
+                    <span style="width: 30%"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hub-stack-card">
+            <div class="hub-stack-grid">
+                <section class="hub-stack-section">
+                <div class="hub-card-heading">
+                    <div>
+                        <p class="hub-card-eyebrow">Logistics · Facilities · SFI</p>
+                        <h3>Staff on shift</h3>
+                    </div>
+                    <span class="hub-chip hub-chip--success">Stable</span>
+                </div>
                 <ul class="admin-approvals-list">
                     <li>
                         <div>
                             <strong>Operations Desk</strong>
                             <p class="text-muted small mb-0">3 approvers · SLA 45 mins</p>
                         </div>
-                        <span class="admin-tag is-success">Online</span>
+                        <span class="hub-mini-pill is-online">Online</span>
                     </li>
                     <li>
                         <div>
                             <strong>SFI Support</strong>
                             <p class="text-muted small mb-0">2 coordinators</p>
                         </div>
-                        <span class="admin-tag is-info">On call</span>
+                        <span class="hub-mini-pill is-info">On call</span>
                     </li>
                 </ul>
-            </div>
-            <div class="hub-grid-card">
-                <h3>Incident board</h3>
-                <p class="text-muted">Facilities requiring attention.</p>
+            </section>
+            <section class="hub-stack-section">
+                <div class="hub-card-heading">
+                    <div>
+                        <p class="hub-card-eyebrow">Facilities requiring attention</p>
+                        <h3>Incident board</h3>
+                    </div>
+                    <span class="hub-chip hub-chip--warning">2 open</span>
+                </div>
                 <ul class="admin-approvals-list">
                     <li>
                         <div>
                             <strong>Studio B · Lighting rack</strong>
                             <p class="text-muted small mb-0">Repair scheduled at 6:00 PM</p>
                         </div>
-                        <span class="admin-tag is-warning">Maintenance</span>
+                        <span class="hub-mini-pill is-warning">Maintenance</span>
                     </li>
                     <li>
                         <div>
                             <strong>Storage Wing · Access control</strong>
                             <p class="text-muted small mb-0">Awaiting vendor update</p>
                         </div>
-                        <span class="admin-tag is-info">Monitoring</span>
+                        <span class="hub-mini-pill is-info">Monitoring</span>
                     </li>
                 </ul>
-            </div>
-            <div class="hub-grid-card">
-                <h3>Policy updates</h3>
-                <p class="text-muted">Latest announcements for teams.</p>
+            </section>
+            <section class="hub-stack-section">
+                <div class="hub-card-heading">
+                    <div>
+                        <p class="hub-card-eyebrow">Latest announcements</p>
+                        <h3>Policy updates</h3>
+                    </div>
+                    <span class="hub-chip hub-chip--info">New items</span>
+                </div>
                 <ul class="admin-approvals-list">
                     <li>
                         <div>
                             <strong>Equipment checkout</strong>
                             <p class="text-muted small mb-0">Effective Dec 1 · Logistics</p>
                         </div>
-                        <span class="admin-tag is-info">New</span>
+                        <span class="hub-mini-pill is-info">New</span>
                     </li>
                     <li>
                         <div>
                             <strong>Room prep SLA</strong>
                             <p class="text-muted small mb-0">Operations · 30 min buffer</p>
                         </div>
-                        <span class="admin-tag is-success">Live</span>
+                        <span class="hub-mini-pill is-online">Live</span>
                     </li>
                 </ul>
-            </div>
-            <div class="hub-grid-card">
-                <h3>SLA tracker</h3>
-                <p class="text-muted">Average response and completion.</p>
-                <div class="chart-placeholder">SLA chart placeholder</div>
+            </section>
+            <section class="hub-stack-section">
+                <div class="hub-card-heading">
+                    <div>
+                        <p class="hub-card-eyebrow">Average response and completion</p>
+                        <h3>SLA tracker</h3>
+                    </div>
+                    <span class="hub-chip hub-chip--neutral">Live</span>
+                </div>
+                <div class="chart-placeholder">
+                    <div class="sla-bars">
+                        <span style="height: 60%"></span>
+                        <span style="height: 80%"></span>
+                        <span style="height: 45%"></span>
+                        <span style="height: 90%"></span>
+                        <span style="height: 72%"></span>
+                    </div>
+                </div>
                 <p class="mt-3 mb-0"><strong>42 mins</strong> avg response · <strong>1h 55m</strong> completion</p>
+            </section>
             </div>
         </div>
-
-        <article class="hub-approval-panel">
-            <div class="approval-header">
-                <div>
-                    <h2>Approval queue</h2>
-                    <p class="text-muted mb-0">Realtime list of requests needing admin review.</p>
-                </div>
-                <a href="{{ route('admin.analytics') }}" class="btn btn-outline-primary">Open approvals dashboard</a>
-            </div>
-            <ul class="approval-list">
-                @foreach ($approvals as $item)
-                    @php
-                        $tone = match($item['status']) {
-                            'verify' => 'is-info',
-                            'ready' => 'is-success',
-                            default => 'is-warning',
-                        };
-                        $label = ucfirst($item['status']);
-                    @endphp
-                    <li class="approval-item">
-                        <div>
-                            <strong>{{ $item['title'] }}</strong>
-                            <p class="text-muted small mb-0">{{ $item['team'] }} · {{ $item['date'] }}</p>
-                        </div>
-                        <span class="admin-tag {{ $tone }}">{{ $label }}</span>
-                    </li>
-                @endforeach
-            </ul>
-        </article>
-
-        <article class="rooms-card">
-            <h2>Rooms currently booked</h2>
-            <p class="text-muted">Monitor in-use venues across the campus.</p>
-            <ul class="rooms-list">
-                @foreach ($rooms as $room)
-                    <li>
-                        <div>
-                            <strong>{{ $room['room'] }}</strong>
-                            <p class="text-muted small mb-0">{{ $room['purpose'] }}</p>
-                        </div>
-                        <div class="text-end">
-                            <p class="mb-0 fw-semibold">{{ $room['time'] }}</p>
-                            <p class="text-muted small mb-0">{{ $room['owner'] }}</p>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        </article>
 
         <section class="admin-card">
             <h3>Admin tools</h3>
             <p class="text-muted">All administrative controls and modules live here.</p>
             <div class="tool-matrix">
-                <a href="{{ route('admin.users') }}" class="tool-card">
+                <a href="{{ route('admin.users') }}" class="tool-card tool-card--plum">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="1.6"/><path d="M17 11l2 2 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>
@@ -194,7 +185,7 @@
                         <p class="tool-card-meta">Manage accounts, roles, access</p>
                     </div>
                 </a>
-                <a href="{{ route('admin.facilities') }}" class="tool-card">
+                <a href="{{ route('admin.facilities') }}" class="tool-card tool-card--rust">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>
@@ -203,7 +194,7 @@
                         <p class="tool-card-meta">Maintenance, photos, availability</p>
                     </div>
                 </a>
-                <a href="{{ route('admin.analytics') }}" class="tool-card">
+                <a href="{{ route('admin.analytics') }}" class="tool-card tool-card--navy">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20V10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M10 20V4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M16 20v-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M22 20V8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>
@@ -212,7 +203,7 @@
                         <p class="tool-card-meta">Utilization, wait times, SLA</p>
                     </div>
                 </a>
-                <a href="{{ route('admin.calendar') }}" class="tool-card">
+                <a href="{{ route('admin.calendar') }}" class="tool-card tool-card--teal">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M3 10h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>
@@ -221,7 +212,7 @@
                         <p class="tool-card-meta">Cross-campus bookings</p>
                     </div>
                 </a>
-                <a href="{{ route('admin.policies') }}" class="tool-card">
+                <a href="{{ route('admin.policies') }}" class="tool-card tool-card--amber">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 2h9l3 3v15a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.6"/><path d="M9 8h6M9 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>
@@ -230,7 +221,7 @@
                         <p class="tool-card-meta">Publish guidelines & SOPs</p>
                     </div>
                 </a>
-                <a href="{{ route('admin.audit') }}" class="tool-card">
+                <a href="{{ route('admin.audit') }}" class="tool-card tool-card--slate">
                     <span class="tool-card-icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 21h14v-2a7 7 0 00-14 0v2z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M12 13a5 5 0 100-10 5 5 0 000 10z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M17 11l4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </span>

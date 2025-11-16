@@ -84,88 +84,175 @@
   font-size: 0.9rem;
 }
 
-.hub-grid {
+.hub-health-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
-.hub-grid-card {
-  background: #fff;
-  border-radius: 1.25rem;
-  border: 1px solid rgba(0, 24, 64, 0.06);
+.hub-health-card {
+  border-radius: 1.2rem;
   padding: 1.25rem;
-  box-shadow: 0 20px 40px rgba(0, 13, 42, 0.08);
+  color: #fff;
+  box-shadow: 0 20px 40px rgba(0, 24, 64, 0.25);
 }
 
-.hub-approval-panel {
-  background: #fff;
-  border-radius: 1.4rem;
-  border: 1px solid rgba(0, 24, 64, 0.08);
-  padding: 1.75rem;
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.08);
-  margin-bottom: 2rem;
+.hub-health-card--plum {
+  background: linear-gradient(140deg, #150b1f, #3a0d30);
 }
 
-.approval-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  align-items: center;
+.hub-health-card--navy {
+  background: linear-gradient(140deg, #0c1b43, #102a71);
 }
 
-.approval-list {
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
+.hub-health-card--rust {
+  background: linear-gradient(140deg, #5a0f00, #6d0f1d);
+}
+
+.hub-health-card strong {
+  display: block;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin: 0.25rem 0;
+}
+
+.hub-health-label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.hub-health-meta {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.hub-progress {
+  margin-top: 0.85rem;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.hub-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fff085, #00c950);
+}
+
+.hub-progress.is-info span {
+  background: linear-gradient(90deg, #75a3eb, #155dfc);
+}
+
+.hub-progress.is-warning span {
+  background: linear-gradient(90deg, #ffc857, #ff7b6e);
+}
+
+.hub-stack-card {
+  background: #fdfdfd;
+  border-radius: 1.75rem;
+  box-shadow: 0 25px 60px rgba(0, 24, 64, 0.08);
+  padding: clamp(1.25rem, 2vw, 2rem);
+  margin-bottom: 2.5rem;
+}
+
+.hub-stack-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.approval-item {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  gap: 1rem;
-  border: 1px solid rgba(0, 24, 64, 0.08);
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.approval-item .admin-tag {
-  justify-self: end;
-}
-
-.rooms-card {
+.hub-stack-section {
+  padding: 1rem;
+  border-radius: 1.1rem;
   background: #fff;
-  border-radius: 1.4rem;
-  border: 1px solid rgba(0, 24, 64, 0.08);
-  padding: 1.5rem;
-  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 24, 64, 0.06);
 }
 
-.rooms-list {
+.hub-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hub-card-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-size: 0.68rem;
   margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.95rem;
+  color: #000206;
 }
 
-.rooms-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  border-bottom: 1px solid rgba(0, 24, 64, 0.08);
-  padding-bottom: 0.75rem;
+.hub-chip {
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid #001840;
+  text-transform: uppercase;
+  background: rgba(0, 24, 64, 0.08);
+  color: #001840;
 }
 
-.rooms-list li:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.hub-chip--success {
+  border-color: rgba(0, 201, 80, 0.35);
+  background: rgba(0, 201, 80, 0.15);
+  color: #0b5c2d;
+}
+
+.hub-chip--warning {
+  border-color: rgba(255, 200, 87, 0.45);
+  background: rgba(255, 200, 87, 0.2);
+  color: #7a3d00;
+}
+
+.hub-chip--info {
+  border-color: rgba(117, 163, 235, 0.4);
+  background: rgba(117, 163, 235, 0.18);
+  color: #0b3d91;
+}
+
+.hub-chip--neutral {
+  border-color: rgba(0, 24, 64, 0.2);
+  background: rgba(0, 24, 64, 0.06);
+  color: #001840;
+}
+
+.hub-mini-pill {
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(0, 24, 64, 0.06);
+  border: 1px solid rgba(0, 24, 64, 0.2);
+  color: #001840;
+}
+
+.hub-mini-pill.is-online {
+  border-color: rgba(0, 201, 80, 0.35);
+  background: rgba(0, 201, 80, 0.15);
+  color: #0b5c2d;
+}
+
+.hub-mini-pill.is-warning {
+  border-color: rgba(255, 200, 87, 0.45);
+  background: rgba(255, 200, 87, 0.2);
+  color: #7a3d00;
+}
+
+.hub-mini-pill.is-info {
+  border-color: rgba(117, 163, 235, 0.45);
+  background: rgba(117, 163, 235, 0.2);
+  color: #0b3d91;
 }
 
 .tool-matrix {
@@ -175,37 +262,69 @@
 }
 
 .tool-card {
-  border: 1px solid rgba(0, 24, 64, 0.08);
   border-radius: 1.1rem;
-  padding: 1.1rem 1.25rem;
-  background: #fff;
+  padding: 1.5rem 1.75rem;
   text-decoration: none;
-  color: inherit;
+  color: #fff;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  min-height: 220px;
 }
 
 .tool-card:hover {
-  border-color: #001840;
-  box-shadow: 0 20px 35px rgba(0, 13, 42, 0.08);
+  box-shadow: 0 25px 45px rgba(0, 13, 42, 0.25);
+  transform: translateY(-3px);
 }
 
 .tool-card-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 0.9rem;
-  background: rgba(0, 24, 64, 0.08);
+  width: 58px;
+  height: 58px;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.15);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #001840;
+  color: #fff;
+  margin: 0 auto;
+}
+
+.tool-card h4 {
+  margin-bottom: 0.1rem;
+  color: #fff;
 }
 
 .tool-card-meta {
-  font-size: 0.85rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.tool-card--plum {
+  background: linear-gradient(140deg, #240424, #541056);
+}
+
+.tool-card--rust {
+  background: linear-gradient(140deg, #5c0f05, #a42b12);
+}
+
+.tool-card--navy {
+  background: linear-gradient(140deg, #081732, #0f3c90);
+}
+
+.tool-card--teal {
+  background: linear-gradient(140deg, #023d49, #0ca8a2);
+}
+
+.tool-card--amber {
+  background: linear-gradient(140deg, #4c2a00, #c38005);
+}
+
+.tool-card--slate {
+  background: linear-gradient(140deg, #111c2d, #313a4f);
 }
 
 @keyframes adminHeroFlow {
@@ -215,10 +334,7 @@
 }
 
 @media (max-width: 640px) {
-  .approval-item {
+  .hub-health-row {
     grid-template-columns: 1fr;
-  }
-  .approval-item .admin-tag {
-    justify-self: start;
   }
 }

@@ -17,6 +17,11 @@
         ['room' => 'Multipurpose Hall', 'purpose' => 'Volunteer training', 'time' => '1:00 – 4:00 PM', 'owner' => 'Operations'],
         ['room' => 'Creative Lab', 'purpose' => 'Podcast demo', 'time' => '2:00 – 3:30 PM', 'owner' => 'Media'],
     ];
+    $approvalsQueue = [
+        ['facility' => 'Multipurpose Hall', 'title' => 'Leaders weekend summit', 'team' => 'Outreach', 'date' => 'Dec 2 · 8:00 AM', 'status' => 'pending', 'priority' => 'High'],
+        ['facility' => 'Studio B', 'title' => 'Production block', 'team' => 'Comms', 'date' => 'Dec 2 · 2:00 PM', 'status' => 'review', 'priority' => 'Medium'],
+        ['facility' => 'Victory Room 2', 'title' => 'Leadership sync', 'team' => 'Pastoral', 'date' => 'Dec 3 · 10:00 AM', 'status' => 'ready', 'priority' => 'Standard'],
+    ];
 @endphp
 
 @section('content')
@@ -123,34 +128,52 @@
 
         <div class="admin-main-grid">
             <div>
-                <article class="admin-card">
-                    <h3>Approval queue</h3>
-                    <p class="text-muted">Newest items waiting for your review.</p>
-                    <ul class="admin-approvals-list">
-                        <li>
+                <article class="approval-spotlight">
+                    <div class="approval-spotlight-header">
+                        <div>
+                            <p class="approval-eyebrow">Queue health</p>
+                            <h3>Approval queue</h3>
+                            <p class="text-muted mb-0">Critical bookings awaiting action right now.</p>
+                        </div>
+                        <div class="approval-spotlight-meta">
                             <div>
-                                <strong>Multipurpose Hall · Weekend conference</strong>
-                                <p class="text-muted mb-0 small">Requested by Outreach · Nov 30</p>
+                                <span class="label">Waiting</span>
+                                <strong>18</strong>
                             </div>
-                            <span class="admin-tag is-warning">Pending</span>
-                        </li>
-                        <li>
                             <div>
-                                <strong>Studio B · Production block</strong>
-                                <p class="text-muted mb-0 small">Requested by Comms · Dec 1</p>
+                                <span class="label">Breaching SLA</span>
+                                <strong class="text-warning">3</strong>
                             </div>
-                            <span class="admin-tag is-info">Verify</span>
-                        </li>
-                        <li>
-                            <div>
-                                <strong>Victory Room 2 · Leadership sync</strong>
-                                <p class="text-muted mb-0 small">Requested by Pastoral · Dec 2</p>
+                            <a href="{{ route('admin.approvals.queue') }}" class="btn btn-primary approval-cta">Open approvals queue</a>
+                        </div>
+                    </div>
+                    <div class="approval-timeline">
+                        @foreach ($approvalsQueue as $item)
+                            @php
+                                $tone = match($item['status']) {
+                                    'review' => 'is-info',
+                                    'ready' => 'is-success',
+                                    default => 'is-warning',
+                                };
+                            @endphp
+                            <div class="timeline-item">
+                                <div class="timeline-indicator {{ $tone }}"></div>
+                                <div class="timeline-body">
+                                    <div class="timeline-top">
+                                        <strong>{{ $item['facility'] }} · {{ $item['title'] }}</strong>
+                                        <span class="admin-tag {{ $tone }}">{{ ucfirst($item['status']) }}</span>
+                                    </div>
+                                    <p class="timeline-meta mb-0">{{ $item['team'] }} · {{ $item['date'] }} · {{ $item['priority'] }} priority</p>
+                                    <div class="timeline-actions">
+                                        <a href="{{ route('admin.approvals.show') }}" class="link-muted">View booking details</a>
+                                        <div class="timeline-buttons">
+                                            <button class="btn btn-success btn-sm">Approve</button>
+                                            <button class="btn btn-outline-danger btn-sm">Escalate</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <span class="admin-tag is-success">Ready</span>
-                        </li>
-                    </ul>
-                    <div class="mt-3">
-                        <a href="{{ route('admin.analytics') }}" class="btn btn-outline-primary">Open approvals dashboard</a>
+                        @endforeach
                     </div>
                 </article>
 
