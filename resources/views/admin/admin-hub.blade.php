@@ -11,7 +11,7 @@
 @endpush
 
 @php
-    $user = auth()->user();
+    $user = $user ?? auth()->user();
 @endphp
 
 @section('content')
@@ -49,26 +49,26 @@
         <div class="hub-health-row">
             <div class="hub-health-card hub-health-card--plum">
                 <span class="hub-health-label">Campus utilization</span>
-                <strong>86%</strong>
-                <span class="hub-health-meta">↑ 4% vs last week</span>
+                <strong>{{ $utilization ?? 0 }}%</strong>
+                <span class="hub-health-meta">Across {{ $totalFacilities ?? 0 }} facilities</span>
                 <div class="hub-progress">
-                    <span style="width: 86%"></span>
+                    <span style="width: {{ min(100, $utilization ?? 0) }}%"></span>
                 </div>
             </div>
             <div class="hub-health-card hub-health-card--navy">
                 <span class="hub-health-label">Approvals SLA</span>
-                <strong>42 mins</strong>
+                <strong>{{ $avgSla ?? 0 }} mins</strong>
                 <span class="hub-health-meta">Target · 45 mins</span>
                 <div class="hub-progress is-info">
-                    <span style="width: 93%"></span>
+                    <span style="width: {{ min(100, (($avgSla ?? 0) / 45) * 100) }}%"></span>
                 </div>
             </div>
             <div class="hub-health-card hub-health-card--rust">
                 <span class="hub-health-label">Live incidents</span>
-                <strong>02</strong>
-                <span class="hub-health-meta text-warning">1 critical · 1 maintenance</span>
+                <strong>{{ str_pad($incidentsCount ?? 0, 2, '0', STR_PAD_LEFT) }}</strong>
+                <span class="hub-health-meta text-warning">{{ $incidentsCount ?? 0 }} facilities flagged</span>
                 <div class="hub-progress is-warning">
-                    <span style="width: 30%"></span>
+                    <span style="width: {{ min(100, ($incidentsCount ?? 0) * 15) }}%"></span>
                 </div>
             </div>
         </div>
@@ -81,23 +81,25 @@
                         <p class="hub-card-eyebrow">Logistics · Facilities · SFI</p>
                         <h3>Staff on shift</h3>
                     </div>
-                    <span class="hub-chip hub-chip--success">Stable</span>
+                    <span class="hub-chip hub-chip--success">{{ $approversOnDuty ?? 0 }} on duty</span>
                 </div>
                 <ul class="admin-approvals-list">
-                    <li>
-                        <div>
-                            <strong>Operations Desk</strong>
-                            <p class="text-muted small mb-0">3 approvers · SLA 45 mins</p>
-                        </div>
-                        <span class="hub-mini-pill is-online">Online</span>
-                    </li>
-                    <li>
-                        <div>
-                            <strong>SFI Support</strong>
-                            <p class="text-muted small mb-0">2 coordinators</p>
-                        </div>
-                        <span class="hub-mini-pill is-info">On call</span>
-                    </li>
+                    @forelse ($staffing as $member)
+                        <li>
+                            <div>
+                                <strong>{{ $member['name'] }}</strong>
+                                <p class="text-muted small mb-0">{{ $member['department'] }}</p>
+                            </div>
+                            <span class="hub-mini-pill is-online">Online</span>
+                        </li>
+                    @empty
+                        <li>
+                            <div>
+                                <strong>No admins detected</strong>
+                                <p class="text-muted small mb-0">Invite approvers to begin</p>
+                            </div>
+                        </li>
+                    @endforelse
                 </ul>
             </section>
             <section class="hub-stack-section">
@@ -106,23 +108,25 @@
                         <p class="hub-card-eyebrow">Facilities requiring attention</p>
                         <h3>Incident board</h3>
                     </div>
-                    <span class="hub-chip hub-chip--warning">2 open</span>
+                    <span class="hub-chip hub-chip--warning">{{ $incidentsCount ?? 0 }} open</span>
                 </div>
                 <ul class="admin-approvals-list">
-                    <li>
-                        <div>
-                            <strong>Studio B · Lighting rack</strong>
-                            <p class="text-muted small mb-0">Repair scheduled at 6:00 PM</p>
-                        </div>
-                        <span class="hub-mini-pill is-warning">Maintenance</span>
-                    </li>
-                    <li>
-                        <div>
-                            <strong>Storage Wing · Access control</strong>
-                            <p class="text-muted small mb-0">Awaiting vendor update</p>
-                        </div>
-                        <span class="hub-mini-pill is-info">Monitoring</span>
-                    </li>
+                    @forelse ($incidentItems as $incident)
+                        <li>
+                            <div>
+                                <strong>{{ $incident['name'] }}</strong>
+                                <p class="text-muted small mb-0">{{ $incident['note'] }} · {{ $incident['status'] }}</p>
+                            </div>
+                            <span class="hub-mini-pill is-warning">Maintenance</span>
+                        </li>
+                    @empty
+                        <li>
+                            <div>
+                                <strong>All facilities available</strong>
+                                <p class="text-muted small mb-0">No active incidents</p>
+                            </div>
+                        </li>
+                    @endforelse
                 </ul>
             </section>
             <section class="hub-stack-section">
@@ -131,23 +135,25 @@
                         <p class="hub-card-eyebrow">Latest announcements</p>
                         <h3>Policy updates</h3>
                     </div>
-                    <span class="hub-chip hub-chip--info">New items</span>
+                    <span class="hub-chip hub-chip--info">{{ $policyUpdates->count() ?? 0 }} new</span>
                 </div>
                 <ul class="admin-approvals-list">
-                    <li>
-                        <div>
-                            <strong>Equipment checkout</strong>
-                            <p class="text-muted small mb-0">Effective Dec 1 · Logistics</p>
-                        </div>
-                        <span class="hub-mini-pill is-info">New</span>
-                    </li>
-                    <li>
-                        <div>
-                            <strong>Room prep SLA</strong>
-                            <p class="text-muted small mb-0">Operations · 30 min buffer</p>
-                        </div>
-                        <span class="hub-mini-pill is-online">Live</span>
-                    </li>
+                    @forelse ($policyUpdates as $update)
+                        <li>
+                            <div>
+                                <strong>{{ $update['title'] }}</strong>
+                                <p class="text-muted small mb-0">{{ $update['meta'] }}</p>
+                            </div>
+                            <span class="hub-mini-pill is-info">Update</span>
+                        </li>
+                    @empty
+                        <li>
+                            <div>
+                                <strong>No announcements yet</strong>
+                                <p class="text-muted small mb-0">Notifications will appear here</p>
+                            </div>
+                        </li>
+                    @endforelse
                 </ul>
             </section>
             <section class="hub-stack-section">
@@ -160,14 +166,14 @@
                 </div>
                 <div class="chart-placeholder">
                     <div class="sla-bars">
-                        <span style="height: 60%"></span>
-                        <span style="height: 80%"></span>
-                        <span style="height: 45%"></span>
-                        <span style="height: 90%"></span>
-                        <span style="height: 72%"></span>
+                        @forelse ($slaTrend as $height)
+                            <span style="height: {{ min(100, max(10, $height)) }}%"></span>
+                        @empty
+                            <span style="height: 30%"></span>
+                        @endforelse
                     </div>
                 </div>
-                <p class="mt-3 mb-0"><strong>42 mins</strong> avg response · <strong>1h 55m</strong> completion</p>
+                <p class="mt-3 mb-0"><strong>{{ $avgSla ?? 0 }} mins</strong> avg response · <strong>{{ ($avgSla ?? 0) + 45 }} mins</strong> completion</p>
             </section>
             </div>
         </div>

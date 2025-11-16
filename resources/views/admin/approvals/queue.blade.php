@@ -10,61 +10,7 @@
 @endpush
 
 @php
-    $user = auth()->user();
-    $approvals = [
-        [
-            'reference' => 'BKG-8742',
-            'facility' => 'Multipurpose Hall',
-            'facility_code' => 'MPH-01',
-            'room' => 'G01',
-            'requester' => 'Jared Mercado',
-            'requester_email' => 'jared.mercado@oneservices.ph',
-            'event' => 'Leaders Weekend Summit',
-            'schedule' => 'Dec 2 · 8:00 AM – 10:00 AM',
-            'submitted' => 'Nov 30 · 9:42 PM',
-            'status' => 'pending',
-            'remarks' => 'Waiting for routing to Ops approver',
-        ],
-        [
-            'reference' => 'BKG-8790',
-            'facility' => 'Studio B',
-            'facility_code' => 'STB-02',
-            'room' => '201',
-            'requester' => 'Ava Santos',
-            'requester_email' => 'ava.santos@oneservices.ph',
-            'event' => 'Production Block Recording',
-            'schedule' => 'Dec 2 · 2:00 PM – 4:00 PM',
-            'submitted' => 'Nov 30 · 1:10 PM',
-            'status' => 'approved',
-            'remarks' => 'Approved with stage reset',
-        ],
-        [
-            'reference' => 'BKG-8720',
-            'facility' => 'Victory Room 2',
-            'facility_code' => 'VCR-12',
-            'room' => '312',
-            'requester' => 'Luis Catapang',
-            'requester_email' => 'luis.catapang@oneservices.ph',
-            'event' => 'Leadership Sync',
-            'schedule' => 'Dec 3 · 10:00 AM – 11:30 AM',
-            'submitted' => 'Nov 29 · 4:30 PM',
-            'status' => 'pending',
-            'remarks' => 'Needs requester confirmation',
-        ],
-        [
-            'reference' => 'BKG-8810',
-            'facility' => 'Studio A',
-            'facility_code' => 'STA-01',
-            'room' => 'LL1',
-            'requester' => 'Micah Lim',
-            'requester_email' => 'micah.lim@oneservices.ph',
-            'event' => 'Podcast Season Finale',
-            'schedule' => 'Dec 3 · 4:00 PM – 5:30 PM',
-            'submitted' => 'Nov 30 · 8:20 AM',
-            'status' => 'rejected',
-            'remarks' => 'Reject: schedule conflict',
-        ],
-    ];
+    $user = $user ?? auth()->user();
 @endphp
 
 @section('content')
@@ -95,33 +41,43 @@
                 <p>Monitor all live booking requests, triage escalations, and keep SLA promises across campus operations.</p>
                 <div class="approvals-hero-footer">
                     <p class="approvals-hero-hint">Jumps straight to the most recent booking awaiting a decision.</p>
-                    <a href="{{ route('admin.approvals.show') }}" class="approvals-hero-cta">Open latest request</a>
+                    @if ($latestPending)
+                        <a href="{{ route('admin.approvals.show', $latestPending) }}" class="approvals-hero-cta">Open latest request</a>
+                    @else
+                        <span class="approvals-hero-hint">No pending requests</span>
+                    @endif
                 </div>
             </div>
             <div class="approvals-hero-panel">
                 <div class="approvals-hero-metrics">
                     <div class="metric">
                         <small>Waiting</small>
-                        <strong>18</strong>
+                        <strong>{{ number_format($queueStats['pending'] ?? 0) }}</strong>
                     </div>
                     <div class="metric">
                         <small>Breaching SLA</small>
-                        <strong>3</strong>
+                        <strong>{{ number_format($queueStats['breaches'] ?? 0) }}</strong>
                     </div>
                     <div class="metric">
                         <small>Avg response</small>
-                        <strong>42 mins</strong>
+                        <strong>{{ number_format($queueStats['avgResponse'] ?? 0) }} mins</strong>
                     </div>
                 </div>
-                <span class="approvals-hero-updated">Live queue data · refreshed 5 mins ago</span>
+                <span class="approvals-hero-updated">Live queue data · refreshed {{ now()->diffForHumans(null, true) }} ago</span>
             </div>
         </header>
 
         <div class="approvals-filters">
-            <button class="approvals-chip active">All status</button>
-            <button class="approvals-chip">Pending</button>
-            <button class="approvals-chip">Approved</button>
-            <button class="approvals-chip">Rejected</button>
+            <a href="{{ route('admin.approvals.queue') }}"
+               class="approvals-chip {{ empty($statusFilter) ? 'active' : '' }}">
+                All status
+            </a>
+            @foreach ($availableStatuses as $status)
+                <a href="{{ route('admin.approvals.queue', ['status' => $status]) }}"
+                   class="approvals-chip {{ $statusFilter === $status ? 'active' : '' }}">
+                    {{ ucfirst($status) }}
+                </a>
+            @endforeach
         </div>
 
         <div class="queue-surface">
@@ -154,44 +110,47 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($approvals as $row)
+                        @foreach ($bookings as $row)
                             @php
-                                $statusClass = match($row['status']) {
+                                $statusClass = match($row->status) {
                                     'approved' => 'is-approved',
                                     'rejected' => 'is-rejected',
                                     'cancelled' => 'is-cancelled',
                                     'noshow' => 'is-noshow',
                                     default => 'is-pending',
                                 };
+                                $scheduleDate = $row->date?->format('M j, Y');
+                                $startTime = $row->start_at ? \Illuminate\Support\Carbon::parse($row->start_at)->format('g:i A') : null;
+                                $endTime = $row->end_at ? \Illuminate\Support\Carbon::parse($row->end_at)->format('g:i A') : null;
                             @endphp
                             <tr>
                                 <td>
-                                    <span class="queue-primary">{{ $row['reference'] }}</span>
-                                    <span class="queue-meta">Submitted {{ $row['submitted'] }}</span>
+                                    <span class="queue-primary">{{ $row->reference_code }}</span>
+                                    <span class="queue-meta">Submitted {{ $row->created_at?->format('M j · g:i A') }}</span>
                                 </td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['facility'] }}</span>
-                                    <span class="queue-meta">{{ $row['facility_code'] }} · Room {{ $row['room'] }}</span>
+                                    <span class="queue-primary">{{ $row->facility->name ?? 'Facility' }}</span>
+                                    <span class="queue-meta">{{ $row->facility->facility_code ?? 'N/A' }} · Room {{ $row->facility->room_number ?? '—' }}</span>
                                 </td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['requester'] }}</span>
-                                    <span class="queue-meta">{{ $row['requester_email'] }}</span>
+                                    <span class="queue-primary">{{ $row->requester->name ?? 'Requester' }}</span>
+                                    <span class="queue-meta">{{ $row->requester->email ?? 'N/A' }}</span>
                                 </td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['event'] }}</span>
+                                    <span class="queue-primary">{{ optional($row->details)->purpose ?? 'Booking purpose' }}</span>
                                     <span class="queue-meta">Event name</span>
                                 </td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['schedule'] }}</span>
+                                    <span class="queue-primary">{{ trim(($scheduleDate ?? '—') . ($startTime ? ' · ' . $startTime : '') . ($endTime ? ' – ' . $endTime : '')) }}</span>
                                     <span class="queue-meta">Booking date · time block</span>
                                 </td>
-                                <td><span class="queue-status {{ $statusClass }}">{{ ucfirst($row['status']) }}</span></td>
+                                <td><span class="queue-status {{ $statusClass }}">{{ ucfirst($row->status) }}</span></td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['remarks'] ?? 'No remarks yet' }}</span>
+                                    <span class="queue-primary">{{ optional($row->approval)->remarks ?? 'No remarks yet' }}</span>
                                     <span class="queue-meta">Internal notes</span>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.approvals.show') }}" class="btn btn-link">View booking</a>
+                                    <a href="{{ route('admin.approvals.show', $row) }}" class="btn btn-link">View booking</a>
                                 </td>
                             </tr>
                         @endforeach

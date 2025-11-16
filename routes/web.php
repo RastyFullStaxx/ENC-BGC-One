@@ -5,6 +5,9 @@ use App\Http\Controllers\Auth\SignupController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\UserBookingController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminHubController;
+use App\Http\Controllers\Admin\AdminApprovalController;
 
 
 Route::get('/', function () {
@@ -69,9 +72,10 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
 // Admin Pages (Protected - requires authentication and admin role)
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    // Dashboard
-    Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
-    Route::view('/admin/hub', 'admin.admin-hub')->name('admin.hub');
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/hub', [AdminHubController::class, 'index'])->name('admin.hub');
+    Route::get('/admin/approvals', [AdminApprovalController::class, 'index'])->name('admin.approvals.queue');
+    Route::get('/admin/approvals/{booking}', [AdminApprovalController::class, 'show'])->name('admin.approvals.show');
 });
 
 // Temporary preview route for Admin Users & Roles tool
@@ -91,11 +95,6 @@ Route::view('/admin/calendar', 'admin.calendar')->name('admin.calendar');
 
 // Temporary preview route for Admin Audit Log
 Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
-
-// Admin approvals queue previews
-Route::view('/admin/approvals', 'admin.approvals.queue')->name('admin.approvals.queue');
-Route::view('/admin/approvals/detail', 'admin.approvals.show')->name('admin.approvals.show');
-
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {

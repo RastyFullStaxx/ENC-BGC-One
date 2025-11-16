@@ -127,13 +127,17 @@
   background: #fff;
   color: #001840;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .approvals-chip.active {
-  background: #001840;
   color: #fff;
-  border-color: #001840;
+  border-color: transparent;
+  background: linear-gradient(135deg, #2b0f1d, #001840);
+  box-shadow: 0 15px 30px rgba(0, 12, 42, 0.2);
 }
 
 .queue-surface {

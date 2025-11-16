@@ -10,34 +10,15 @@
 @endpush
 
 @php
-    $user = auth()->user();
-    $booking = [
-        'reference' => 'BKG-8742',
-        'facility' => 'Multipurpose Hall',
-        'purpose' => 'Leaders weekend summit',
-        'requester' => 'Jared Mercado',
-        'requester_email' => 'jared.mercado@oneservices.ph',
-        'department' => 'Outreach',
-        'date' => 'Dec 2, 2025',
-        'start' => '8:00 AM',
-        'end' => '6:00 PM',
-        'submitted' => 'Nov 30, 9:42 PM',
-        'status' => 'pending',
-        'attendees' => 120,
-        'notes' => 'Requesting additional breakout rooms and livestream support.',
-    ];
-    $bookingDetail = [
-        'sfi_support' => true,
-        'sfi_count' => 4,
-        'purpose' => 'Weekend leadership summit and volunteers training for ENC BGC leaders.',
-        'additional_notes' => 'Need camera riser and rehearsal block before 7:00 AM.',
-    ];
-    $approval = [
-        'status' => 'pending',
-        'approver' => 'Ops Desk',
-        'remarks' => 'Awaiting confirmation from requester on breakout configuration.',
-        'updated_at' => 'Dec 1, 7:22 AM',
-    ];
+    $user = $user ?? auth()->user();
+    $detail = $detail ?? $booking->details;
+    $approvalRecord = $approvalRecord ?? $booking->approval;
+    $scheduleDate = $booking->date?->format('M j, Y');
+    $startTime = $booking->start_at ? \Illuminate\Support\Carbon::parse($booking->start_at)->format('g:i A') : null;
+    $endTime = $booking->end_at ? \Illuminate\Support\Carbon::parse($booking->end_at)->format('g:i A') : null;
+    $requester = $booking->requester;
+    $department = optional($requester?->department)->name;
+    $reference = $booking->reference_code;
 @endphp
 
 @section('content')
@@ -63,26 +44,26 @@
 
         <article class="approval-detail-hero">
             <div>
-                <span class="hero-badge">Reference {{ $booking['reference'] }}</span>
-                <h1>{{ $booking['facility'] }}</h1>
-                <p class="mb-0">{{ $booking['purpose'] }}</p>
+                <span class="hero-badge">Reference {{ $reference }}</span>
+                <h1>{{ $booking->facility->name ?? 'Facility' }}</h1>
+                <p class="mb-0">{{ $detail->purpose ?? 'Booking request' }}</p>
             </div>
             <div class="hero-metrics">
                 <div>
                     <small>Schedule</small>
-                    <strong>{{ $booking['date'] }} · {{ $booking['start'] }} – {{ $booking['end'] }}</strong>
+                    <strong>{{ trim(($scheduleDate ?? '—') . ($startTime ? ' · ' . $startTime : '') . ($endTime ? ' – ' . $endTime : '')) }}</strong>
                 </div>
                 <div>
                     <small>Status</small>
-                    <strong>{{ ucfirst($booking['status']) }}</strong>
+                    <strong>{{ ucfirst($booking->status) }}</strong>
                 </div>
                 <div>
                     <small>Attendees</small>
-                    <strong>{{ $booking['attendees'] }} pax</strong>
+                    <strong>{{ $detail->attendees_count ?? '—' }} pax</strong>
                 </div>
                 <div>
                     <small>Submitted</small>
-                    <strong>{{ $booking['submitted'] }}</strong>
+                    <strong>{{ $booking->created_at?->format('M j · g:i A') }}</strong>
                 </div>
             </div>
         </article>
@@ -90,15 +71,15 @@
         <div class="detail-quick-facts">
             <div class="fact-card">
                 <small>Reference code</small>
-                <strong>{{ $booking['reference'] }}</strong>
+                <strong>{{ $reference }}</strong>
             </div>
             <div class="fact-card">
                 <small>Requester contact</small>
-                <strong>{{ $booking['requester_email'] }}</strong>
+                <strong>{{ $requester->email ?? 'N/A' }}</strong>
             </div>
             <div class="fact-card">
                 <small>Approval updated</small>
-                <strong>{{ $approval['updated_at'] }}</strong>
+                <strong>{{ $approvalRecord?->updated_at?->format('M j · g:i A') ?? 'Pending' }}</strong>
             </div>
         </div>
 
@@ -109,28 +90,28 @@
                     <ul class="detail-list">
                         <li>
                             <span>Requester</span>
-                            <strong>{{ $booking['requester'] }}</strong>
-                            <p>{{ $booking['department'] }} · {{ $booking['requester_email'] }}</p>
+                            <strong>{{ $requester->name ?? 'Requester' }}</strong>
+                            <p>{{ $department ?? 'Department' }} · {{ $requester->email ?? 'N/A' }}</p>
                         </li>
                         <li>
                             <span>Facility</span>
-                            <strong>{{ $booking['facility'] }}</strong>
+                            <strong>{{ $booking->facility->name ?? 'Facility' }}</strong>
                         </li>
                         <li>
                             <span>Schedule</span>
-                            <strong>{{ $booking['date'] }}</strong>
-                            <p>{{ $booking['start'] }} – {{ $booking['end'] }}</p>
+                            <strong>{{ $scheduleDate ?? '—' }}</strong>
+                            <p>{{ $startTime }} @if($endTime) – {{ $endTime }} @endif</p>
                         </li>
                         <li>
                             <span>Status</span>
-                            <strong>{{ ucfirst($booking['status']) }}</strong>
-                            <p>Current approver: {{ $approval['approver'] }}</p>
+                            <strong>{{ ucfirst($booking->status) }}</strong>
+                            <p>Current approver: {{ $approvalRecord?->approver->name ?? 'Unassigned' }}</p>
                         </li>
                     </ul>
                     <div class="summary-meta-chips">
-                        <span>{{ $booking['reference'] }}</span>
-                        <span>{{ $booking['department'] }} team</span>
-                        <span>Submitted {{ $booking['submitted'] }}</span>
+                        <span>{{ $reference }}</span>
+                        <span>{{ $department ?? 'Shared Services' }}</span>
+                        <span>Submitted {{ $booking->created_at?->format('M j · g:i A') }}</span>
                     </div>
                 </section>
 
@@ -138,11 +119,11 @@
                     <h3>Purpose &amp; notes</h3>
                     <div class="detail-text">
                         <p class="eyebrow">Purpose</p>
-                        <p>{{ $bookingDetail['purpose'] }}</p>
+                        <p>{{ $detail->purpose ?? 'Not provided' }}</p>
                         <p class="eyebrow">Requester notes</p>
-                        <p>{{ $booking['notes'] }}</p>
+                        <p>{{ $detail->additional_notes ?? 'No requester notes' }}</p>
                         <p class="eyebrow">Additional notes</p>
-                        <p>{{ $bookingDetail['additional_notes'] }}</p>
+                        <p>{{ $detail->additional_notes ?? '—' }}</p>
                     </div>
                 </section>
 
@@ -151,11 +132,11 @@
                     <div class="support-grid">
                         <div>
                             <span>SFI support</span>
-                            <strong>{{ $bookingDetail['sfi_support'] ? 'Yes' : 'No' }}</strong>
+                            <strong>{{ ($detail->sfi_support ?? false) ? 'Yes' : 'No' }}</strong>
                         </div>
                         <div>
                             <span>SFI team count</span>
-                            <strong>{{ $bookingDetail['sfi_count'] }}</strong>
+                            <strong>{{ $detail->sfi_count ?? 0 }}</strong>
                         </div>
                     </div>
                 </section>
@@ -167,20 +148,20 @@
                     <div class="status-stack">
                         <div>
                             <span>Current status</span>
-                            <strong>{{ ucfirst($approval['status']) }}</strong>
+                            <strong>{{ ucfirst($approvalRecord->status ?? $booking->status) }}</strong>
                         </div>
                         <div>
                             <span>Approver</span>
-                            <strong>{{ $approval['approver'] }}</strong>
+                            <strong>{{ $approvalRecord?->approver->name ?? 'Unassigned' }}</strong>
                         </div>
                         <div>
                             <span>Last updated</span>
-                            <strong>{{ $approval['updated_at'] }}</strong>
+                            <strong>{{ $approvalRecord?->updated_at?->format('M j · g:i A') ?? '—' }}</strong>
                         </div>
                     </div>
                     <div class="status-remarks">
                         <p class="eyebrow">Remarks</p>
-                        <p>{{ $approval['remarks'] }}</p>
+                        <p>{{ $approvalRecord->remarks ?? 'No remarks captured yet.' }}</p>
                     </div>
                 </section>
 

@@ -10,18 +10,7 @@
 @endpush
 
 @php
-    $user = auth()->user();
-    $rooms = [
-        ['room' => 'Studio A', 'purpose' => 'Video capture', 'time' => '8:00 – 10:00 AM', 'owner' => 'Comms'],
-        ['room' => 'Victory Room 2', 'purpose' => 'Board meeting', 'time' => '10:30 – 12:00 NN', 'owner' => 'Executive'],
-        ['room' => 'Multipurpose Hall', 'purpose' => 'Volunteer training', 'time' => '1:00 – 4:00 PM', 'owner' => 'Operations'],
-        ['room' => 'Creative Lab', 'purpose' => 'Podcast demo', 'time' => '2:00 – 3:30 PM', 'owner' => 'Media'],
-    ];
-    $approvalsQueue = [
-        ['facility' => 'Multipurpose Hall', 'title' => 'Leaders weekend summit', 'team' => 'Outreach', 'date' => 'Dec 2 · 8:00 AM', 'status' => 'pending', 'priority' => 'High'],
-        ['facility' => 'Studio B', 'title' => 'Production block', 'team' => 'Comms', 'date' => 'Dec 2 · 2:00 PM', 'status' => 'review', 'priority' => 'Medium'],
-        ['facility' => 'Victory Room 2', 'title' => 'Leadership sync', 'team' => 'Pastoral', 'date' => 'Dec 3 · 10:00 AM', 'status' => 'ready', 'priority' => 'Standard'],
-    ];
+    $user = $user ?? auth()->user();
 @endphp
 
 @section('content')
@@ -59,15 +48,15 @@
                 <div class="admin-hero-actions">
                     <span class="hero-metric-chip">
                         <small>Approvals today</small>
-                        <strong>27</strong>
+                        <strong>{{ number_format($heroStats['approvalsToday'] ?? 0) }}</strong>
                     </span>
                     <span class="hero-metric-chip">
                         <small>Avg SLA</small>
-                        <strong>42 mins</strong>
+                        <strong>{{ number_format($heroStats['avgSla'] ?? 0) }} mins</strong>
                     </span>
                     <span class="hero-metric-chip">
                         <small>Incidents</small>
-                        <strong>2 open</strong>
+                        <strong>{{ number_format($heroStats['openIncidents'] ?? 0) }} open</strong>
                     </span>
                 </div>
             </div>
@@ -94,17 +83,17 @@
         <div class="admin-stats-grid">
             <div class="admin-stat-card">
                 <p class="admin-stat-label">Pending approvals</p>
-                <p class="admin-stat-value">18</p>
+                <p class="admin-stat-value">{{ number_format($pendingApprovals ?? 0) }}</p>
                 <p class="text-muted small mb-0">Across all facilities</p>
             </div>
             <div class="admin-stat-card">
                 <p class="admin-stat-label">Today's requests</p>
-                <p class="admin-stat-value">12</p>
-                <p class="text-muted small mb-0">3 escalated</p>
+                <p class="admin-stat-value">{{ number_format($todaysRequests ?? 0) }}</p>
+                <p class="text-muted small mb-0">Submitted by staff</p>
             </div>
             <div class="admin-stat-card">
                 <p class="admin-stat-label">Active incidents</p>
-                <p class="admin-stat-value">2</p>
+                <p class="admin-stat-value">{{ number_format($heroStats['openIncidents'] ?? 0) }}</p>
                 <p class="text-muted small mb-0">Facilities notified</p>
             </div>
         </div>
@@ -112,17 +101,17 @@
         <div class="status-board">
             <div class="status-card">
                 <span>Facilities online</span>
-                <p class="status-value">23 / 24</p>
+                <p class="status-value">{{ $statusBoard['facilitiesOnline'] ?? 0 }} / {{ $statusBoard['totalFacilities'] ?? 0 }}</p>
                 <p class="status-note">Storage wing under maintenance</p>
             </div>
             <div class="status-card">
                 <span>Approvers on duty</span>
-                <p class="status-value">5</p>
+                <p class="status-value">{{ $statusBoard['approversOnDuty'] ?? 0 }}</p>
                 <p class="status-note">Operations · Logistics · SFI</p>
             </div>
             <div class="status-card">
                 <span>Resolved today</span>
-                <p class="status-value">14</p>
+                <p class="status-value">{{ $statusBoard['resolvedToday'] ?? 0 }}</p>
                 <p class="status-note">Processing time avg. 48 mins</p>
             </div>
         </div>
@@ -139,11 +128,11 @@
                         <div class="approval-spotlight-meta">
                             <div class="metric-block">
                                 <span class="label">Waiting</span>
-                                <strong>18</strong>
+                                <strong>{{ number_format($heroStats['waiting'] ?? 0) }}</strong>
                             </div>
                             <div class="metric-block">
                                 <span class="label">Breaching SLA</span>
-                                <strong class="text-warning">3</strong>
+                                <strong class="text-warning">{{ number_format($heroStats['breaches'] ?? 0) }}</strong>
                             </div>
                         </div>
                     </div>
@@ -151,8 +140,8 @@
                         @foreach ($approvalsQueue as $item)
                             @php
                                 $tone = match($item['status']) {
-                                    'review' => 'is-info',
-                                    'ready' => 'is-success',
+                                    'approved' => 'is-success',
+                                    'rejected' => 'is-danger',
                                     default => 'is-warning',
                                 };
                             @endphp
@@ -165,7 +154,7 @@
                                     </div>
                                     <p class="timeline-meta mb-0">{{ $item['team'] }} · {{ $item['date'] }} · {{ $item['priority'] }} priority</p>
                                 <div class="timeline-actions">
-                                    <a href="{{ route('admin.approvals.show') }}" class="timeline-link">
+                                    <a href="{{ route('admin.approvals.show', $item['id']) }}" class="timeline-link">
                                         View booking details &gt;
                                     </a>
                                     <div class="timeline-buttons">
