@@ -92,6 +92,10 @@ Route::view('/admin/calendar', 'admin.calendar')->name('admin.calendar');
 // Temporary preview route for Admin Audit Log
 Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
 
+// Admin approvals queue previews
+Route::view('/admin/approvals', 'admin.approvals.queue')->name('admin.approvals.queue');
+Route::view('/admin/approvals/detail', 'admin.approvals.show')->name('admin.approvals.show');
+
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {

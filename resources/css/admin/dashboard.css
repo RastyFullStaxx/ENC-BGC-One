@@ -251,6 +251,131 @@
   padding-bottom: 0;
 }
 
+.approval-spotlight {
+  background: linear-gradient(135deg, rgba(0, 24, 64, 0.95), #001840);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  box-shadow: 0 30px 60px rgba(0, 23, 65, 0.35);
+  color: #fff;
+}
+
+.approval-spotlight-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.approval-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  margin-bottom: 0.35rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.approval-spotlight-header h3 {
+  margin: 0.15rem 0;
+  font-size: 1.5rem;
+}
+
+.approval-spotlight-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.approval-spotlight-meta .label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.65);
+  display: block;
+}
+
+.approval-spotlight-meta strong {
+  font-size: 1.5rem;
+  display: block;
+}
+
+.approval-cta {
+  white-space: nowrap;
+  border-radius: 999px;
+  font-weight: 600;
+  padding-inline: 1.5rem;
+}
+
+.approval-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.timeline-indicator {
+  width: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.timeline-indicator.is-warning { background: #FFC857; }
+.timeline-indicator.is-info { background: #75A3EB; }
+.timeline-indicator.is-success { background: #00C950; }
+
+.timeline-body {
+  flex: 1;
+}
+
+.timeline-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-meta {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9rem;
+}
+
+.timeline-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.timeline-actions .link-muted {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.timeline-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.timeline-buttons .btn {
+  border-radius: 999px;
+  font-size: 0.85rem;
+  padding-inline: 1.1rem;
+}
+
 .admin-approvals-list {
   list-style: none;
   padding: 0;
