@@ -13,44 +13,56 @@
     $user = auth()->user();
     $approvals = [
         [
-            'ref' => 'BKG-8742',
+            'reference' => 'BKG-8742',
             'facility' => 'Multipurpose Hall',
+            'facility_code' => 'MPH-01',
+            'room' => 'G01',
             'requester' => 'Jared Mercado',
-            'department' => 'Outreach',
-            'purpose' => 'Leaders weekend summit',
-            'date' => 'Dec 2 · 8:00 AM',
+            'requester_email' => 'jared.mercado@oneservices.ph',
+            'event' => 'Leaders Weekend Summit',
+            'schedule' => 'Dec 2 · 8:00 AM – 10:00 AM',
+            'submitted' => 'Nov 30 · 9:42 PM',
             'status' => 'pending',
-            'priority' => 'High',
+            'remarks' => 'Waiting for routing to Ops approver',
         ],
         [
-            'ref' => 'BKG-8790',
+            'reference' => 'BKG-8790',
             'facility' => 'Studio B',
+            'facility_code' => 'STB-02',
+            'room' => '201',
             'requester' => 'Ava Santos',
-            'department' => 'Comms',
-            'purpose' => 'Production block recording',
-            'date' => 'Dec 2 · 2:00 PM',
-            'status' => 'review',
-            'priority' => 'Medium',
+            'requester_email' => 'ava.santos@oneservices.ph',
+            'event' => 'Production Block Recording',
+            'schedule' => 'Dec 2 · 2:00 PM – 4:00 PM',
+            'submitted' => 'Nov 30 · 1:10 PM',
+            'status' => 'approved',
+            'remarks' => 'Approved with stage reset',
         ],
         [
-            'ref' => 'BKG-8720',
+            'reference' => 'BKG-8720',
             'facility' => 'Victory Room 2',
+            'facility_code' => 'VCR-12',
+            'room' => '312',
             'requester' => 'Luis Catapang',
-            'department' => 'Pastoral',
-            'purpose' => 'Leadership sync',
-            'date' => 'Dec 3 · 10:00 AM',
-            'status' => 'ready',
-            'priority' => 'Standard',
+            'requester_email' => 'luis.catapang@oneservices.ph',
+            'event' => 'Leadership Sync',
+            'schedule' => 'Dec 3 · 10:00 AM – 11:30 AM',
+            'submitted' => 'Nov 29 · 4:30 PM',
+            'status' => 'pending',
+            'remarks' => 'Needs requester confirmation',
         ],
         [
-            'ref' => 'BKG-8810',
+            'reference' => 'BKG-8810',
             'facility' => 'Studio A',
+            'facility_code' => 'STA-01',
+            'room' => 'LL1',
             'requester' => 'Micah Lim',
-            'department' => 'Media',
-            'purpose' => 'Podcast taping',
-            'date' => 'Dec 3 · 4:00 PM',
-            'status' => 'pending',
-            'priority' => 'High',
+            'requester_email' => 'micah.lim@oneservices.ph',
+            'event' => 'Podcast Season Finale',
+            'schedule' => 'Dec 3 · 4:00 PM – 5:30 PM',
+            'submitted' => 'Nov 30 · 8:20 AM',
+            'status' => 'rejected',
+            'remarks' => 'Reject: schedule conflict',
         ],
     ];
 @endphp
@@ -77,10 +89,16 @@
         </div>
 
         <header class="approvals-hero">
-            <div>
+            <div class="approvals-hero-content">
                 <span class="admin-hero-badge">Approvals Command Center</span>
                 <h1>Booking approvals queue</h1>
                 <p>Monitor all live booking requests, triage escalations, and keep SLA promises across campus operations.</p>
+                <div class="approvals-hero-footer">
+                    <p class="approvals-hero-hint">Jumps straight to the most recent booking awaiting a decision.</p>
+                    <a href="{{ route('admin.approvals.show') }}" class="approvals-hero-cta">Open latest request</a>
+                </div>
+            </div>
+            <div class="approvals-hero-panel">
                 <div class="approvals-hero-metrics">
                     <div class="metric">
                         <small>Waiting</small>
@@ -95,18 +113,15 @@
                         <strong>42 mins</strong>
                     </div>
                 </div>
-            </div>
-            <div>
-                <a href="{{ route('admin.approvals.show') }}" class="btn btn-light">Open latest request</a>
+                <span class="approvals-hero-updated">Live queue data · refreshed 5 mins ago</span>
             </div>
         </header>
 
         <div class="approvals-filters">
             <button class="approvals-chip active">All status</button>
             <button class="approvals-chip">Pending</button>
-            <button class="approvals-chip">Needs review</button>
-            <button class="approvals-chip">Ready to release</button>
-            <button class="approvals-chip">High priority</button>
+            <button class="approvals-chip">Approved</button>
+            <button class="approvals-chip">Rejected</button>
         </div>
 
         <div class="queue-surface">
@@ -129,11 +144,12 @@
                     <thead>
                         <tr>
                             <th>Reference</th>
-                            <th>Facility / Purpose</th>
+                            <th>Facility</th>
                             <th>Requester</th>
-                            <th>Date &amp; SLA</th>
+                            <th>Event</th>
+                            <th>Schedule</th>
                             <th>Status</th>
-                            <th>Priority</th>
+                            <th>Remarks</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -141,30 +157,39 @@
                         @foreach ($approvals as $row)
                             @php
                                 $statusClass = match($row['status']) {
-                                    'review' => 'is-review',
-                                    'ready' => 'is-ready',
+                                    'approved' => 'is-approved',
+                                    'rejected' => 'is-rejected',
+                                    'cancelled' => 'is-cancelled',
+                                    'noshow' => 'is-noshow',
                                     default => 'is-pending',
                                 };
                             @endphp
                             <tr>
                                 <td>
-                                    <span class="queue-primary">{{ $row['ref'] }}</span>
-                                    <span class="queue-meta">{{ $row['department'] }}</span>
+                                    <span class="queue-primary">{{ $row['reference'] }}</span>
+                                    <span class="queue-meta">Submitted {{ $row['submitted'] }}</span>
                                 </td>
                                 <td>
                                     <span class="queue-primary">{{ $row['facility'] }}</span>
-                                    <span class="queue-meta">{{ $row['purpose'] }}</span>
+                                    <span class="queue-meta">{{ $row['facility_code'] }} · Room {{ $row['room'] }}</span>
                                 </td>
                                 <td>
                                     <span class="queue-primary">{{ $row['requester'] }}</span>
-                                    <span class="queue-meta">{{ $row['department'] }}</span>
+                                    <span class="queue-meta">{{ $row['requester_email'] }}</span>
                                 </td>
                                 <td>
-                                    <span class="queue-primary">{{ $row['date'] }}</span>
-                                    <span class="queue-meta">SLA: 60 mins</span>
+                                    <span class="queue-primary">{{ $row['event'] }}</span>
+                                    <span class="queue-meta">Event name</span>
+                                </td>
+                                <td>
+                                    <span class="queue-primary">{{ $row['schedule'] }}</span>
+                                    <span class="queue-meta">Booking date · time block</span>
                                 </td>
                                 <td><span class="queue-status {{ $statusClass }}">{{ ucfirst($row['status']) }}</span></td>
-                                <td>{{ $row['priority'] }}</td>
+                                <td>
+                                    <span class="queue-primary">{{ $row['remarks'] ?? 'No remarks yet' }}</span>
+                                    <span class="queue-meta">Internal notes</span>
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.approvals.show') }}" class="btn btn-link">View booking</a>
                                 </td>

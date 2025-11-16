@@ -1,8 +1,8 @@
 .admin-shell {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1760px;
   margin: 0 auto 4rem;
-  padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 4vw, 2rem);
+  padding: clamp(1.5rem, 3vw, 3.5rem) clamp(1rem, 5vw, 3.25rem);
 }
 
 .admin-hero {
@@ -104,8 +104,18 @@
   padding: 1.4rem;
   color: #fff;
   background: linear-gradient(135deg, #1a0f26, #581524);
+  background-size: 220% 220%;
+  animation: adminHeroFlow 18s ease infinite;
   position: relative;
   overflow: hidden;
+}
+
+.admin-highlight--hub {
+  background: linear-gradient(130deg, #2b0f1d, #7c1126, #180004);
+}
+
+.admin-highlight--status {
+  background: linear-gradient(135deg, #001840, #155dfc, #00a7a2);
 }
 
 .admin-highlight-card::after {
@@ -135,6 +145,11 @@
   margin-top: 0.6rem;
 }
 
+.admin-highlight-btn {
+  display: inline-flex;
+  margin-top: 0.8rem;
+}
+
 .admin-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -154,7 +169,7 @@
   font-size: 0.78rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: #000206;
 }
 
 .admin-stat-value {
@@ -184,7 +199,7 @@
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #94a3b8;
+  color: #000206;
 }
 
 .status-value {
@@ -252,11 +267,14 @@
 }
 
 .approval-spotlight {
-  background: linear-gradient(135deg, rgba(0, 24, 64, 0.95), #001840);
+  background: linear-gradient(135deg, #2b0f1d, #7c1126 45%, #001840 90%);
+  background-size: 240% 240%;
+  animation: adminHeroFlow 16s ease infinite;
   border-radius: 1.5rem;
   padding: 1.75rem;
   box-shadow: 0 30px 60px rgba(0, 23, 65, 0.35);
   color: #fff;
+  margin-bottom: 1.5rem;
 }
 
 .approval-spotlight-header {
@@ -266,6 +284,10 @@
   flex-wrap: wrap;
   align-items: flex-start;
   margin-bottom: 1.5rem;
+}
+
+.approval-spotlight-header > div:first-child {
+  max-width: 360px;
 }
 
 .approval-eyebrow {
@@ -286,6 +308,11 @@
   align-items: center;
   gap: 1.25rem;
   flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.metric-block {
+  min-width: 120px;
 }
 
 .approval-spotlight-meta .label {
@@ -303,9 +330,23 @@
 
 .approval-cta {
   white-space: nowrap;
-  border-radius: 999px;
+  border-radius: 0.85rem;
   font-weight: 600;
-  padding-inline: 1.5rem;
+  padding: 0.55rem 1.6rem;
+  background: transparent;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.approval-cta:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.approval-cta-wrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
 }
 
 .approval-timeline {
@@ -359,21 +400,45 @@
   flex-wrap: wrap;
 }
 
-.timeline-actions .link-muted {
-  color: rgba(255, 255, 255, 0.8);
-  text-decoration: none;
+.timeline-link {
+  color: rgba(255, 255, 255, 0.95);
+  text-decoration: underline;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
 }
 
 .timeline-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
-.timeline-buttons .btn {
-  border-radius: 999px;
+.timeline-btn {
+  border-radius: 0.85rem;
   font-size: 0.85rem;
-  padding-inline: 1.1rem;
+  padding: 0.55rem 1.5rem;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.timeline-btn--primary {
+  background: #fff;
+  color: #001840;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-btn--secondary {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+}
+
+.timeline-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.25);
 }
 
 .admin-approvals-list {

@@ -78,15 +78,16 @@
         </header>
 
         <div class="admin-highlight">
-            <div class="admin-highlight-card">
+            <div class="admin-highlight-card admin-highlight--hub">
                 <p class="small fw-semibold mb-1">Admin hub</p>
                 <h2>Centralized tools & approvals</h2>
                 <p class="mb-0">All admin tools, policies, and escalations live here. Launch workflows, delegate tasks, and monitor service health.</p>
+                
             </div>
-            <div class="admin-highlight-card">
+            <div class="admin-highlight-card admin-highlight--hub">
                 <p class="small fw-semibold mb-1">Service status</p>
                 <p class="mb-1">Facilities operational · last sync 2m ago.</p>
-                <a href="{{ route('admin.hub') }}" class="btn btn-light btn-sm">Open hub</a>
+                <a href="{{ route('admin.hub') }}" class="approval-cta admin-highlight-btn">Open hub</a>
             </div>
         </div>
 
@@ -133,18 +134,17 @@
                         <div>
                             <p class="approval-eyebrow">Queue health</p>
                             <h3>Approval queue</h3>
-                            <p class="text-muted mb-0">Critical bookings awaiting action right now.</p>
+                            <p class="mb-0">Critical bookings awaiting action right now.</p>
                         </div>
                         <div class="approval-spotlight-meta">
-                            <div>
+                            <div class="metric-block">
                                 <span class="label">Waiting</span>
                                 <strong>18</strong>
                             </div>
-                            <div>
+                            <div class="metric-block">
                                 <span class="label">Breaching SLA</span>
                                 <strong class="text-warning">3</strong>
                             </div>
-                            <a href="{{ route('admin.approvals.queue') }}" class="btn btn-primary approval-cta">Open approvals queue</a>
                         </div>
                     </div>
                     <div class="approval-timeline">
@@ -164,16 +164,21 @@
                                         <span class="admin-tag {{ $tone }}">{{ ucfirst($item['status']) }}</span>
                                     </div>
                                     <p class="timeline-meta mb-0">{{ $item['team'] }} · {{ $item['date'] }} · {{ $item['priority'] }} priority</p>
-                                    <div class="timeline-actions">
-                                        <a href="{{ route('admin.approvals.show') }}" class="link-muted">View booking details</a>
-                                        <div class="timeline-buttons">
-                                            <button class="btn btn-success btn-sm">Approve</button>
-                                            <button class="btn btn-outline-danger btn-sm">Escalate</button>
-                                        </div>
+                                <div class="timeline-actions">
+                                    <a href="{{ route('admin.approvals.show') }}" class="timeline-link">
+                                        View booking details &gt;
+                                    </a>
+                                    <div class="timeline-buttons">
+                                        <button class="timeline-btn timeline-btn--primary">Approve</button>
+                                        <button class="timeline-btn timeline-btn--secondary">Reject</button>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         @endforeach
+                    </div>
+                    <div class="approval-cta-wrap">
+                        <a href="{{ route('admin.approvals.queue') }}" class="approval-cta">Open approvals queue</a>
                     </div>
                 </article>
 

@@ -25,8 +25,10 @@
 }
 
 .admin-calendar-shell {
-    width: min(1240px, calc(100% - 40px));
+    width: 100%;
+    max-width: 1760px;
     margin: 0 auto;
+    padding: 0 clamp(1rem, 5vw, 3.25rem);
 }
 
 .admin-calendar-shell .text-muted {
