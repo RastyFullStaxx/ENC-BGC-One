@@ -31,12 +31,6 @@ body {
     z-index: 100;
 }
 
-.container {
-    max-width: 1294px;
-    margin: 0 auto;
-    padding: 16px 24px;
-}
-
 .header-content {
     display: flex;
     align-items: center;
@@ -140,6 +134,7 @@ body {
 }
 
 .main-content {
+    width: 100%;
     max-width: 1231px;
     margin: 0 auto;
 }

@@ -46,6 +46,12 @@ class AdminApprovalController extends Controller
 
         $latestPending = Booking::where('status', 'pending')->latest('created_at')->first();
 
+        $heroStats = [
+            'approvalsToday' => Booking::where('status', 'approved')->count(),
+            'avgSla' => $this->averageSlaMinutes(),
+            'openIncidents' => Booking::where('status', 'rejected')->count(),
+        ];
+
         return view('admin.approvals.queue', [
             'user' => auth()->user(),
             'bookings' => $bookings,
@@ -53,6 +59,7 @@ class AdminApprovalController extends Controller
             'latestPending' => $latestPending,
             'statusFilter' => $statusFilter,
             'availableStatuses' => $statuses,
+            'heroStats' => $heroStats,
         ]);
     }
 
@@ -66,5 +73,58 @@ class AdminApprovalController extends Controller
             'detail' => $booking->details,
             'approvalRecord' => $booking->approval,
         ]);
+    }
+
+    public function decide(Request $request, Booking $booking)
+    {
+        $data = $request->validate([
+            'action' => 'required|in:approve,reject,changes',
+            'notes' => 'nullable|string|max:1000',
+            'redirect' => 'nullable|url',
+        ]);
+
+        $statusMap = [
+            'approve' => 'approved',
+            'reject' => 'rejected',
+            'changes' => 'pending',
+        ];
+
+        $newStatus = $statusMap[$data['action']];
+        $booking->status = $newStatus;
+        $booking->save();
+
+        $booking->approval()->updateOrCreate(
+            ['booking_id' => $booking->id],
+            [
+                'approved_by' => auth()->id(),
+                'status' => $newStatus,
+                'remarks' => $data['notes'] ?? ucfirst($data['action']) . ' via admin workspace',
+            ]
+        );
+
+        $message = match ($data['action']) {
+            'approve' => 'Booking approved successfully.',
+            'reject' => 'Booking rejected.',
+            default => 'Changes requested from requester.',
+        };
+
+        return redirect($data['redirect'] ?? url()->previous())
+            ->with('statusMessage', $message);
+    }
+
+    protected function averageSlaMinutes(): int
+    {
+        $durations = BookingApproval::whereIn('status', ['approved', 'rejected'])
+            ->get()
+            ->map(function (BookingApproval $approval) {
+                if (! $approval->created_at || ! $approval->updated_at) {
+                    return null;
+                }
+
+                return $approval->created_at->diffInMinutes($approval->updated_at);
+            })
+            ->filter();
+
+        return $durations->count() ? (int) round($durations->avg()) : 0;
     }
 }

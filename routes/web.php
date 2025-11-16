@@ -76,6 +76,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/hub', [AdminHubController::class, 'index'])->name('admin.hub');
     Route::get('/admin/approvals', [AdminApprovalController::class, 'index'])->name('admin.approvals.queue');
     Route::get('/admin/approvals/{booking}', [AdminApprovalController::class, 'show'])->name('admin.approvals.show');
+    Route::post('/admin/approvals/{booking}/decision', [AdminApprovalController::class, 'decide'])->name('admin.approvals.decision');
 });
 
 // Temporary preview route for Admin Users & Roles tool

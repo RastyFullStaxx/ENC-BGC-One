@@ -14,10 +14,10 @@ class AdminDashboardController extends Controller
     public function index()
     {
         $pendingApprovals = Booking::where('status', 'pending')->count();
-        $todaysRequests = Booking::whereDate('created_at', today())->count();
-        $resolvedToday = Booking::where('status', 'approved')
+        $approvalsToday = Booking::where('status', 'approved')
             ->whereDate('updated_at', today())
             ->count();
+        $resolvedToday = $approvalsToday;
 
         $waiting = $pendingApprovals;
         $slaBreaches = Booking::where('status', 'pending')
@@ -25,6 +25,7 @@ class AdminDashboardController extends Controller
             ->count();
 
         $rooms = Booking::with(['facility', 'requester.department', 'details'])
+            ->where('status', 'approved')
             ->whereDate('date', '>=', today())
             ->orderBy('date')
             ->orderBy('start_at')
@@ -46,7 +47,7 @@ class AdminDashboardController extends Controller
             ->values();
 
         $approvalsQueue = Booking::with(['facility', 'requester', 'details'])
-            ->whereIn('status', ['pending', 'approved', 'rejected'])
+            ->where('status', 'pending')
             ->latest('updated_at')
             ->limit(3)
             ->get()
@@ -65,12 +66,33 @@ class AdminDashboardController extends Controller
             })
             ->values();
 
+        $chartRange = 6;
+        $chartStart = today()->subDays($chartRange)->startOfDay();
+        $chartCounts = Booking::selectRaw('DATE(updated_at) as day, COUNT(*) as total')
+            ->where('status', 'approved')
+            ->where('updated_at', '>=', $chartStart)
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $heroChart = collect(range($chartRange, 0))->map(function ($offset) use ($chartCounts) {
+            $date = today()->subDays($offset);
+            return [
+                'label' => $date->format('M j'),
+                'value' => (int) ($chartCounts[$date->toDateString()] ?? 0),
+            ];
+        });
+
         $heroStats = [
-            'approvalsToday' => $todaysRequests,
+            'approvalsToday' => $approvalsToday,
             'avgSla' => $this->averageSlaMinutes(),
             'openIncidents' => Booking::where('status', 'rejected')->count(),
             'waiting' => $waiting,
             'breaches' => $slaBreaches,
+            'chart' => [
+                'series' => $heroChart,
+                'max' => max(1, $heroChart->max('value')),
+                'total' => $heroChart->sum('value'),
+            ],
         ];
 
         $statusBoard = [
@@ -87,7 +109,8 @@ class AdminDashboardController extends Controller
             'heroStats' => $heroStats,
             'statusBoard' => $statusBoard,
             'pendingApprovals' => $pendingApprovals,
-            'todaysRequests' => $todaysRequests,
+            'todaysRequests' => $approvalsToday,
+            'heroChart' => $heroStats['chart'],
         ]);
     }
 

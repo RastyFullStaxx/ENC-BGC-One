@@ -33,6 +33,11 @@
                 &lt; Back to landing page
             </a>
         </div>
+        @if (session('statusMessage'))
+            <div class="admin-flash">
+                {{ session('statusMessage') }}
+            </div>
+        @endif
         <header class="admin-hero">
             <div class="admin-hero-content">
                 <span class="admin-hero-badge">
@@ -61,8 +66,22 @@
                 </div>
             </div>
             <div class="hero-chart-card">
-                <p class="mb-1">Booking volume (last 7 days)</p>
-                <div class="hero-chart-placeholder">Chart placeholder</div>
+                <div class="hero-chart-header">
+                    <p>Approvals · last 7 days</p>
+                    <strong>{{ number_format($heroChart['total'] ?? 0) }}</strong>
+                </div>
+                <div class="hero-chart-bars">
+                    @foreach (($heroChart['series'] ?? collect()) as $point)
+                        @php
+                            $max = max(1, $heroChart['max'] ?? 1);
+                            $height = ($point['value'] / $max) * 100;
+                        @endphp
+                        <div class="hero-chart-bar">
+                            <div class="hero-chart-bar-fill" style="height: {{ $height }}%"></div>
+                            <span>{{ $point['label'] }}</span>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </header>
 
@@ -158,9 +177,37 @@
                                         View booking details &gt;
                                     </a>
                                     <div class="timeline-buttons">
-                                        <button class="timeline-btn timeline-btn--primary">Approve</button>
-                                        <button class="timeline-btn timeline-btn--secondary">Reject</button>
+                                        <button class="timeline-btn timeline-btn--primary"
+                                                data-decision-trigger
+                                                data-form="timeline-decision-{{ $item['id'] }}-approve"
+                                                data-confirm-title="Approve booking?"
+                                                data-confirm-text="This will mark the booking as approved.">
+                                            Approve
+                                        </button>
+                                        <button class="timeline-btn timeline-btn--secondary"
+                                                data-decision-trigger
+                                                data-form="timeline-decision-{{ $item['id'] }}-reject"
+                                                data-confirm-title="Reject booking?"
+                                                data-confirm-text="Requester will be notified of the rejection.">
+                                            Reject
+                                        </button>
                                     </div>
+                                    <form id="timeline-decision-{{ $item['id'] }}-approve"
+                                          action="{{ route('admin.approvals.decision', $item['id']) }}"
+                                          method="POST" class="d-none">
+                                        @csrf
+                                        <input type="hidden" name="action" value="approve">
+                                        <input type="hidden" name="notes" value="">
+                                        <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                                    </form>
+                                    <form id="timeline-decision-{{ $item['id'] }}-reject"
+                                          action="{{ route('admin.approvals.decision', $item['id']) }}"
+                                          method="POST" class="d-none">
+                                        @csrf
+                                        <input type="hidden" name="action" value="reject">
+                                        <input type="hidden" name="notes" value="">
+                                        <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -214,3 +261,50 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-decision-trigger]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formId = button.dataset.form;
+                    const form = document.getElementById(formId);
+                    if (!form) {
+                        return;
+                    }
+
+                    const confirmTitle = button.dataset.confirmTitle || 'Are you sure?';
+                    const confirmText = button.dataset.confirmText || 'This action cannot be undone.';
+                    Swal.fire({
+                        title: confirmTitle,
+                        text: confirmText,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#001840',
+                        cancelButtonColor: '#9ca3af',
+                        confirmButtonText: 'Yes, continue',
+                        reverseButtons: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'admin-swal-popup',
+                            title: 'admin-swal-title',
+                            confirmButton: 'admin-swal-btn admin-swal-btn--primary',
+                            cancelButton: 'admin-swal-btn admin-swal-btn--ghost',
+                        },
+                        showClass: {
+                            popup: 'admin-swal-pop',
+                        },
+                        hideClass: {
+                            popup: 'admin-swal-fade',
+                        },
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

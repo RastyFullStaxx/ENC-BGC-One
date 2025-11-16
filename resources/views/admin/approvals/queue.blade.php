@@ -11,6 +11,11 @@
 
 @php
     $user = $user ?? auth()->user();
+    $heroStats = $heroStats ?? [
+        'approvalsToday' => 0,
+        'avgSla' => 0,
+        'openIncidents' => 0,
+    ];
 @endphp
 
 @section('content')
@@ -64,6 +69,20 @@
                     </div>
                 </div>
                 <span class="approvals-hero-updated">Live queue data · refreshed {{ now()->diffForHumans(null, true) }} ago</span>
+                <div class="approvals-hero-trackers">
+                    <div class="metric">
+                        <small>Approvals today</small>
+                        <strong>{{ number_format($heroStats['approvalsToday'] ?? 0) }}</strong>
+                    </div>
+                    <div class="metric">
+                        <small>Avg SLA</small>
+                        <strong>{{ number_format($heroStats['avgSla'] ?? 0) }} mins</strong>
+                    </div>
+                    <div class="metric">
+                        <small>Open incidents</small>
+                        <strong>{{ number_format($heroStats['openIncidents'] ?? 0) }}</strong>
+                    </div>
+                </div>
             </div>
         </header>
 

@@ -41,6 +41,11 @@
                 &lt; Back to approvals queue
             </a>
         </div>
+        @if (session('statusMessage'))
+            <div class="admin-flash">
+                {{ session('statusMessage') }}
+            </div>
+        @endif
 
         <article class="approval-detail-hero">
             <div>
@@ -170,12 +175,114 @@
                     <label for="decisionNotes" class="form-label">Notes to requester</label>
                     <textarea id="decisionNotes" placeholder="Add context, approvals, or requests for changes..."></textarea>
                     <div class="decision-buttons">
-                        <button class="btn btn-success flex-1">Approve</button>
-                        <button class="btn btn-outline-danger flex-1">Reject</button>
-                        <button class="btn btn-outline-secondary flex-1">Request changes</button>
+                        <button class="btn btn-success flex-1"
+                                type="button"
+                                data-decision-trigger
+                                data-form="detail-decision-approve"
+                                data-confirm-title="Approve booking?"
+                                data-confirm-text="Requester will be notified of the approval.">
+                            Approve
+                        </button>
+                        <button class="btn btn-outline-danger flex-1"
+                                type="button"
+                                data-decision-trigger
+                                data-form="detail-decision-reject"
+                                data-confirm-title="Reject booking?"
+                                data-confirm-text="Are you sure you want to reject this booking?">
+                            Reject
+                        </button>
+                        <button class="btn btn-outline-secondary flex-1"
+                                type="button"
+                                data-decision-trigger
+                                data-form="detail-decision-changes"
+                                data-note-source="decisionNotes"
+                                data-confirm-title="Request changes?"
+                                data-confirm-text="Requester will be prompted to adjust their booking.">
+                            Request changes
+                        </button>
                     </div>
+                    <form id="detail-decision-approve"
+                          action="{{ route('admin.approvals.decision', $booking) }}"
+                          method="POST" class="d-none">
+                        @csrf
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="notes" value="">
+                        <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                    </form>
+                    <form id="detail-decision-reject"
+                          action="{{ route('admin.approvals.decision', $booking) }}"
+                          method="POST" class="d-none">
+                        @csrf
+                        <input type="hidden" name="action" value="reject">
+                        <input type="hidden" name="notes" value="">
+                        <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                    </form>
+                    <form id="detail-decision-changes"
+                          action="{{ route('admin.approvals.decision', $booking) }}"
+                          method="POST" class="d-none">
+                        @csrf
+                        <input type="hidden" name="action" value="changes">
+                        <input type="hidden" name="notes" value="">
+                        <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+                    </form>
                 </section>
             </aside>
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-decision-trigger]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const formId = button.dataset.form;
+                    const form = document.getElementById(formId);
+                    if (!form) {
+                        return;
+                    }
+
+                    const noteFieldId = button.dataset.noteSource;
+                    if (noteFieldId) {
+                        const noteField = document.getElementById(noteFieldId);
+                        const noteInput = form.querySelector('input[name="notes"]');
+                        if (noteField && noteInput) {
+                            noteInput.value = noteField.value;
+                        }
+                    }
+
+                    const confirmTitle = button.dataset.confirmTitle || 'Are you sure?';
+                    const confirmText = button.dataset.confirmText || 'This action cannot be undone.';
+                    Swal.fire({
+                        title: confirmTitle,
+                        text: confirmText,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#001840',
+                        cancelButtonColor: '#9ca3af',
+                        confirmButtonText: 'Yes, continue',
+                        reverseButtons: true,
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'admin-swal-popup',
+                            title: 'admin-swal-title',
+                            confirmButton: 'admin-swal-btn admin-swal-btn--primary',
+                            cancelButton: 'admin-swal-btn admin-swal-btn--ghost',
+                        },
+                        showClass: {
+                            popup: 'admin-swal-pop',
+                        },
+                        hideClass: {
+                            popup: 'admin-swal-fade',
+                        },
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

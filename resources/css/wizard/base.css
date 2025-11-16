@@ -173,6 +173,8 @@
 }
 
 .enc-stepper {
+  display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
@@ -181,6 +183,9 @@
   padding-bottom: 0.5rem;
   min-width: 0;
   gap: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .enc-stepper-circle {
@@ -209,9 +214,8 @@
   background: #E5E7EB;
   border-radius: 999px;
   opacity: 1;
-  align-self: center;
   flex-grow: 1;
-  margin-left: 1rem;
+  margin: 0 1rem 0 -1.55rem;
 }
 
 .enc-stepper-item.is-active .enc-stepper-circle {
