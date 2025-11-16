@@ -142,13 +142,14 @@ body {
     display:inline-flex;
     align-items:center;
     gap:0.4rem;
-    color:#fff;
+    color:var(--enc-color-brand-primary);
     background:none;
     border:none;
     font-weight:600;
     font-size:0.95rem;
     padding:0;
     text-decoration:none;
+    transition:color 0.2s ease;
 }
 .admin-back-button svg{
     width:16px;
@@ -156,4 +157,15 @@ body {
 }
 .admin-back-button:hover{
     color:var(--enc-color-blue-light);
+}
+.admin-back-button--light{
+    color:rgba(253,253,253,0.92);
+}
+.admin-back-button--light:hover{
+    color:#fff;
+}
+.admin-top-actions{
+    display:flex;
+    justify-content:flex-start;
+    margin-bottom:1rem;
 }

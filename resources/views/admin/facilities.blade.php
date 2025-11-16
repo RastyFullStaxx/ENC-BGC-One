@@ -7,12 +7,6 @@
 @endpush
 
 @section('content')
-<a href="{{ route('admin.dashboard') }}" class="admin-back-link">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-    </svg>
-    Back to admin dashboard
-</a>
 @php
     $facilities = [
         [
@@ -72,6 +66,12 @@
 
 <section class="admin-facilities-page">
     <div class="admin-facilities-shell">
+        <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to admin hub
+        </a>
         <p class="fac-breadcrumb">Admin Hub · Facilities</p>
         <div class="fac-header">
             <div>

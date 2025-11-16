@@ -34,6 +34,11 @@
     ])
 
     <section class="admin-shell">
+        <div class="admin-top-actions">
+            <a href="{{ route('landing') }}" class="admin-back-button">
+                &lt; Back to landing page
+            </a>
+        </div>
         <header class="admin-hero">
             <div class="admin-hero-content">
                 <span class="admin-hero-badge">
@@ -113,29 +118,6 @@
                 <span>Resolved today</span>
                 <p class="status-value">14</p>
                 <p class="status-note">Processing time avg. 48 mins</p>
-            </div>
-        </div>
-
-        <div class="admin-module-teasers">
-            <div class="module-teaser-card module-users">
-                <span class="badge text-bg-light text-dark">User ops</span>
-                <h4>User directory</h4>
-                <p>Spotlight inactive staff, reset access, or escalate role changes.</p>
-            </div>
-            <div class="module-teaser-card module-facilities">
-                <span class="badge text-bg-light text-dark">Facilities</span>
-                <h4>Maintenance & readiness</h4>
-                <p>Track prep status, upload room media, and flag availability updates.</p>
-            </div>
-            <div class="module-teaser-card module-analytics">
-                <span class="badge text-bg-light text-dark">Insights</span>
-                <h4>Utilization trends</h4>
-                <p>Upcoming report on peak hours and SLA performance across campuses.</p>
-            </div>
-            <div class="module-teaser-card module-policies">
-                <span class="badge text-bg-light text-dark">Policies</span>
-                <h4>Guideline drafts</h4>
-                <p>Next release: extended equipment checkout rules for events.</p>
             </div>
         </div>
 

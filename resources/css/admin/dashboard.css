@@ -198,57 +198,6 @@
   font-size: 0.85rem;
 }
 
-.admin-module-teasers {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.module-teaser-card {
-  border-radius: 1.2rem;
-  padding: 1.1rem 1.25rem;
-  color: #fff;
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 20px 40px rgba(0, 13, 42, 0.08);
-}
-
-.module-teaser-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.2), transparent 60%);
-}
-
-.module-teaser-card > * {
-  position: relative;
-  z-index: 1;
-}
-
-.module-teaser-card h4 {
-  margin: 0;
-  font-size: 1.1rem;
-}
-
-.module-teaser-card p {
-  margin: 0;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-.module-teaser-card .badge {
-  align-self: flex-start;
-}
-
-.module-teaser-card.module-users { background: linear-gradient(135deg, #1f1b2c, #5c1675); }
-.module-teaser-card.module-facilities { background: linear-gradient(135deg, #0c1e35, #0d4d7d); }
-.module-teaser-card.module-analytics { background: linear-gradient(135deg, #111827, #283e71); }
-.module-teaser-card.module-policies { background: linear-gradient(135deg, #35200d, #a35406); }
-
 .admin-main-grid {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1.2fr);

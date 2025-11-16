@@ -12,22 +12,18 @@
 
 @php
     $user = auth()->user();
-    $automations = [
-        ['title' => 'Auto-confirm low-risk bookings', 'detail' => 'Enabled for rooms under 20 pax', 'status' => 'Running'],
-        ['title' => 'Nightly backup reminders', 'detail' => 'Facilities team 9:00 PM', 'status' => 'Scheduled'],
-        ['title' => 'Incident escalation', 'detail' => 'Escalate if unresolved in 2 hrs', 'status' => 'Monitoring'],
+    $approvals = [
+        ['title' => 'Creative Studio · Broadcast taping', 'team' => 'Comms', 'date' => 'Dec 2 · 10:00 AM', 'status' => 'pending'],
+        ['title' => 'Victory Room 4 · Pastoral sync', 'team' => 'Pastoral', 'date' => 'Dec 2 · 1:00 PM', 'status' => 'verify'],
+        ['title' => 'Multipurpose Hall · Leaders rally', 'team' => 'Operations', 'date' => 'Dec 3 · 9:00 AM', 'status' => 'ready'],
+        ['title' => 'Studio B · Music capture', 'team' => 'Production', 'date' => 'Dec 3 · 3:00 PM', 'status' => 'pending'],
     ];
 
-    $notifications = [
-        ['title' => 'Policy draft ready', 'detail' => 'Equipment checkout rules, review by Dec 4'],
-        ['title' => 'Vendor onsite', 'detail' => 'AC maintenance · Multipurpose Hall · 3:00 PM'],
-        ['title' => 'Training reminder', 'detail' => 'Facilities safety orientation · tomorrow 9:00 AM'],
-    ];
-
-    $checklist = [
-        ['task' => 'Upload December facility photos', 'status' => 'In progress'],
-        ['task' => 'Confirm catering partners', 'status' => 'Pending'],
-        ['task' => 'Reconcile incident log', 'status' => 'In progress'],
+    $rooms = [
+        ['room' => 'Studio A', 'purpose' => 'Video capture', 'time' => '8:00 – 10:00 AM', 'owner' => 'Comms'],
+        ['room' => 'Victory Room 2', 'purpose' => 'Board meeting', 'time' => '10:30 – 12:00 NN', 'owner' => 'Executive'],
+        ['room' => 'Multipurpose Hall', 'purpose' => 'Volunteer training', 'time' => '1:00 – 4:00 PM', 'owner' => 'Operations'],
+        ['room' => 'Creative Lab', 'purpose' => 'Podcast demo', 'time' => '2:00 – 3:30 PM', 'owner' => 'Media'],
     ];
 @endphp
 
@@ -46,6 +42,11 @@
     ])
 
     <section class="hub-shell">
+        <div class="admin-top-actions">
+            <a href="{{ route('admin.dashboard') }}" class="admin-back-button">
+                &lt; Back to admin dashboard
+            </a>
+        </div>
         <header class="hub-hero">
             <div>
                 <span class="admin-hero-badge">Admin hub</span>
@@ -135,52 +136,50 @@
         <article class="hub-approval-panel">
             <div class="approval-header">
                 <div>
-                    <h2>Automations & reminders</h2>
-                    <p class="text-muted mb-0">Compact view of scheduled workflows.</p>
+                    <h2>Approval queue</h2>
+                    <p class="text-muted mb-0">Realtime list of requests needing admin review.</p>
                 </div>
-                <a href="{{ route('admin.analytics') }}" class="btn btn-outline-primary btn-sm">View workflows</a>
+                <a href="{{ route('admin.analytics') }}" class="btn btn-outline-primary">Open approvals dashboard</a>
             </div>
             <ul class="approval-list">
-                @foreach ($automations as $automation)
+                @foreach ($approvals as $item)
+                    @php
+                        $tone = match($item['status']) {
+                            'verify' => 'is-info',
+                            'ready' => 'is-success',
+                            default => 'is-warning',
+                        };
+                        $label = ucfirst($item['status']);
+                    @endphp
                     <li class="approval-item">
                         <div>
-                            <strong>{{ $automation['title'] }}</strong>
-                            <p class="text-muted small mb-0">{{ $automation['detail'] }}</p>
+                            <strong>{{ $item['title'] }}</strong>
+                            <p class="text-muted small mb-0">{{ $item['team'] }} · {{ $item['date'] }}</p>
                         </div>
-                        <span class="admin-tag is-info">{{ $automation['status'] }}</span>
+                        <span class="admin-tag {{ $tone }}">{{ $label }}</span>
                     </li>
                 @endforeach
             </ul>
         </article>
 
-        <div class="hub-grid">
-            <div class="rooms-card">
-                <h2>Notifications feed</h2>
-                <ul class="rooms-list">
-                    @foreach ($notifications as $note)
-                        <li>
-                            <div>
-                                <strong>{{ $note['title'] }}</strong>
-                                <p class="text-muted small mb-0">{{ $note['detail'] }}</p>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            <div class="rooms-card">
-                <h2>Resource checklist</h2>
-                <ul class="rooms-list">
-                    @foreach ($checklist as $item)
-                        <li>
-                            <div>
-                                <strong>{{ $item['task'] }}</strong>
-                                <p class="text-muted small mb-0">{{ $item['status'] }}</p>
-                            </div>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-        </div>
+        <article class="rooms-card">
+            <h2>Rooms currently booked</h2>
+            <p class="text-muted">Monitor in-use venues across the campus.</p>
+            <ul class="rooms-list">
+                @foreach ($rooms as $room)
+                    <li>
+                        <div>
+                            <strong>{{ $room['room'] }}</strong>
+                            <p class="text-muted small mb-0">{{ $room['purpose'] }}</p>
+                        </div>
+                        <div class="text-end">
+                            <p class="mb-0 fw-semibold">{{ $room['time'] }}</p>
+                            <p class="text-muted small mb-0">{{ $room['owner'] }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </article>
 
         <section class="admin-card">
             <h3>Admin tools</h3>
