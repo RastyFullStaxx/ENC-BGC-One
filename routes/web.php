@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard
     Route::view('/admin/dashboard', 'admin.dashboard')->name('admin.dashboard');
+    Route::view('/admin/hub', 'admin.admin-hub')->name('admin.hub');
 });
 
 // Temporary preview route for Admin Users & Roles tool

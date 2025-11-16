@@ -24,6 +24,7 @@
   $bookingsPanelTarget = $bookingsPanelTarget ?? '#wizardBookingsSidebar';
   $bookingsPanelControlId = ltrim($bookingsPanelTarget, '#') ?: 'wizardBookingsSidebar';
   $showBookingsToggle = $showBookingsToggle ?? true;
+  $roleClass = strtolower($userRole) === 'admin' ? 'text-bg-danger' : 'text-bg-primary';
 
   // Helper for avatar initial
   $avatarSource = $userName ?: 'U';
@@ -132,7 +133,7 @@
       </div>
 
       {{-- User type pill --}}
-      <span class="enc-user-type badge text-bg-primary fw-semibold text-uppercase">
+      <span class="enc-user-type badge {{ $roleClass }} fw-semibold text-uppercase">
         {{ $userRole }}
       </span>
 

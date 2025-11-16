@@ -25,13 +25,12 @@
 
 <section class="admin-analytics-page">
     <div class="admin-analytics-shell">
-        <a href="{{ route('user.dashboard') }}" class="admin-back-button mb-3">
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M6 8H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Back to Dashboard
-        </a>
+        <a href="{{ route('admin.dashboard') }}" class="admin-back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to admin dashboard
+</a>
         <p class="analytics-breadcrumb">Admin Hub · Analytics</p>
         <div class="analytics-header">
             <div>
