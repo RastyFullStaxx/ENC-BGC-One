@@ -34,6 +34,8 @@ export default defineConfig({
                 'resources/css/user/faq/faq.css',
                  'resources/css/bookings/index.css',
                  'resources/css/bookings/show.css',
+                 'resources/css/admin/dashboard.css',
+                 'resources/css/admin/hub.css',
             ],
             refresh: true,
         }),
