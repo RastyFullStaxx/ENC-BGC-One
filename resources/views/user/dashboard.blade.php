@@ -875,7 +875,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 @php
     $bookingStats = $bookingStats ?? ['pending' => 0, 'confirmed' => 0, 'cancelled' => 0, 'total' => 0];
-    $upcomingBookingCard = $upcomingBookingCard ?? null;
+    $upcomingBookingsCards = $upcomingBookingsCards ?? [];
 @endphp
 
 @section('app-navbar')
@@ -962,21 +962,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         </svg>
                         <h3>Upcoming</h3>
                     </div>
-                    <div class="badge-count">{{ $upcomingBookingCard ? 1 : 0 }}</div>
+                    <div class="badge-count">{{ count($upcomingBookingsCards) }}</div>
                 </div>
-                @if($upcomingBookingCard)
-                    <div class="upcoming-booking">
-                        <p class="upcoming-date">{{ $upcomingBookingCard['date'] }}</p>
-                        <h4 class="upcoming-title">{{ $upcomingBookingCard['facility'] }}</h4>
-                        <p class="upcoming-purpose">{{ $upcomingBookingCard['purpose'] }}</p>
-                        <p class="upcoming-meta">
-                            <span>{{ $upcomingBookingCard['time'] }}</span>
-                            @if(!empty($upcomingBookingCard['location']))
-                                <span aria-hidden="true">•</span>
-                                <span>{{ $upcomingBookingCard['location'] }}</span>
-                            @endif
-                        </p>
-                    </div>
+                @if(count($upcomingBookingsCards) > 0)
+                    @foreach($upcomingBookingsCards as $upcomingCard)
+                        <div class="upcoming-booking" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 16px;">
+                            <p class="upcoming-date">{{ $upcomingCard['date'] }}</p>
+                            <h4 class="upcoming-title">{{ $upcomingCard['facility'] }}</h4>
+                            <p class="upcoming-purpose">{{ $upcomingCard['purpose'] }}</p>
+                            <p class="upcoming-meta">
+                                <span>{{ $upcomingCard['time'] }}</span>
+                                @if(!empty($upcomingCard['location']))
+                                    <span aria-hidden="true">•</span>
+                                    <span>{{ $upcomingCard['location'] }}</span>
+                                @endif
+                            </p>
+                        </div>
+                    @endforeach
                 @else
                     <div class="card-empty">
                         <div class="empty-icon">

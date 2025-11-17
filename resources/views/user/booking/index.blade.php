@@ -84,7 +84,7 @@
             <div class="bookings-tabs" role="tablist">
                 <button type="button" class="bookings-tab active" onclick="switchTab(this, 'upcoming')">
                     <span>Upcoming</span>
-                    <span class="bookings-tab__badge" id="upcomingCount">{{ $bookingStats['pending'] ?? 0 }}</span>
+                    <span class="bookings-tab__badge" id="upcomingCount">0</span>
                 </button>
                 <button type="button" class="bookings-tab" onclick="switchTab(this, 'past')">Past</button>
                 <button type="button" class="bookings-tab" onclick="switchTab(this, 'cancelled')">Cancelled</button>
@@ -169,6 +169,7 @@
             element.classList.add('active');
             currentTab = tab;
             filterBookings();
+            updateBookingCount();
             showToast(`Switched to ${tab} bookings`, 'success');
         }
 
@@ -177,8 +178,22 @@
             const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const facilityFilter = document.getElementById('facilityFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
 
             filteredBookings = bookings.filter(booking => {
+                // Tab filtering: upcoming, past, cancelled
+                let matchesTab = true;
+                const bookingDate = parseBookingDate(booking.date);
+                
+                if (currentTab === 'upcoming') {
+                    matchesTab = bookingDate >= today && booking.status !== 'cancelled';
+                } else if (currentTab === 'past') {
+                    matchesTab = bookingDate < today && booking.status !== 'cancelled';
+                } else if (currentTab === 'cancelled') {
+                    matchesTab = booking.status === 'cancelled';
+                }
+
                 const matchesSearch = !searchQuery || 
                     booking.purpose.toLowerCase().includes(searchQuery) ||
                     booking.facility.toLowerCase().includes(searchQuery);
@@ -186,10 +201,20 @@
                 const matchesFacility = !facilityFilter || booking.facility === facilityFilter;
                 const matchesStatus = !statusFilter || booking.status === statusFilter;
                 
-                return matchesSearch && matchesFacility && matchesStatus;
+                return matchesTab && matchesSearch && matchesFacility && matchesStatus;
             });
 
             renderBookings();
+        }
+
+        // Parse booking date string (format: "Day, Mon D, Y")
+        function parseBookingDate(dateStr) {
+            // Example: "Mon, Nov 18, 2025" -> parse to Date
+            const parts = dateStr.split(', ');
+            if (parts.length === 3) {
+                return new Date(parts[1] + ' ' + parts[2]);
+            }
+            return new Date(dateStr);
         }
 
         // Render bookings in both table and card view
@@ -359,11 +384,19 @@
 
         // Update booking count
         function updateBookingCount() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const upcomingCount = bookings.filter(b => {
+                const bookingDate = parseBookingDate(b.date);
+                return bookingDate >= today && b.status !== 'cancelled';
+            }).length;
+
             const pendingCount = bookings.filter(b => b.status === 'pending').length;
             const confirmedCount = bookings.filter(b => b.status === 'confirmed').length;
             const cancelledCount = bookings.filter(b => b.status === 'cancelled').length;
 
-            document.getElementById('upcomingCount').textContent = pendingCount;
+            document.getElementById('upcomingCount').textContent = upcomingCount;
             document.getElementById('statPending').textContent = pendingCount;
             document.getElementById('statConfirmed').textContent = confirmedCount;
             document.getElementById('statCancelled').textContent = cancelledCount;

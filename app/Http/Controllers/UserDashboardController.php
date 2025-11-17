@@ -30,12 +30,13 @@ class UserDashboardController extends Controller
             ->take(5)
             ->get();
 
-        $upcomingBooking = (clone $baseQuery)
+        $upcomingBookings = (clone $baseQuery)
             ->whereDate('date', '>=', Carbon::today('Asia/Manila'))
-            ->whereIn('status', ['pending', 'approved', 'confirmed'])
+            ->whereIn('status', ['pending', 'approved'])
             ->orderBy('date')
             ->orderBy('start_at')
-            ->first();
+            ->take(10)
+            ->get();
 
         $dashboardBookings = [
             'title' => 'My Bookings',
@@ -50,13 +51,15 @@ class UserDashboardController extends Controller
             'bookings' => $recentBookings->map(fn ($booking) => $this->formatSnapshotBooking($booking))->all(),
         ];
 
-        $upcomingBookingCard = $upcomingBooking ? [
-            'date'     => $bookingDate = Carbon::parse($upcomingBooking->date, 'Asia/Manila')->format('D, M j, Y'),
-            'time'     => $this->formatTimeRange($upcomingBooking),
-            'facility' => $upcomingBooking->facility->name ?? 'Facility',
-            'purpose'  => $upcomingBooking->details->purpose ?? 'Scheduled booking',
-            'location' => $this->formatLocation($upcomingBooking),
-        ] : null;
+        $upcomingBookingsCards = $upcomingBookings->map(function($booking) {
+            return [
+                'date'     => Carbon::parse($booking->date, 'Asia/Manila')->format('D, M j, Y'),
+                'time'     => $this->formatTimeRange($booking),
+                'facility' => $booking->facility->name ?? 'Facility',
+                'purpose'  => $booking->details->purpose ?? 'Scheduled booking',
+                'location' => $this->formatLocation($booking),
+            ];
+        })->toArray();
 
         $bookingStats = [
             'pending'   => $pendingCount,
@@ -68,7 +71,7 @@ class UserDashboardController extends Controller
         return view('user.dashboard', [
             'dashboardBookings'   => $dashboardBookings,
             'bookingStats'        => $bookingStats,
-            'upcomingBookingCard' => $upcomingBookingCard,
+            'upcomingBookingsCards' => $upcomingBookingsCards,
         ]);
     }
 
