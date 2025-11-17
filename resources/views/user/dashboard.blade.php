@@ -907,12 +907,27 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         <div class="hero-section">
             <div class="hero-content">
+            @php
+            use Carbon\Carbon;
+
+            // Get current time in Manila
+            $now = Carbon::now('Asia/Manila');
+            $hour = $now->hour;
+
+            if ($hour >= 5 && $hour < 12) {
+                $greeting = 'Good morning';
+            } elseif ($hour >= 12 && $hour < 18) {
+                $greeting = 'Good afternoon';
+            } else {
+                $greeting = 'Good evening';
+            }
+            @endphp
                 <div class="hero-left">
                     <div class="greeting">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 2.5L13.9443 8.48693L20.2929 8.48693L15.1743 12.5261L17.1187 18.5131L12 14.4739L6.88128 18.5131L8.82567 12.5261L3.70706 8.48693L10.0557 8.48693L12 2.5Z" stroke="#FFF085" stroke-width="1.5" stroke-linejoin="round"/>
                         </svg>
-                        Good evening
+                        {{ $greeting }},  {{ explode(' ', trim(auth()->user()->name))[0] ?? 'User' }}
                     </div>
                     <h2 class="hero-heading">Let's plan your next booking</h2>
                     <p  class="text-white-50">Plan smarter with up-to-the-minute availability across ENC facilities.</p>
