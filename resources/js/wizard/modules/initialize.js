@@ -728,7 +728,7 @@ export const initBookingWizard = () => {
         wizardState.support.equipment = Array
           .from(supportEquipmentInputs)
           .filter(input => input.checked)
-          .map(input => input.value);
+          .map(input => input.dataset.equipmentName || input.value);
         updateDetailsNextState();
       };
 
