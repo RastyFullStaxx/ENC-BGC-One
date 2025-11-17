@@ -141,9 +141,15 @@ export const initBookingWizard = () => {
       frag.appendChild(equipmentTitle);
 
       const list = document.createElement('ul');
-      wizardState.support.equipment.forEach(item => {
+      // Get equipment names from checked inputs for display
+      const equipmentNames = Array
+        .from(supportEquipmentInputs)
+        .filter(input => input.checked)
+        .map(input => input.dataset.equipmentName || input.value);
+      
+      equipmentNames.forEach(name => {
         const li = document.createElement('li');
-        li.textContent = item;
+        li.textContent = name;
         list.appendChild(li);
       });
       frag.appendChild(list);
@@ -381,6 +387,14 @@ export const initBookingWizard = () => {
         const helpText = document.getElementById('wizardAttendeesHelp');
         if (helpText) {
           helpText.textContent = `Need more than ${wizardState.roomCapacity}? Leave a note so we can suggest larger venues or hybrid setups.`;
+        }
+        
+        // Update button states to reflect new capacity
+        if (attendeesIncrease) {
+          attendeesIncrease.disabled = currentValue >= wizardState.roomCapacity;
+        }
+        if (attendeesDecrease) {
+          attendeesDecrease.disabled = currentValue <= 1;
         }
       }
     });
@@ -665,10 +679,11 @@ export const initBookingWizard = () => {
 
     const attachCounter = (decreaseBtn, increaseBtn, valueEl, inputEl, onChange) => {
       if (!decreaseBtn || !increaseBtn || !valueEl || !inputEl) return;
-      const min = Number(inputEl.dataset.min || 1);
-      const max = Number(inputEl.dataset.max || 50);
 
       const updateButtonStates = (currentValue) => {
+        // Read min/max dynamically from data attributes to support capacity changes
+        const min = Number(inputEl.dataset.min || 1);
+        const max = Number(inputEl.dataset.max || 50);
         // Disable decrease button if at minimum
         decreaseBtn.disabled = currentValue <= min;
         // Disable increase button if at maximum
@@ -676,6 +691,9 @@ export const initBookingWizard = () => {
       };
 
       const setValue = (newValue) => {
+        // Read min/max dynamically to support capacity changes
+        const min = Number(inputEl.dataset.min || 1);
+        const max = Number(inputEl.dataset.max || 50);
         const clamped = Math.min(Math.max(newValue, min), max);
         inputEl.value = clamped;
         valueEl.textContent = clamped;
@@ -685,6 +703,7 @@ export const initBookingWizard = () => {
       };
 
       decreaseBtn.addEventListener('click', () => {
+        const min = Number(inputEl.dataset.min || 1);
         const currentValue = Number(inputEl.value || min);
         if (currentValue > min) {
           setValue(currentValue - 1);
@@ -692,6 +711,7 @@ export const initBookingWizard = () => {
       });
 
       increaseBtn.addEventListener('click', () => {
+        const max = Number(inputEl.dataset.max || 50);
         const currentValue = Number(inputEl.value || min);
         if (currentValue < max) {
           setValue(currentValue + 1);
@@ -725,10 +745,11 @@ export const initBookingWizard = () => {
 
     if (supportEquipmentInputs.length) {
       const refreshEquipment = () => {
+        // Store equipment IDs for database submission
         wizardState.support.equipment = Array
           .from(supportEquipmentInputs)
           .filter(input => input.checked)
-          .map(input => input.dataset.equipmentName || input.value);
+          .map(input => input.value);
         updateDetailsNextState();
       };
 

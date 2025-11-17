@@ -202,6 +202,13 @@
   padding: 0;
 }
 
+.wizard-counter-btn:disabled,
+.wizard-counter-btn[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .wizard-counter-value {
   text-align: center;
   min-width: 70px;

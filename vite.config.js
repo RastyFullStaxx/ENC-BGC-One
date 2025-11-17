@@ -32,6 +32,8 @@ export default defineConfig({
                 'resources/css/facility/catalog.css',
                 'resources/js/facility-catalog.js',
                 'resources/css/user/faq/faq.css',
+                 'resources/css/bookings/index.css',
+                 'resources/css/bookings/show.css',
             ],
             refresh: true,
         }),
