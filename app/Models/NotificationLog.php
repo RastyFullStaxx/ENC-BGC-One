@@ -13,14 +13,7 @@ class NotificationLog extends Model
     protected $fillable = [
         'id',
         'booking_id',
-        'recipient_email',
-        'notification_type',
-        'sent_at',
-        'status',
-    ];
-
-    protected $casts = [
-        'sent_at' => 'datetime',
+        'channel',
     ];
 
     public $incrementing = false;

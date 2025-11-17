@@ -20,7 +20,7 @@
         'currentStep' => 0,
         'steps' => [],
         'bookingsCount' => ($bookingStats['pending'] ?? 0) + ($bookingStats['confirmed'] ?? 0) + ($bookingStats['cancelled'] ?? 0),
-        'notificationsCount' => 2,
+        'notificationsCount' => $notificationsCount,
         'userName' => auth()->user()->name ?? 'User',
         'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
         'userRole' => auth()->user()->role ?? 'staff',

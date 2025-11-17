@@ -7,6 +7,7 @@ use App\Models\BookingDetail;
 use App\Models\BookingEquipment;
 use App\Models\Facility;
 use App\Models\Equipment;
+use App\Models\NotificationLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +21,16 @@ class BookingController extends Controller
      */
     public function index()
     {
-        return view('user.booking.wizard');
+        $user = Auth::user();
+        
+        // Get notification count
+        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
+            $query->where('requester_id', $user->id);
+        })->count();
+
+        return view('user.booking.wizard', [
+            'notificationsCount' => $notificationsCount,
+        ]);
     }
 
     /**
@@ -328,6 +338,9 @@ class BookingController extends Controller
                 }
             }
 
+            // Create notification log for the booking
+            $this->createNotificationLog($booking, 'booking_created');
+
             DB::commit();
 
             // Load relationships for response
@@ -497,9 +510,84 @@ class BookingController extends Controller
         $booking->status = 'cancelled';
         $booking->save();
 
+        // Create notification log for cancellation
+        $this->createNotificationLog($booking, 'booking_cancelled');
+
         return response()->json([
             'success' => true,
             'message' => 'Booking cancelled successfully',
         ]);
+    }
+
+    /**
+     * Create a notification log entry for a booking event.
+     */
+    private function createNotificationLog(Booking $booking, string $notificationType)
+    {
+        try {
+            NotificationLog::create([
+                'booking_id' => $booking->id,
+                'channel' => 'EMAIL',
+            ]);
+        } catch (\Exception $e) {
+            // Log the error but don't fail the booking operation
+            \Log::error('Failed to create notification log: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get user's notification logs.
+     */
+    public function getUserNotifications(Request $request)
+    {
+        $limit = $request->get('limit', 10);
+        
+        $notifications = NotificationLog::with(['booking.facility'])
+            ->whereHas('booking', function ($query) {
+                $query->where('requester_id', Auth::id());
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($notification) {
+                $booking = $notification->booking;
+                $message = $this->getNotificationMessage($booking);
+                
+                return [
+                    'id' => $notification->id,
+                    'booking_id' => $booking->id,
+                    'facility_name' => $booking->facility->name ?? 'Facility',
+                    'message' => $message,
+                    'date' => Carbon::parse($booking->date)->format('M j, Y'),
+                    'time' => Carbon::parse($booking->start_at)->format('g:i A'),
+                    'status' => $booking->status,
+                    'created_at' => $notification->created_at->diffForHumans(),
+                    'is_read' => false, // Can be implemented later
+                ];
+            });
+
+        return response()->json($notifications);
+    }
+
+    /**
+     * Generate notification message based on booking status.
+     */
+    private function getNotificationMessage($booking)
+    {
+        $facilityName = $booking->facility->name ?? 'Facility';
+        
+        switch ($booking->status) {
+            case 'pending':
+                return "Your booking request for {$facilityName} is awaiting approval";
+            case 'approved':
+            case 'confirmed':
+                return "Your booking for {$facilityName} has been confirmed";
+            case 'cancelled':
+                return "Your booking for {$facilityName} was cancelled";
+            case 'rejected':
+                return "Your booking request for {$facilityName} was declined";
+            default:
+                return "Update on your booking for {$facilityName}";
+        }
     }
 }

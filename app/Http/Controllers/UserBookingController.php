@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\NotificationLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,10 +54,16 @@ class UserBookingController extends Controller
             'cancelled' => $cancelledCount,
         ];
 
+        // Get notification count
+        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
+            $query->where('requester_id', $user->id);
+        })->count();
+
         return view('user.booking.index', [
             'bookingsData' => $bookingsData,
             'bookingStats' => $bookingStats,
             'totalBookings' => $bookingsCollection->count(),
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 
@@ -112,9 +119,15 @@ class UserBookingController extends Controller
 
         $bookingsTotal = Booking::where('requester_id', $user->id)->count();
 
+        // Get notification count
+        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
+            $query->where('requester_id', $user->id);
+        })->count();
+
         return view('user.booking.show', [
             'bookingSummary' => $bookingSummary,
             'bookingsCount' => $bookingsTotal,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 

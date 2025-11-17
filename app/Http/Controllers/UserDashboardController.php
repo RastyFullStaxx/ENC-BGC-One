@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
+use App\Models\NotificationLog;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,6 +24,11 @@ class UserDashboardController extends Controller
         $pendingCount     = (clone $baseQuery)->where('status', 'pending')->count();
         $confirmedCount   = (clone $baseQuery)->whereIn('status', ['approved', 'confirmed'])->count();
         $cancelledCount   = (clone $baseQuery)->where('status', 'cancelled')->count();
+
+        // Get notification count
+        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
+            $query->where('requester_id', $user->id);
+        })->count();
 
         $recentBookings = (clone $baseQuery)
             ->latest('date')
@@ -72,6 +78,7 @@ class UserDashboardController extends Controller
             'dashboardBookings'   => $dashboardBookings,
             'bookingStats'        => $bookingStats,
             'upcomingBookingsCards' => $upcomingBookingsCards,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 

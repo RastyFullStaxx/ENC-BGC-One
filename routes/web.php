@@ -67,6 +67,7 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
         Route::post('/check-availability', [\App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
         Route::post('/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('api.bookings.store');
         Route::get('/user-bookings', [\App\Http\Controllers\BookingController::class, 'getUserBookings'])->name('api.bookings.user-bookings');
+        Route::get('/notifications', [\App\Http\Controllers\BookingController::class, 'getUserNotifications'])->name('api.bookings.notifications');
         Route::get('/{id}', [\App\Http\Controllers\BookingController::class, 'show'])->name('api.bookings.show');
         Route::post('/{id}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('api.bookings.cancel');
     });

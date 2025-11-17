@@ -109,6 +109,7 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
           aria-label="Notifications"
+          onclick="loadNotifications()"
         >
           {{-- Bell icon --}}
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -116,21 +117,90 @@
             <path d="M10 20a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
           </svg>
           @if($notificationsCount > 0)
-            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+            <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
               <span class="visually-hidden">{{ $notificationsCount }} new notifications</span>
             </span>
           @endif
         </button>
-        <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="appNotificationsMenu" style="min-width: 280px;">
-          <div class="p-3 small text-muted">
-            @if($notificationsCount > 0)
-              You have {{ $notificationsCount }} new notification{{ $notificationsCount > 1 ? 's' : '' }}.
-            @else
-              No new notifications.
-            @endif
+        <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="appNotificationsMenu" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+          <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+            <span class="fw-semibold">Notifications</span>
+            <span id="notificationCount" class="badge bg-primary rounded-pill">{{ $notificationsCount }}</span>
+          </div>
+          <div id="notificationsList" class="p-2">
+            <div class="text-center py-3">
+              <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <script>
+        let notificationsLoaded = false;
+
+        function loadNotifications() {
+          if (notificationsLoaded) return;
+          
+          fetch('{{ route('api.bookings.notifications') }}')
+            .then(response => response.json())
+            .then(notifications => {
+              const container = document.getElementById('notificationsList');
+              const countBadge = document.getElementById('notificationCount');
+              
+              if (notifications.length === 0) {
+                container.innerHTML = '<div class="p-3 text-center text-muted small">No new notifications</div>';
+              } else {
+                container.innerHTML = notifications.map(notif => `
+                  <a href="/user/booking/${notif.booking_id}" class="dropdown-item py-2 px-3 text-decoration-none" style="white-space: normal;">
+                    <div class="d-flex gap-2">
+                      <div class="flex-shrink-0">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-${getStatusColor(notif.status)}">
+                          <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2"/>
+                          <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                        </svg>
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="fw-semibold small">${notif.facility_name}</div>
+                        <div class="small text-muted">${notif.message}</div>
+                        <div class="small text-muted mt-1">
+                          <span>${notif.date} at ${notif.time}</span>
+                          <span class="mx-1">•</span>
+                          <span>${notif.created_at}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                  <hr class="dropdown-divider my-1">
+                `).join('');
+                
+                // Remove last divider
+                const lastDivider = container.querySelector('hr:last-child');
+                if (lastDivider) lastDivider.remove();
+              }
+              
+              countBadge.textContent = notifications.length;
+              notificationsLoaded = true;
+            })
+            .catch(error => {
+              console.error('Error loading notifications:', error);
+              document.getElementById('notificationsList').innerHTML = 
+                '<div class="p-3 text-center text-danger small">Failed to load notifications</div>';
+            });
+        }
+
+        function getStatusColor(status) {
+          const colors = {
+            'pending': 'warning',
+            'approved': 'success',
+            'confirmed': 'success',
+            'cancelled': 'danger',
+            'rejected': 'danger'
+          };
+          return colors[status] || 'secondary';
+        }
+      </script>
 
       {{-- User type pill --}}
       <span class="enc-user-type badge {{ $roleClass }} fw-semibold text-uppercase">

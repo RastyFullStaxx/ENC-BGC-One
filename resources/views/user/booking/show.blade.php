@@ -21,7 +21,7 @@
         'currentStep' => 0,
         'steps' => [],
         'bookingsCount' => $bookingsCount ?? 0,
-        'notificationsCount' => 2,
+        'notificationsCount' => $notificationsCount,
         'userName' => auth()->user()->name ?? 'User',
         'userEmail' => auth()->user()->email ?? 'user@ministry.gov',
         'userRole' => auth()->user()->role ?? 'staff',

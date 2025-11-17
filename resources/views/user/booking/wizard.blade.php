@@ -96,7 +96,7 @@
     @include('partials.dashboard-navbar', [
       'currentStep'        => 1,
       'bookingsCount'      => count($userBookings),
-      'notificationsCount' => 2,
+      'notificationsCount' => $notificationsCount,
       'showBookingsToggle' => false,
     ])
   </div>
