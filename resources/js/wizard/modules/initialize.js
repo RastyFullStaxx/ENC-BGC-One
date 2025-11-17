@@ -370,6 +370,18 @@ export const initBookingWizard = () => {
           attendeesInput.value = wizardState.roomCapacity;
           if (attendeesValue) attendeesValue.textContent = wizardState.roomCapacity;
         }
+        
+        // Update max capacity badge
+        const maxBadge = document.getElementById('wizardAttendeesMaxBadge');
+        if (maxBadge) {
+          maxBadge.textContent = `Max in-room: ${wizardState.roomCapacity}`;
+        }
+        
+        // Update help text
+        const helpText = document.getElementById('wizardAttendeesHelp');
+        if (helpText) {
+          helpText.textContent = `Need more than ${wizardState.roomCapacity}? Leave a note so we can suggest larger venues or hybrid setups.`;
+        }
       }
     });
 
@@ -389,6 +401,36 @@ export const initBookingWizard = () => {
         datePanel?.classList.add('d-none');
         detailsPanel?.classList.remove('d-none');
         updateStepperState(3);
+        
+        // Update capacity badge and help text when entering details panel
+        if (wizardState.roomCapacity > 0) {
+          const maxBadge = document.getElementById('wizardAttendeesMaxBadge');
+          if (maxBadge) {
+            maxBadge.textContent = `Max in-room: ${wizardState.roomCapacity}`;
+          }
+          
+          const helpText = document.getElementById('wizardAttendeesHelp');
+          if (helpText) {
+            helpText.textContent = `Need more than ${wizardState.roomCapacity}? Leave a note so we can suggest larger venues or hybrid setups.`;
+          }
+          
+          // Reset attendees count to a reasonable default (half capacity or minimum 4)
+          if (attendeesInput && attendeesValue) {
+            const defaultAttendees = Math.max(4, Math.floor(wizardState.roomCapacity / 2));
+            const clampedDefault = Math.min(defaultAttendees, wizardState.roomCapacity);
+            attendeesInput.value = clampedDefault;
+            attendeesValue.textContent = clampedDefault;
+            wizardState.attendees = clampedDefault;
+            
+            // Update button states based on new capacity
+            if (attendeesDecrease) {
+              attendeesDecrease.disabled = clampedDefault <= 1;
+            }
+            if (attendeesIncrease) {
+              attendeesIncrease.disabled = clampedDefault >= wizardState.roomCapacity;
+            }
+          }
+        }
       });
     }
 
@@ -626,20 +668,34 @@ export const initBookingWizard = () => {
       const min = Number(inputEl.dataset.min || 1);
       const max = Number(inputEl.dataset.max || 50);
 
+      const updateButtonStates = (currentValue) => {
+        // Disable decrease button if at minimum
+        decreaseBtn.disabled = currentValue <= min;
+        // Disable increase button if at maximum
+        increaseBtn.disabled = currentValue >= max;
+      };
+
       const setValue = (newValue) => {
         const clamped = Math.min(Math.max(newValue, min), max);
         inputEl.value = clamped;
         valueEl.textContent = clamped;
+        updateButtonStates(clamped);
         if (typeof onChange === 'function') onChange(clamped);
         updateDetailsNextState();
       };
 
       decreaseBtn.addEventListener('click', () => {
-        setValue(Number(inputEl.value || min) - 1);
+        const currentValue = Number(inputEl.value || min);
+        if (currentValue > min) {
+          setValue(currentValue - 1);
+        }
       });
 
       increaseBtn.addEventListener('click', () => {
-        setValue(Number(inputEl.value || min) + 1);
+        const currentValue = Number(inputEl.value || min);
+        if (currentValue < max) {
+          setValue(currentValue + 1);
+        }
       });
 
       setValue(Number(inputEl.value || min));

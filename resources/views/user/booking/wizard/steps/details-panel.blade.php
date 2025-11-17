@@ -40,10 +40,10 @@
                         </button>
                       </div>
                       <div class="wizard-attendees-badge-wrap">
-                        <span class="badge wizard-attendees-badge">Max 20 in-room</span>
+                        <span class="badge wizard-attendees-badge" id="wizardAttendeesMaxBadge">Max in-room: 20</span>
                       </div>
                       <input type="hidden" id="wizardAttendeesInput" value="4" data-min="1" data-max="20">
-                      <p class="wizard-form-tip small text-muted mt-3 mb-0">
+                      <p class="wizard-form-tip small text-muted mt-3 mb-0" id="wizardAttendeesHelp">
                         Need more than 20? Leave a note so we can suggest larger venues or hybrid setups.
                       </p>
                     </div>
