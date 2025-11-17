@@ -251,9 +251,9 @@
                   <label for="roomSize" class="form-label small mb-1">Size</label>
                   <select id="roomSize" class="form-select">
                     <option value="">All Sizes</option>
-                    <option value="small">Small (≤ 6)</option>
-                    <option value="medium">Medium (7–12)</option>
-                    <option value="large">Large (13+)</option>
+                    <option value="small">Small (≤ 10)</option>
+                    <option value="medium">Medium (11–15)</option>
+                    <option value="large">Large (16+)</option>
                   </select>
                 </div>
               </div>

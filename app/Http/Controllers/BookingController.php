@@ -39,13 +39,13 @@ class BookingController extends Controller
         if ($request->has('size') && $request->size != '') {
             switch ($request->size) {
                 case 'small':
-                    $query->where('capacity', '<=', 6);
+                    $query->where('capacity', '<=', 10);
                     break;
                 case 'medium':
-                    $query->whereBetween('capacity', [7, 12]);
+                    $query->whereBetween('capacity', [11, 15]);
                     break;
                 case 'large':
-                    $query->where('capacity', '>=', 13);
+                    $query->where('capacity', '>=', 16);
                     break;
             }
         }

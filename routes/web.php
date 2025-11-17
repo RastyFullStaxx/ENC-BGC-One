@@ -50,15 +50,17 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     
     // List of Bookings
     Route::get('/user/booking', [\App\Http\Controllers\UserBookingController::class, 'index'])->name('user.booking.index');
+
+    // Booking Wizard (must come before {booking} route to avoid route conflict)
+    Route::get('/user/booking/wizard', [\App\Http\Controllers\BookingController::class, 'index'])->name('user.booking.wizard');
+    
     Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
     // Profile & Settings
     Route::view('/user/profile', 'user.profile')->name('user.profile');
     Route::view('/user/settings', 'user.settings')->name('user.settings');
 
-    // Booking Wizard
-    Route::get('/user/booking/wizard', [\App\Http\Controllers\BookingController::class, 'index'])->name('user.booking.wizard');
-    
+
     // Booking API endpoints
     Route::prefix('api/bookings')->group(function () {
         Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])->name('api.bookings.facilities');
@@ -68,6 +70,9 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
         Route::get('/{id}', [\App\Http\Controllers\BookingController::class, 'show'])->name('api.bookings.show');
         Route::post('/{id}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('api.bookings.cancel');
     });
+
+    // Return Room Capacity for Booking Wizard
+    Route::get('/user/booking/wizard/capacities', [\App\Http\Controllers\BookingController::class, 'returnRoomCapacity'])->name('api.bookings.capacities');
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
