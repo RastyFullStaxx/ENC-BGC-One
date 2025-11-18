@@ -17,8 +17,9 @@
     'resources/css/landing/how-it-works.css',
     'resources/css/landing/policies.css',
     'resources/css/landing/cta.css',
-    'resources/js/landing.js'
+    'resources/js/landing/index.js'
   ])
+  @livewireStyles
 
   {{-- If you prefer CDN instead of Vite, uncomment: --}}
   {{-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"> --}}
@@ -29,63 +30,37 @@
   <meta property="og:title" content="ENC BGC One — Shared Services Portal">
   <meta property="og:description" content="Request rooms and facilities easily with real-time availability, instant confirmations, and smart approvals.">
   <meta property="og:image" content="/images/social-card.png">
-
-  <style>
-    /* keep skip-link always available */
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-    .skip-link:focus{left:12px;top:12px;width:auto;height:auto;padding:.625rem .875rem;background:#111;color:#fff;border-radius:.6rem;z-index:1055}
-  </style>
 </head>
 <body class="landing enc-type-body">
 
   <a href="#main" class="skip-link">Skip to content</a>
 
-  {{-- Reusable Navbar (Bootstrap). If you build partials, this include will be used; otherwise a Bootstrap fallback renders. --}}
-  @includeIf('partials.navbar', [
-    'brand' => 'ONE Services',
-    'actions' => [
-      ['label' => 'Help/FAQ', 'href' => route('faq')],
-      ['label' => 'Log In',   'href' => route('login')],
-      ['label' => 'Sign Up',  'href' => route('signup.index')]
-    ]
+  @php
+    $isAuthenticated = auth()->check();
+    $homeButtonRoute = null;
+    if ($isAuthenticated) {
+      $role = strtolower(auth()->user()->role ?? '');
+      $homeButtonRoute = $role === 'admin' ? route('admin.dashboard') : route('user.dashboard');
+    }
+  @endphp
+
+  @include('partials.dashboard-navbar', [
+    'mode' => $isAuthenticated ? 'app' : 'public',
+    'showStepper' => false,
+    'showBookingsToggle' => false,
+    'showNotifications' => $isAuthenticated,
+    'showUserMenu' => $isAuthenticated,
+    'showRolePill' => false,
+    'homeRoute' => route('landing'),
+    'bookingsCount' => 0,
+    'notificationsCount' => 0,
+    'showHomeButton' => $isAuthenticated,
+    'homeButtonRoute' => $homeButtonRoute,
+    'guestActions' => [
+      ['label' => 'Log In', 'href' => route('login'), 'variant' => 'outline'],
+      ['label' => 'Sign Up', 'href' => route('signup.index'), 'variant' => 'primary'],
+    ],
   ])
-
-  @if (!view()->exists('partials.navbar'))
-  <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
-    <nav class="navbar navbar-expand-md bg-white">
-      <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap gap-3">
-        <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('landing') }}">
-          <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
-            <span class="fw-bold small">ONE</span>
-          </span>
-          <span class="brand-copy d-none d-md-inline text-start lh-sm">
-            <span class="d-block fw-semibold">ONE Services</span>
-            <span class="d-block text-muted small">Shared Services Portal</span>
-          </span>
-        </a>
-
-        <button class="navbar-toggler ms-auto d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
-                aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0">
-          <ul class="navbar-nav align-items-center ms-md-auto ms-lg-0 flex-row flex-md-row gap-2">
-            <li class="nav-item me-2">
-              <a class="nav-link" href="{{ url('/help') }}">Help/FAQ</a>
-            </li>
-            <li class="nav-item me-2">
-              <a class="btn btn-outline-secondary" href="{{ route('login') }}">Log In</a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-primary" href="{{ url('/register') }}">Sign Up</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-  @endif
 
   <main id="main" tabindex="-1">
 
@@ -133,140 +108,102 @@
     </section>
 
     @php
-      $scheduleStart = 7;  // 7 AM
-      $scheduleEnd   = 19; // 7 PM
-      $scheduleBlocks = [
-        [
-          'room' => 'Creative Studio B',
-          'status' => 'available',
-          'status_label' => 'Available',
-          'note' => 'Available until 10:00 AM',
-          'segments' => [
-            ['start' => 7,   'end' => 8.5, 'status' => 'occupied'],
-            ['start' => 8.5, 'end' => 10,  'status' => 'available'],
-            ['start' => 10,  'end' => 14,  'status' => 'limited'],
-            ['start' => 14,  'end' => 15,  'status' => 'occupied'],
-            ['start' => 15,  'end' => 17.5,'status' => 'available'],
-          ],
-        ],
-        [
-          'room' => 'Boardroom A-301',
-          'status' => 'limited-availability',
-          'status_label' => 'Limited availability',
-          'note' => 'Leadership sync until 12:30 PM',
-          'segments' => [
-            ['start' => 7,   'end' => 9,   'status' => 'available'],
-            ['start' => 9,   'end' => 12.5,'status' => 'occupied'],
-            ['start' => 12.5,'end' => 13.5,'status' => 'limited'],
-            ['start' => 13.5,'end' => 15,  'status' => 'limited'],
-            ['start' => 16,  'end' => 18.5,'status' => 'occupied'],
-          ],
-        ],
-        [
-          'room' => 'Innovation Lab C-401',
-          'status' => 'occupied',
-          'status_label' => 'Occupied',
-          'note' => 'Design sprint until 2:00 PM',
-          'segments' => [
-            ['start' => 7,   'end' => 9.5, 'status' => 'maintenance'],
-            ['start' => 9.5, 'end' => 12,  'status' => 'occupied'],
-            ['start' => 12,  'end' => 14,  'status' => 'occupied'],
-            ['start' => 14,  'end' => 15,  'status' => 'limited'],
-            ['start' => 15,  'end' => 19,  'status' => 'available'],
-          ],
-        ],
-        [
-          'room' => 'Atrium Lounge D-214',
-          'status' => 'under-maintenance',
-          'status_label' => 'Under maintenance',
-          'note' => 'Deep clean ongoing until 4:00 PM · reopening after QA.',
-          'segments' => [
-            ['start' => 7,   'end' => 11,  'status' => 'maintenance'],
-            ['start' => 11,  'end' => 14,  'status' => 'maintenance'],
-            ['start' => 14,  'end' => 16,  'status' => 'maintenance'],
-            ['start' => 16,  'end' => 19,  'status' => 'available'],
-          ],
-        ],
+      $scheduleStart = $scheduleStart ?? 7;  // 7 AM fallback
+      $scheduleEnd   = $scheduleEnd ?? 19; // 7 PM fallback
+      $scheduleBlocks = $scheduleBlocks ?? [];
+      $stateLabels = [
+        'available'   => 'Available',
+        'limited'     => 'Limited availability',
+        'occupied'    => 'Occupied',
+        'maintenance' => 'Under maintenance',
       ];
-
-      $lastSync    = now();
+      $lastSync    = $lastSync ?? now();
+      $nowLabel    = $lastSync->format('g:i A');
       $range       = max(1, $scheduleEnd - $scheduleStart);
       $nowDecimal  = (int) $lastSync->format('G') + ((int) $lastSync->format('i') / 60);
       $nowInRange  = $nowDecimal >= $scheduleStart && $nowDecimal <= $scheduleEnd;
       $nowOffset   = max(0, min(100, (($nowDecimal - $scheduleStart) / $range) * 100));
     @endphp
 
-    <section id="availability" class="availability-preview py-5">
-      <div class="container">
-        <div class="section-heading text-center mb-5">
-          <span class="section-eyebrow">Quick availability glance</span>
-          <h2>Today’s load at a glance</h2>
-          <p class="workflow-subtext mb-0">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
-        </div>
 
-        <div class="row g-4 align-items-start">
-          <div class="col-12">
-            <article class="availability-panel availability-panel-schedule h-100">
-              <div class="availability-panel-head availability-panel-head-compact">
-                <span>Last sync {{ $lastSync->format('g:i A') }}</span>
-              </div>
-              <div class="schedule-scale">
-                @for ($hour = $scheduleStart; $hour <= $scheduleEnd; $hour += 2)
-                  <span>{{ $hour <= 12 ? $hour : $hour - 12 }}{{ $hour < 12 ? ' AM' : ' PM' }}</span>
-                @endfor
-              </div>
-              @php
-                $stateLabels = [
-                  'available'   => 'Available',
-                  'limited'     => 'Limited availability',
-                  'occupied'    => 'Occupied',
-                  'maintenance' => 'Under maintenance',
-                ];
-              @endphp
-              <div class="schedule-board">
-                @foreach ($scheduleBlocks as $block)
-                  <div class="schedule-row">
-                    <div class="schedule-meta">
+    @if (class_exists(\Livewire\Livewire::class))
+      <livewire:today-glance />
+    @else
+      <section id="availability" class="availability-preview py-5">
+        <div class="container">
+          <div class="section-heading text-center mb-5">
+            <span class="section-eyebrow">Quick availability glance</span>
+            <h2>Today’s load at a glance</h2>
+            <p class="workflow-subtext mb-0">Slide across the day to see when spotlight rooms are booked, on hold, flipping, or wide open.</p>
+          </div>
+
+          <div class="row g-4 align-items-start">
+            <div class="col-12">
+              <article class="availability-panel availability-panel-schedule h-100" data-schedule-start="{{ $scheduleStart }}" data-schedule-end="{{ $scheduleEnd }}">
+                <div class="availability-panel-head availability-panel-head-compact">
+                  <span>Last sync {{ $lastSync->format('g:i A') }} · {{ $lastSync->format('M j, Y') }}</span>
+                  <span class="text-muted small">Current time {{ $lastSync->format('g:i A') }} · {{ config('app.timezone', 'UTC') }}</span>
+                </div>
+                <div class="schedule-scale">
+                  @for ($hour = $scheduleStart; $hour <= $scheduleEnd; $hour += 2)
+                    <span>{{ $hour <= 12 ? $hour : $hour - 12 }}{{ $hour < 12 ? ' AM' : ' PM' }}</span>
+                  @endfor
+                </div>
+                <div class="schedule-board">
+                  @forelse ($scheduleBlocks as $block)
+                    <div class="schedule-row">
+                      <div class="schedule-meta">
                       <p class="schedule-room">{{ $block['room'] }}</p>
                       <p class="schedule-status schedule-status-{{ $block['status'] ?? 'available' }}">{{ $block['status_label'] ?? ucwords(str_replace('-', ' ', $block['status'] ?? 'available')) }}</p>
                       <p class="schedule-note">{{ $block['note'] }}</p>
                     </div>
                     <div class="schedule-track">
                       @if ($nowInRange)
-                        <span class="schedule-now" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
+                        <span class="schedule-now" data-label="Now {{ $nowLabel }}" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
                       @endif
-                      @foreach ($block['segments'] as $segment)
+                      @foreach ($block['segments'] ?? [] as $segment)
                         @php
                           $state = $segment['status'] ?? 'available';
                           $offset = (($segment['start'] - $scheduleStart) / $range) * 100;
                           $width = (($segment['end'] - $segment['start']) / $range) * 100;
-                          $offset = max(0, min(100, $offset));
-                          $width = max(1, min(100, $width));
-                          $label = $stateLabels[$state] ?? ucwords($state);
-                        @endphp
-                        <span class="schedule-block schedule-block-{{ $state }}" style="--segment-offset: {{ $offset }}%; --segment-width: {{ $width }}%;" data-label="{{ $label }}" aria-label="{{ $label }}"></span>
-                      @endforeach
+                            $offset = max(0, min(100, $offset));
+                            $width = max(1, min(100, $width));
+                            $label = $stateLabels[$state] ?? ucwords($state);
+                          @endphp
+                          <span class="schedule-block schedule-block-{{ $state }}" style="--segment-offset: {{ $offset }}%; --segment-width: {{ $width }}%;" data-label="{{ $label }}" aria-label="{{ $label }}"></span>
+                        @endforeach
+                      </div>
                     </div>
-                  </div>
-                @endforeach
-              </div>
-              <div class="schedule-legend">
-                <span><i class="legend-dot dot-available"></i> Available</span>
-                <span><i class="legend-dot dot-limited"></i> Limited availability</span>
-                <span><i class="legend-dot dot-occupied"></i> Occupied</span>
-                <span><i class="legend-dot dot-maintenance"></i> Under maintenance</span>
-              </div>
-            </article>
+                  @empty
+                    <div class="schedule-row">
+                      <div class="schedule-meta">
+                        <p class="schedule-room mb-1">No facilities yet</p>
+                        <p class="schedule-note">Add a booking to see live availability.</p>
+                      </div>
+                      <div class="schedule-track d-flex align-items-center justify-content-center text-muted small">
+                        <span>Nothing scheduled today</span>
+                      </div>
+                    </div>
+                  @endforelse
+                </div>
+                <div class="schedule-legend">
+                  <span class="legend-item legend-available"><i class="legend-dot dot-available"></i> Available</span>
+                  <span class="legend-item legend-limited"><i class="legend-dot dot-limited"></i> Limited availability</span>
+                  <span class="legend-item legend-occupied"><i class="legend-dot dot-occupied"></i> Occupied</span>
+                  <span class="legend-item legend-maintenance"><i class="legend-dot dot-maintenance"></i> Under maintenance</span>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    @endif
   </main>
 
   {{-- SECTION: Featured Facilities --}}
   <section id="facilities" class="py-5 facility-feature">
     @php
-      $facilityHero = [
+      $facilityHero = $facilityHero ?? [
         'title' => 'Innovation Lab C-401',
         'type' => 'Innovation Lab',
         'status' => 'Limited availability this morning',
@@ -281,7 +218,7 @@
         ],
       ];
 
-      $facilityTiles = [
+      $facilityTiles = $facilityTiles ?? [
         [
           'title' => 'Creative Studio B',
           'type' => 'Podcast & media suite',
@@ -307,9 +244,7 @@
           'details' => ['Hoteling', 'Soft seating', 'Town hall ready'],
         ],
       ];
-    @endphp
-    @php
-      $featuredServices = [
+      $featuredServices = $featuredServices ?? [
         [
           'name' => 'Meeting room booking',
           'summary' => 'Live availability, instant approvals, and guided forms for every huddle or town hall.',
@@ -360,7 +295,7 @@
               </div>
               <p class="facility-hero-summary">{{ $facilityHero['summary'] }}</p>
               <ul class="facility-hero-stats">
-                @foreach ($facilityHero['metrics'] as $metric)
+                @foreach (($facilityHero['metrics'] ?? []) as $metric)
                   <li>
                     <span class="stat-label">{{ $metric['label'] }}</span>
                     <span class="stat-value">{{ $metric['value'] }}</span>
@@ -368,7 +303,7 @@
                 @endforeach
               </ul>
               <div class="facility-hero-tags">
-                @foreach ($facilityHero['chips'] as $chip)
+                @foreach (($facilityHero['chips'] ?? []) as $chip)
                   <span>{{ $chip }}</span>
                 @endforeach
               </div>
@@ -381,7 +316,7 @@
         </div>
         <div class="col-12 col-lg-5">
           <div class="facility-mini-stack">
-            @foreach ($facilityTiles as $tile)
+            @forelse ($facilityTiles as $tile)
               <article class="facility-mini facility-mini-{{ $tile['tone'] ?? 'available' }}">
                 <div class="facility-mini-media" style="background-image:url('{{ $tile['image'] }}');"></div>
                 <div class="facility-mini-body">
@@ -391,7 +326,7 @@
                   </div>
                   <p class="mini-status">{{ $tile['status'] }}</p>
                   <ul class="mini-details">
-                    @foreach ($tile['details'] as $detail)
+                    @foreach (($tile['details'] ?? []) as $detail)
                       <li>{{ $detail }}</li>
                     @endforeach
                   </ul>
@@ -401,7 +336,20 @@
                   </div>
                 </div>
               </article>
-            @endforeach
+            @empty
+              <article class="facility-mini facility-mini-available">
+                <div class="facility-mini-body">
+                  <div class="facility-mini-head">
+                    <h5>More spaces coming soon</h5>
+                    <span class="mini-type">Facilities</span>
+                  </div>
+                  <p class="mini-status">We’ll feature active rooms here once bookings are live.</p>
+                  <div class="mini-actions">
+                    <a href="{{ route('facilities.catalog') }}" class="btn btn-outline-light btn-sm">View catalog</a>
+                  </div>
+                </div>
+              </article>
+            @endforelse
           </div>
         </div>
       </div>
@@ -558,4 +506,5 @@
   @endif
 
 </body>
+@livewireScripts
 </html>

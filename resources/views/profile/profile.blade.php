@@ -3,13 +3,10 @@
 @section('title', 'My Profile — ONE Services')
 
 @push('styles')
-  @vite(['resources/css/wizard/base.css'])
-  @vite(['resources/css/user/account.css'])
-  <style>
-    .account-hero {
-      margin-top: -2rem;
-    }
-  </style>
+  @vite([
+    'resources/css/wizard/base.css',
+    'resources/css/profile/account.css',
+  ])
 @endpush
 
 @php

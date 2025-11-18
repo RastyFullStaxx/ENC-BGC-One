@@ -1,15 +1,13 @@
 import { debounce, showError, showWarning, showSuccess, formatDateLabel, formatTimeLabel } from './utils';
 import { loadFacilities as fetchFacilities, checkAvailability, submitBooking } from './facilities';
 
-let roomsGrid = null;
-
 export const initBookingWizard = () => {
   const methodSection     = document.getElementById('wizardMethodSection');
   const landingShell      = document.getElementById('wizardLandingShell');
   const landingSection    = landingShell?.closest('.wizard-shell');
   const manualStage       = document.getElementById('wizardManualStage');
   const wizardAppNavWrap  = document.getElementById('wizardAppNav');
-  roomsGrid               = document.getElementById('wizardRoomsGrid'); // Set module-level reference
+  const roomsGrid         = document.getElementById('wizardRoomsGrid');
   const loadFacilities = (filters = {}) => fetchFacilities(roomsGrid, filters);
   const nextDateBtn       = document.querySelector('.wizard-next-date');
   const bookingsSidebar   = document.getElementById('wizardBookingsSidebar');

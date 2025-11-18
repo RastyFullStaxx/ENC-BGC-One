@@ -46,9 +46,9 @@ body {
 
 .bookings-shell {
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: clamp(1.5rem, 3vw, 3rem) clamp(1rem, 4vw, 2rem) 4rem;
+  max-width: var(--enc-shell-max-width, 1760px);
+  margin: 0 auto 4rem;
+  padding: var(--enc-shell-padding-block, clamp(1.5rem, 3vw, 3.5rem)) var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem)) 4rem;
 }
 
 .bookings-back-link {

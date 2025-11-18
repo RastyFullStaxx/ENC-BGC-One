@@ -1,20 +1,9 @@
 // resources/js/landing.js
 import 'bootstrap';
 
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 document.addEventListener('DOMContentLoaded', () => {
-  /* Smooth scroll for same-page anchors (e.g., #features) */
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', e => {
-      const id = a.getAttribute('href');
-      const el = document.querySelector(id);
-      if (!el) return;
-      e.preventDefault();
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Move focus for accessibility
-      el.setAttribute('tabindex', '-1');
-      el.focus({ preventScroll: true });
-    });
-  });
 
   /* Elevate header when scrolling (subtle shadow) */
   const header = document.querySelector('.site-header');
@@ -89,7 +78,7 @@ function initIdleHeaderFooter(){
   resetTimer();
 }
 
-// Smooth anchor scroll for same-page links
+// Smooth anchor scroll for same-page links (delegated once)
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[href^="#"]');
   if (!a) return;
@@ -102,7 +91,7 @@ document.addEventListener('click', (e) => {
 
 // Animate progress bars when visible (prefers-reduced-motion aware)
 (() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (prefersReducedMotion) return;
 
   const container = document.querySelector('#availability');
   if (!container) return;
@@ -127,7 +116,7 @@ document.addEventListener('click', (e) => {
 
 // Refill the heat bars each time the section scrolls into view
 (() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (prefersReducedMotion) return;
 
   const section = document.querySelector('#availability');
   if (!section) return;
@@ -162,4 +151,3 @@ document.addEventListener('click', (e) => {
 
   io.observe(section);
 })();
-

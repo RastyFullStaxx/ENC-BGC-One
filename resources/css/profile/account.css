@@ -18,6 +18,7 @@
   animation: accountHeroFlow 18s ease infinite;
   color: #fff;
   padding: 3rem 0 5rem;
+  margin-top: -2rem;
 }
 
 .account-hero .badge {

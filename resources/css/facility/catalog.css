@@ -20,9 +20,9 @@
 }
 
 .catalog-back-nav {
-  max-width: 1240px;
+  max-width: var(--enc-shell-max-width, 1760px);
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 0;
+  padding: var(--enc-shell-padding-block, clamp(1.5rem, 3vw, 3.5rem)) var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem)) 0;
 }
 
 .catalog-back-link {
@@ -52,6 +52,12 @@
 .facility-hero .hero-title {
   color: var(--facility-blue);
   letter-spacing: -0.02em;
+}
+
+.facility-catalog-page .container {
+  max-width: var(--enc-shell-max-width, 1760px);
+  padding-left: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
+  padding-right: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
 }
 
 .facility-hero .hero-pill {

@@ -35,6 +35,9 @@
     --enc-radius-card: 1.25rem;
     --enc-shadow-card: 0 15px 35px rgba(0, 24, 64, 0.08);
     --enc-border-subtle: 1px solid var(--enc-color-gray-light);
+    --enc-shell-max-width: 1760px;
+    --enc-shell-padding-block: clamp(1.5rem, 3vw, 3.5rem);
+    --enc-shell-padding-inline: clamp(1rem, 5vw, 3.25rem);
 }
 
 body {

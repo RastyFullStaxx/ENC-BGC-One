@@ -8,18 +8,18 @@ use App\Http\Controllers\UserBookingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
+use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\FacilityCatalogController;
 
 
-Route::get('/', function () {
-    return view('marketing/landing');
-})->name('landing');
+Route::get('/', LandingPageController::class)->name('landing');
 
 // Facility catalog (public for preview)
-Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
+Route::get('/facilities/catalog', FacilityCatalogController::class)->name('facilities.catalog');
 
 // Help/FAQ - Accessible to all users (guest and authenticated)
 Route::get('/faq', function () {
-    return view('user.faq');
+    return view('faqs.faq');
 })->name('faq');
 
 
@@ -57,23 +57,31 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
     // Profile & Settings
-    Route::view('/user/profile', 'user.profile')->name('user.profile');
-    Route::view('/user/settings', 'user.settings')->name('user.settings');
+    Route::view('/user/profile', 'profile.profile')->name('user.profile');
+    Route::view('/user/settings', 'settings.settings')->name('user.settings');
 
 
     // Booking API endpoints
     Route::prefix('api/bookings')->group(function () {
-        Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])->name('api.bookings.facilities');
+        Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])
+            ->name('api.bookings.facilities')
+            ->withoutMiddleware(['auth', 'role:staff', 'role:admin']);
         Route::post('/check-availability', [\App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
         Route::post('/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('api.bookings.store');
         Route::get('/user-bookings', [\App\Http\Controllers\BookingController::class, 'getUserBookings'])->name('api.bookings.user-bookings');
-        Route::get('/notifications', [\App\Http\Controllers\BookingController::class, 'getUserNotifications'])->name('api.bookings.notifications');
         Route::get('/{id}', [\App\Http\Controllers\BookingController::class, 'show'])->name('api.bookings.show');
         Route::post('/{id}/cancel', [\App\Http\Controllers\BookingController::class, 'cancel'])->name('api.bookings.cancel');
     });
 
     // Return Room Capacity for Booking Wizard
     Route::get('/user/booking/wizard/capacities', [\App\Http\Controllers\BookingController::class, 'returnRoomCapacity'])->name('api.bookings.capacities');
+});
+
+// Notifications API (returns empty array when not authenticated to avoid redirects)
+Route::prefix('api/bookings')->group(function () {
+    Route::get('/notifications', [\App\Http\Controllers\BookingController::class, 'getUserNotifications'])
+        ->withoutMiddleware(['auth', 'role:staff', 'role:admin'])
+        ->name('api.bookings.notifications');
 });
 
 // Admin Pages (Protected - requires authentication and admin role)
@@ -105,5 +113,5 @@ Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {
-    return view('user.booking.wizard');
+    return view('booking.wizard');
 })->name('booking.wizard');

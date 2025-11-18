@@ -135,6 +135,12 @@
             @endforelse
         </div>
 
+        <div class="enc-bookings-pagination" data-role="bookings-pagination" hidden>
+            <button type="button" class="enc-page-btn" data-action="prev" aria-label="Previous page">‹ Prev</button>
+            <span class="enc-page-label" data-role="page-label">Page 1</span>
+            <button type="button" class="enc-page-btn" data-action="next" aria-label="Next page">Next ›</button>
+        </div>
+
         <div
             class="enc-bookings-empty-message"
             data-role="empty-state"
