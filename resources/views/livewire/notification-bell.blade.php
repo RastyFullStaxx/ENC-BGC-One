@@ -1,11 +1,11 @@
 <div class="dropdown">
-  <button 
-    class="btn btn-light border-0 enc-nav-icon-btn position-relative" 
-    type="button" 
-    id="notifBell" 
-    data-bs-toggle="dropdown" 
+  <button
+    class="btn btn-light border-0 enc-nav-icon-btn position-relative"
+    type="button"
+    id="notifBell"
+    data-bs-toggle="dropdown"
     data-bs-auto-close="outside"
-    aria-expanded="false" 
+    aria-expanded="false"
     aria-label="Notifications"
     wire:click.prevent="markSeen"
   >
@@ -13,21 +13,25 @@
       <path d="M12 4a5 5 0 00-5 5v3.382l-.894 2.236A1 1 0 007.03 16h9.94a1 1 0 00.924-1.382L17 12.382V9a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M10 19a2 2 0 104 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
-    @if(($count ?? 0) > 0 && !($muteBadge ?? false))
-      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small">
-        {{ $count > 99 ? '99+' : $count }}
-      </span>
-    @endif
+
+    <!-- Badge updates every 5s via polling -->
+    <span 
+      wire:poll.1s
+      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small {{ ($count ?? 0) > 0 && !$muteBadge ? '' : 'd-none' }}"
+    >
+      {{ $count > 99 ? '99+' : $count }}
+    </span>
   </button>
 
-  <!-- Important: wire:ignore + no polling here -->
-  <div 
-    class="dropdown-menu dropdown-menu-end shadow-sm" 
-    aria-labelledby="notifBell" 
+  <!-- This is the magic: .self = keep dropdown container, update INSIDE -->
+  <div
+    class="dropdown-menu dropdown-menu-end shadow-sm"
+    aria-labelledby="notifBell"
     style="min-width: 320px;"
-    wire:ignore
-  >
-    <div wire:poll.5s> <!-- You can keep polling here only, or remove if Echo is enough -->
+    wire:ignore.self
+    wire:key="notif-menu-{{ auth()->id() }}"
+    >
+    <div wire:poll.1s>
       <div class="px-3 py-2 d-flex justify-content-between align-items-center">
         <span class="fw-semibold small">Notifications</span>
         <span class="text-muted small">{{ $count ?? 0 }} total</span>
@@ -56,3 +60,19 @@
     </div>
   </div>
 </div>
+
+@auth
+<script>
+  document.addEventListener('livewire:initialized', () => {
+    const userId = {{ auth()->id() }};
+
+    if (window.Echo && userId) {
+      Echo.private(`users.${userId}`)
+        .listen('.notification.created', () => {
+          // This triggers $refresh → updates badge + list instantly
+          Livewire.dispatch('refreshNotifications');
+        });
+    }
+  });
+</script>
+@endauth
