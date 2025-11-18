@@ -17,6 +17,9 @@ return new class extends Migration
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
             $table->enum('channel', ['EMAIL', 'SMS', 'CHAT']);
             $table->timestamps();
+
+            // Add seen_at column to track when notification was read
+            $table->timestamp('seen_at')->nullable()->after('updated_at');
         });
     }
 

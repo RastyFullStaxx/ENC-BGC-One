@@ -21,45 +21,39 @@ class NotificationBell extends Component
     {
         $user = Auth::user();
 
-        if (! $user) {
+        if (!$user) {
             $this->lastCount = 0;
             return view('livewire.notification-bell', [
                 'count' => 0,
                 'notifications' => collect(),
+                'muteBadge' => false,
             ]);
         }
 
+        // Fetch latest 6 notifications for this user
         $notifications = NotificationLog::with([
                 'booking.facility',
                 'booking.details',
             ])
-            ->whereHas('booking', function ($q) use ($user) {
-                $q->where('requester_id', $user->id);
-            })
+            ->whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
             ->latest('created_at')
             ->limit(6)
             ->get()
-            ->map(function ($log) {
-                $booking = $log->booking;
-                $facility = $booking?->facility?->name ?? 'Booking';
-                $purpose = $booking?->details?->purpose ?? 'Booking update';
-                $time = $booking?->date ? Carbon::parse($booking->date, config('app.timezone'))->format('M j, g:i A') : null;
-                $status = ucfirst($booking?->status ?? 'pending');
+            ->map(fn($log) => [
+                'id' => $log->id,
+                'channel' => $log->channel,
+                'created_at' => optional($log->created_at)->diffForHumans(),
+                'facility' => $log->booking?->facility?->name ?? 'Booking',
+                'purpose' => $log->booking?->details?->purpose ?? 'Booking update',
+                'time' => $log->booking?->date ? Carbon::parse($log->booking->date, config('app.timezone'))->format('M j, g:i A') : null,
+                'status' => ucfirst($log->booking?->status ?? 'pending'),
+                'seen_at' => $log->seen_at,
+            ]) ;
 
-                return [
-                    'id' => $log->id,
-                    'channel' => $log->channel,
-                    'created_at' => optional($log->created_at)->diffForHumans(),
-                    'facility' => $facility,
-                    'purpose' => $purpose,
-                    'status' => $status,
-                    'time' => $time,
-                ];
-            });
-
-        $count = NotificationLog::whereHas('booking', function ($q) use ($user) {
-            $q->where('requester_id', $user->id);
-        })->count();
+        // Count only unread notifications
+        $count = NotificationLog::whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
+            ->whereNull('seen_at')
+            ->count();
 
         // Unmute badge when new notifications arrive
         if ($count > $this->lastCount) {
@@ -74,8 +68,27 @@ class NotificationBell extends Component
         ]);
     }
 
+    /**
+     * Mark all notifications as seen
+     */
     public function markSeen(): void
     {
+        $user = Auth::user();
+        if (!$user) return;
+
+        // Update all unseen notifications to set seen_at
+        NotificationLog::whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
+            ->whereNull('seen_at')
+            ->update(['seen_at' => now()]);
+
         $this->muteBadge = true;
+        $this->lastCount = 0;
+    }
+    public function markSeenAndKeepOpen()
+    {
+        $this->markSeen();
+        $this->dispatch('$refresh'); // or just let poll handle it
+        // Tell Bootstrap NOT to close
+        $this->dispatch('dropdown-stay-open');
     }
 }

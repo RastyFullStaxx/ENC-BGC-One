@@ -83,72 +83,8 @@
       </a>
 
       @if ($showNotifications)
-        {{-- Notifications via Livewire (poll + Echo) --}}
-        <livewire:notification-bell />
-
-        <script>
-          let notificationsLoaded = false;
-
-          function loadNotifications() {
-            if (notificationsLoaded) return;
-            
-            fetch('{{ route('api.bookings.notifications') }}')
-              .then(response => response.json())
-              .then(notifications => {
-                const container = document.getElementById('notificationsList');
-                const countBadge = document.getElementById('notificationCount');
-                
-                if (notifications.length === 0) {
-                  container.innerHTML = '<div class="p-3 text-center text-muted small">No new notifications</div>';
-                } else {
-                  container.innerHTML = notifications.map(notif => `
-                    <a href="/user/booking/${notif.booking_id}" class="dropdown-item py-2 px-3 text-decoration-none" style="white-space: normal;">
-                      <div class="d-flex gap-2">
-                        <div class="flex-shrink-0">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="text-${getStatusColor(notif.status)}">
-                            <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.2"/>
-                            <circle cx="12" cy="12" r="4" fill="currentColor"/>
-                          </svg>
-                        </div>
-                        <div class="flex-grow-1">
-                          <div class="fw-semibold small">${notif.facility_name}</div>
-                          <div class="small text-muted">${notif.message}</div>
-                          <div class="small text-muted mt-1">
-                            <span>${notif.date} at ${notif.time}</span>
-                            <span class="mx-1">•</span>
-                            <span>${notif.created_at}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
-                    <hr class="dropdown-divider my-1">
-                  `).join('');
-
-                  // Remove trailing divider
-                  container.innerHTML = container.innerHTML.replace(/<hr class="dropdown-divider my-1">\s*$/, '');
-                }
-
-                countBadge.textContent = notifications.length;
-                notificationsLoaded = true;
-              })
-              .catch(error => {
-                console.error('Error loading notifications:', error);
-                document.getElementById('notificationsList').innerHTML = 
-                  '<div class="p-3 text-center text-danger small">Failed to load notifications</div>';
-              });
-          }
-
-          function getStatusColor(status) {
-            const colors = {
-              'pending': 'warning',
-              'approved': 'success',
-              'confirmed': 'success',
-              'cancelled': 'danger',
-              'rejected': 'danger'
-            };
-            return colors[status] || 'secondary';
-          }
-        </script>
+        {{-- Notification Bell --}}
+        @livewire('notification-bell', ['count' => $notificationsCount])
       @endif
 
       @if(($showHomeButton ?? false) && ($homeButtonRoute ?? false))
