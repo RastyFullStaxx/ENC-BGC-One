@@ -53,16 +53,22 @@
         }
       });
 
-      // Close dropdown on scroll (navbar hide) and when idle scroll happens
+      // Only auto-close when the navbar retracts (e.g., idle header animation)
       const hideDropdown = () => {
         if (!dropdownEl) return;
         const instance = bootstrap.Dropdown.getInstance(dropdownEl);
         if (instance) { instance.hide(); }
       };
-      window.addEventListener('scroll', hideDropdown, { passive: true });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) hideDropdown();
-      });
+
+      const header = document.querySelector('.header-slide');
+      if (header) {
+        const observer = new MutationObserver(() => {
+          if (header.classList.contains('header-hidden')) {
+            hideDropdown();
+          }
+        });
+        observer.observe(header, { attributes: true, attributeFilter: ['class'] });
+      }
     })();
   </script>
 @endauth
