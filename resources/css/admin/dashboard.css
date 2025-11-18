@@ -1,8 +1,8 @@
 .admin-shell {
   width: 100%;
-  max-width: 1760px;
+  max-width: var(--enc-shell-max-width, 1760px);
   margin: 0 auto 4rem;
-  padding: clamp(1.5rem, 3vw, 3.5rem) clamp(1rem, 5vw, 3.25rem);
+  padding: var(--enc-shell-padding-block, clamp(1.5rem, 3vw, 3.5rem)) var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
 }
 
 .admin-flash {

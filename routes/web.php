@@ -62,7 +62,9 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
     // Booking API endpoints
     Route::prefix('api/bookings')->group(function () {
-        Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])->name('api.bookings.facilities');
+        Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])
+            ->name('api.bookings.facilities')
+            ->withoutMiddleware(['auth', 'role:staff', 'role:admin']);
         Route::post('/check-availability', [\App\Http\Controllers\BookingController::class, 'checkAvailability'])->name('api.bookings.check-availability');
         Route::post('/store', [\App\Http\Controllers\BookingController::class, 'store'])->name('api.bookings.store');
         Route::get('/user-bookings', [\App\Http\Controllers\BookingController::class, 'getUserBookings'])->name('api.bookings.user-bookings');

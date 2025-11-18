@@ -276,7 +276,7 @@
 /* ---- Layout shell ---- */
 .wizard-shell {
   min-height: calc(100vh - 140px); /* leave room for navbar/footer */
-  padding: clamp(2rem, 4vh, 4rem) 1rem;
+  padding: var(--enc-shell-padding-block, clamp(1.5rem, 3vw, 3.5rem)) var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
   background: var(--enc-color-light, #FDFDFD);
 }
 
@@ -285,6 +285,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: var(--enc-shell-max-width, 1760px);
+  width: 100%;
+  margin: 0 auto;
+  padding-left: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
+  padding-right: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
 }
 
 #wizardLandingShell .row {
@@ -533,16 +538,23 @@
   margin-top: 1rem;
 }
 
+.wizard-stage.container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .wizard-stage-row {
   --wizard-sidebar-width: clamp(260px, 25vw, 340px);
   width: 100%;
-  max-width: 1320px;
+  max-width: var(--enc-shell-max-width, 1760px);
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
   align-items: stretch;
   justify-content: center;
+  padding-left: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
+  padding-right: var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
 }
 
 .wizard-stage-row.has-sidebar {
