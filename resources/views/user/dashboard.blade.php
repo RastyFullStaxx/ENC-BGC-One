@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @push('styles')
-    @vite(['resources/css/wizard/base.css'])
+    @vite(['resources/css/wizard/base.css', 'resources/css/wizard/steps.css'])
 @endpush
 
 @push('styles')
@@ -296,8 +296,8 @@ body {
 /* Content Grid */
 .content-grid {
     display: grid;
-    grid-template-columns: 1fr 400px;
-    gap: 16px;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 18px;
 }
 
 /* Card Styles */
@@ -618,6 +618,87 @@ body {
     border-left-color: #9f0712;
 }
 
+.mini-calendar{
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    overflow:hidden;
+    background:#fdfdfd;
+    box-shadow:0px 25px 60px -45px rgba(0,24,64,0.7);
+}
+.mini-calendar__header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:16px 18px;
+    background:linear-gradient(135deg, #001840, #155dfc);
+    color:#fdfdfd;
+}
+.mini-calendar__grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    background:#fff;
+}
+.mini-calendar__cell{
+    border:1px solid #f1f5f9;
+    min-height:80px;
+    padding:8px;
+    font-size:12px;
+    position:relative;
+    font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    transition:background 0.2s ease, border-color 0.2s ease;
+}
+.mini-calendar__cell-header{
+    font-weight:700;
+    color:#001840;
+}
+.mini-calendar__pill{
+    display:inline-block;
+    margin-top:6px;
+    padding:5px 8px;
+    border-radius:10px;
+    background:#e8eeff;
+    color:#001840;
+    font-size:11px;
+    line-height:1.2;
+    border:1px solid rgba(21,93,252,0.15);
+}
+.mini-calendar__pill.is-maint{
+    background:#fff085;
+    border-color:#894b00;
+    color:#894b00;
+}
+.mini-calendar__pill.is-occupied{
+    background:#ffc9c9;
+    border-color:#9f0712;
+    color:#9f0712;
+}
+.mini-calendar__pill.is-available{
+    background:#e8fdee;
+    border-color:#00c950;
+    color:#005a24;
+}
+.mini-calendar__pill.is-limited{
+    background:#e8eeff;
+    border-color:#155dfc;
+    color:#001840;
+}
+.mini-calendar__weekday{
+    background:#f4f6f9;
+    text-align:center;
+    padding:8px 4px;
+    font-weight:700;
+    font-size:12px;
+    border:1px solid #e5e7eb;
+    font-family:'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.mini-calendar__cell.is-today{
+    border:1px solid #155dfc;
+    box-shadow:0 10px 25px -18px rgba(0,24,64,0.6);
+}
+.mini-calendar__cell:hover{
+    background:#f8fafc;
+    border-color:#dbe4f3;
+}
 .enc-bookings-list__item-header {
     display: flex;
     align-items: center;
@@ -966,47 +1047,101 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         <div class="content-grid">
-            <div class="card upcoming-card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M6.66667 1.66667V5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M13.3333 1.66667V5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M15.8333 3.33333H4.16667C3.24619 3.33333 2.5 4.07953 2.5 5V16.6667C2.5 17.5871 3.24619 18.3333 4.16667 18.3333H15.8333C16.7538 18.3333 17.5 17.5871 17.5 16.6667V5C17.5 4.07953 16.7538 3.33333 15.8333 3.33333Z" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M2.5 8.33333H17.5" stroke="#99A1AF" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <h3>Upcoming</h3>
+            <div class="d-flex flex-column gap-3">
+                {{-- Global calendar --}}
+                <div class="card p-0 overflow-hidden">
+                    @php
+                        $now = \Carbon\Carbon::now('Asia/Manila');
+                        $startOfMonth = $now->copy()->startOfMonth();
+                        $daysInMonth = $now->daysInMonth;
+                        $startWeekday = ($startOfMonth->dayOfWeekIso - 1); // 0-based
+                        $calendarDays = [];
+                        for ($i = 0; $i < $startWeekday; $i++) { $calendarDays[] = null; }
+                        for ($d = 1; $d <= $daysInMonth; $d++) { $calendarDays[] = $now->copy()->day($d); }
+                        $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+                        $events = array_slice($upcomingBookingsCards ?? [], 0, 8);
+                        $eventsByDay = collect($events)->groupBy(function($item) {
+                            return \Carbon\Carbon::parse($item['date'])->day;
+                        });
+                    @endphp
+                    <div class="enc-my-bookings-card__header">
+                        <div class="enc-my-bookings-card__heading">
+                            <p class="enc-my-bookings-card__eyebrow mb-1">Global calendar</p>
+                            <h3 class="enc-my-bookings-card__title mb-0">All rooms in one view</h3>
+                            <p class="enc-my-bookings-card__subtitle mb-0">Quick preview of {{ $now->format('F Y') }}. Open the full calendar for details.</p>
+                        </div>
+                        <a href="{{ route('admin.calendar') }}" class="enc-my-bookings-card__cta">Open calendar</a>
                     </div>
-                    <div class="badge-count">{{ count($upcomingBookingsCards) }}</div>
+                    <div class="p-3 p-md-4">
+                        <div class="wizard-calendar">
+                            <div class="wizard-calendar-nav d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-semibold text-primary">{{ $now->format('F Y') }}</span>
+                                <span class="text-muted small">Today: {{ $now->format('M j') }}</span>
+                            </div>
+                            <div class="wizard-calendar-daynames">
+                                @foreach($weekdays as $day)
+                                    <span>{{ $day }}</span>
+                                @endforeach
+                            </div>
+                            <div class="wizard-calendar-grid">
+                                @foreach($calendarDays as $day)
+                                    @if(!$day)
+                                        <button class="wizard-calendar-day is-muted" type="button" disabled></button>
+                                    @else
+                                        @php $dayEvents = $eventsByDay->get($day->day, collect()); @endphp
+                                        <button class="wizard-calendar-day {{ $day->isToday() ? 'is-today' : '' }}" type="button">
+                                            <span class="wizard-calendar-daynumber">{{ $day->day }}</span>
+                                            @foreach($dayEvents as $ev)
+                                                @php
+                                                    $pillClass = 'mini-calendar__pill';
+                                                    $status = strtolower($ev['status'] ?? '');
+                                                    if (str_contains($status, 'maintenance')) $pillClass .= ' is-maint';
+                                                    elseif (str_contains($status, 'occupied') || str_contains($status, 'approved') || str_contains($status, 'confirmed')) $pillClass .= ' is-occupied';
+                                                    elseif (str_contains($status, 'pending')) $pillClass .= ' is-limited';
+                                                    else $pillClass .= ' is-available';
+                                                @endphp
+                                                <span class="{{ $pillClass }} d-block mt-1" title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}">
+                                                    {{ $ev['facility'] }}
+                                                </span>
+                                            @endforeach
+                                        </button>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                @if(count($upcomingBookingsCards) > 0)
-                    @foreach($upcomingBookingsCards as $upcomingCard)
-                        <div class="upcoming-booking" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 16px; margin-bottom: 16px;">
-                            <p class="upcoming-date">{{ $upcomingCard['date'] }}</p>
-                            <h4 class="upcoming-title">{{ $upcomingCard['facility'] }}</h4>
-                            <p class="upcoming-purpose">{{ $upcomingCard['purpose'] }}</p>
-                            <p class="upcoming-meta">
-                                <span>{{ $upcomingCard['time'] }}</span>
-                                @if(!empty($upcomingCard['location']))
-                                    <span aria-hidden="true">•</span>
-                                    <span>{{ $upcomingCard['location'] }}</span>
-                                @endif
-                            </p>
+
+                {{-- Quick actions and resources --}}
+                <div class="card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <p class="text-uppercase small text-muted mb-1">Quick actions</p>
+                            <h3 class="mb-0">Get things done faster</h3>
                         </div>
-                    @endforeach
-                @else
-                    <div class="card-empty">
-                        <div class="empty-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <path d="M8 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M16 2V6" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M3 10H21" stroke="#D1D5DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <p>No upcoming bookings</p>
                     </div>
-                @endif
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <a href="{{ route('user.booking.wizard') }}" class="btn btn-primary btn-sm">Start a booking</a>
+                        <a href="{{ route('facilities.catalog') }}" class="btn btn-outline-primary btn-sm">Explore facilities</a>
+                        <a href="{{ route('faq') }}" class="btn btn-outline-secondary btn-sm">FAQ & Policies</a>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border bg-light h-100">
+                                <p class="text-uppercase small text-muted mb-1">Need help?</p>
+                                <p class="mb-1 fw-semibold">Call concierge</p>
+                                <p class="text-muted small mb-0">We’ll help you find a room or update a request.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="p-3 rounded-3 border bg-light h-100">
+                                <p class="text-uppercase small text-muted mb-1">Approvals</p>
+                                <p class="mb-1 fw-semibold">Track status</p>
+                                <p class="text-muted small mb-0">Check pending requests and next steps.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <section id="dashboardBookingsPanel" class="dashboard-bookings-panel is-visible" data-panel-state="visible" aria-live="polite">
