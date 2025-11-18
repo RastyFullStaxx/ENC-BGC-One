@@ -120,8 +120,10 @@
                         for ($i = 0; $i < $startWeekday; $i++) { $calendarDays[] = null; }
                         for ($d = 1; $d <= $daysInMonth; $d++) { $calendarDays[] = $now->copy()->day($d); }
                         $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                        $events = array_slice($upcomingBookingsCards ?? [], 0, 8);
-                        $eventsByDay = collect($events)->groupBy(function($item) {
+                        $events = collect($upcomingBookingsCards ?? [])->filter(function ($item) {
+                            return str_contains(strtolower($item['status'] ?? ''), 'approved') || str_contains(strtolower($item['status'] ?? ''), 'confirmed');
+                        });
+                        $eventsByDay = $events->groupBy(function($item) {
                             return \Carbon\Carbon::parse($item['date'])->day;
                         });
                     @endphp
@@ -135,9 +137,10 @@
                     </div>
                     <div class="p-3 p-md-4">
                         <div class="wizard-calendar">
-                            <div class="wizard-calendar-nav d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-semibold text-primary">{{ $now->format('F Y') }}</span>
-                                <span class="text-muted small">Today: {{ $now->format('M j') }}</span>
+                            <div class="wizard-calendar-header">
+                                <button class="wizard-calendar-nav-btn" type="button" aria-label="Previous month">‹</button>
+                                <div class="wizard-calendar-month text-center">{{ $now->format('F Y') }}</div>
+                                <button class="wizard-calendar-nav-btn" type="button" aria-label="Next month">›</button>
                             </div>
                             <div class="wizard-calendar-daynames">
                                 @foreach($weekdays as $day)
@@ -153,17 +156,12 @@
                                         <button class="wizard-calendar-day {{ $day->isToday() ? 'is-today' : '' }}" type="button">
                                             <span class="wizard-calendar-daynumber">{{ $day->day }}</span>
                                             @foreach($dayEvents as $ev)
-                                                @php
-                                                    $pillClass = 'mini-calendar__pill';
-                                                    $status = strtolower($ev['status'] ?? '');
-                                                    if (str_contains($status, 'maintenance')) $pillClass .= ' is-maint';
-                                                    elseif (str_contains($status, 'occupied') || str_contains($status, 'approved') || str_contains($status, 'confirmed')) $pillClass .= ' is-occupied';
-                                                    elseif (str_contains($status, 'pending')) $pillClass .= ' is-limited';
-                                                    else $pillClass .= ' is-available';
-                                                @endphp
-                                                <span class="{{ $pillClass }} d-block mt-1" title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}">
-                                                    {{ $ev['facility'] }}
-                                                </span>
+                                                <div class="calendar-event-pill" title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}">
+                                                    <strong>{{ $ev['facility'] }}</strong>
+                                                    @if(!empty($ev['title']))
+                                                        <span class="d-block small text-muted">{{ $ev['title'] }}</span>
+                                                    @endif
+                                                </div>
                                             @endforeach
                                         </button>
                                     @endif
@@ -173,36 +171,75 @@
                     </div>
                 </div>
 
-                {{-- Quick actions and resources --}}
-                <div class="card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
+                @php
+                    $favoriteRooms = ($favoriteRooms ?? null) ?: [
+                        [
+                            'name' => 'Conference Room A-301',
+                            'capacity' => '12 seats',
+                            'location' => 'Tower A · 3F',
+                            'status' => 'Available now',
+                            'tone' => 'success',
+                            'image' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop'
+                        ],
+                        [
+                            'name' => 'Innovation Lab C-401',
+                            'capacity' => '24 seats',
+                            'location' => 'Tower C · 4F',
+                            'status' => 'Limited slots',
+                            'tone' => 'warning',
+                            'image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1200&auto=format&fit=crop'
+                        ],
+                        [
+                            'name' => 'Huddle Room B-215',
+                            'capacity' => '6 seats',
+                            'location' => 'Tower B · 2F',
+                            'status' => 'Ready in 5 min',
+                            'tone' => 'info',
+                            'image' => 'https://images.unsplash.com/photo-1523419400524-fc1e0aba7895?q=80&w=1200&auto=format&fit=crop'
+                        ],
+                    ];
+
+                    $whatsNew = ($whatsNew ?? null) ?: [
+                        ['title' => 'Innovation Lab now supports livestream kits', 'date' => 'Updated today', 'tag' => 'Update', 'detail' => 'AV concierge can pre-stage cameras.'],
+                        ['title' => 'Townhall Studio maintenance on Nov 24', 'date' => 'Notice · 2 days', 'tag' => 'Maintenance', 'detail' => 'Lighting will be recalibrated 8–11 AM.'],
+                        ['title' => 'New auto-checklist for VIP visits', 'date' => 'New', 'tag' => 'New', 'detail' => 'Auto-shares prep steps to hosts.'],
+                    ];
+
+                    $toolStrip = ($toolStrip ?? null) ?: [
+                        ['label' => 'Start a booking', 'href' => route('user.booking.wizard'), 'icon' => 'calendar'],
+                        ['label' => 'View approvals', 'href' => route('user.booking.index'), 'icon' => 'check'],
+                        ['label' => 'Facilities catalog', 'href' => route('facilities.catalog'), 'icon' => 'map'],
+                        ['label' => 'Support & FAQ', 'href' => route('faq'), 'icon' => 'help'],
+                    ];
+                @endphp
+
+                {{-- Favorites --}}
+                <div class="card favorites-card">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
-                            <p class="text-uppercase small text-muted mb-1">Quick actions</p>
-                            <h3 class="mb-0">Get things done faster</h3>
+                            <p class="text-uppercase small mb-1">Favorite rooms</p>
+                            <h3 class="mb-0">Book again in one tap</h3>
                         </div>
                     </div>
-                    <div class="d-flex flex-wrap gap-2 mb-3">
-                        <a href="{{ route('user.booking.wizard') }}" class="btn btn-primary btn-sm">Start a booking</a>
-                        <a href="{{ route('facilities.catalog') }}" class="btn btn-outline-primary btn-sm">Explore facilities</a>
-                        <a href="{{ route('faq') }}" class="btn btn-outline-secondary btn-sm">FAQ & Policies</a>
-                    </div>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 border bg-light h-100">
-                                <p class="text-uppercase small text-muted mb-1">Need help?</p>
-                                <p class="mb-1 fw-semibold">Call concierge</p>
-                                <p class="text-muted small mb-0">We’ll help you find a room or update a request.</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="p-3 rounded-3 border bg-light h-100">
-                                <p class="text-uppercase small text-muted mb-1">Approvals</p>
-                                <p class="mb-1 fw-semibold">Track status</p>
-                                <p class="text-muted small mb-0">Check pending requests and next steps.</p>
-                            </div>
-                        </div>
+                    <div class="favorites-grid">
+                        @foreach($favoriteRooms as $room)
+                            <article class="favorite-room-card">
+                                <div class="favorite-room-thumb" style="background-image: url('{{ $room['image'] ?? 'https://images.unsplash.com/photo-1523419400524-fc1e0aba7895?q=80&w=1200&auto=format&fit=crop' }}');">
+                                    <span class="favorite-room-status favorite-room-status--{{ $room['tone'] ?? 'neutral' }}">{{ $room['status'] }}</span>
+                                </div>
+                                <div class="favorite-room-content">
+                                    <p class="favorite-room-name mb-1">{{ $room['name'] }}</p>
+                                    <p class="favorite-room-meta mb-2">{{ $room['capacity'] }} · {{ $room['location'] }}</p>
+                                    <div class="favorite-room-actions">
+                                        <a href="{{ route('user.booking.wizard') }}#wizardMethodSection" class="favorite-btn favorite-btn--primary">Rebook</a>
+                                        <a href="{{ route('facilities.catalog') }}" class="favorite-btn favorite-btn--ghost">Details</a>
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
                     </div>
                 </div>
+
             </div>
 
             <section id="dashboardBookingsPanel" class="dashboard-bookings-panel is-visible" data-panel-state="visible" aria-live="polite">
@@ -213,4 +250,45 @@
         </div>
     </div>
 </section>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const list = document.querySelector('[data-role="bookings-list"]');
+    const items = list ? Array.from(list.querySelectorAll('[data-role="booking-item"]')) : [];
+    const pager = document.querySelector('[data-role="bookings-pagination"]');
+    if (!list || !pager) return;
+
+    const pageLabel = pager.querySelector('[data-role="page-label"]');
+    const prevBtn = pager.querySelector('[data-action="prev"]');
+    const nextBtn = pager.querySelector('[data-action="next"]');
+    const pageSize = 5;
+    const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+    let current = 0;
+
+    if (totalPages <= 1) {
+        pager.setAttribute('hidden', '');
+        return;
+    }
+    pager.removeAttribute('hidden');
+
+    function render(page) {
+        current = Math.min(Math.max(page, 0), totalPages - 1);
+        const start = current * pageSize;
+        const end = start + pageSize;
+        items.forEach((item, idx) => {
+            item.hidden = !(idx >= start && idx < end);
+        });
+        pageLabel.textContent = `Page ${current + 1} of ${totalPages}`;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current >= totalPages - 1;
+    }
+
+    prevBtn?.addEventListener('click', () => render(current - 1));
+    nextBtn?.addEventListener('click', () => render(current + 1));
+
+    render(0);
+});
+</script>
+@endpush
 @endsection
