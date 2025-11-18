@@ -19,17 +19,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         };
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(btn => {
-                    btn.classList.remove('is-active');
-                    btn.setAttribute('aria-selected', 'false');
-                });
+        widget.addEventListener('click', (event) => {
+            const tab = event.target.closest('.enc-my-bookings-card__tab');
+            if (!tab || !widget.contains(tab)) return;
 
-                tab.classList.add('is-active');
-                tab.setAttribute('aria-selected', 'true');
-                filterList(tab.dataset.status);
+            tabs.forEach(btn => {
+                btn.classList.toggle('is-active', btn === tab);
+                btn.setAttribute('aria-selected', btn === tab ? 'true' : 'false');
             });
+
+            filterList(tab.dataset.status);
         });
 
         const initialTab = widget.querySelector('.enc-my-bookings-card__tab.is-active') || tabs[0];
