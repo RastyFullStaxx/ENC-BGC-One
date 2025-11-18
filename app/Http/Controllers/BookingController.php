@@ -541,10 +541,15 @@ class BookingController extends Controller
     public function getUserNotifications(Request $request)
     {
         $limit = $request->get('limit', 10);
+        $userId = Auth::id();
+
+        if (! $userId) {
+            return response()->json([]);
+        }
         
         $notifications = NotificationLog::with(['booking.facility'])
-            ->whereHas('booking', function ($query) {
-                $query->where('requester_id', Auth::id());
+            ->whereHas('booking', function ($query) use ($userId) {
+                $query->where('requester_id', $userId);
             })
             ->orderBy('created_at', 'desc')
             ->limit($limit)

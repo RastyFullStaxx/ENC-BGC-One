@@ -179,16 +179,19 @@
                   @forelse ($scheduleBlocks as $block)
                     <div class="schedule-row">
                       <div class="schedule-meta">
-                        <p class="schedule-room">{{ $block['room'] }}</p>
-                        <p class="schedule-status schedule-status-{{ $block['status'] ?? 'available' }}">{{ $block['status_label'] ?? ucwords(str_replace('-', ' ', $block['status'] ?? 'available')) }}</p>
-                        <p class="schedule-note">{{ $block['note'] }}</p>
-                      </div>
-                      <div class="schedule-track">
-                        @foreach ($block['segments'] ?? [] as $segment)
-                          @php
-                            $state = $segment['status'] ?? 'available';
-                            $offset = (($segment['start'] - $scheduleStart) / $range) * 100;
-                            $width = (($segment['end'] - $segment['start']) / $range) * 100;
+                      <p class="schedule-room">{{ $block['room'] }}</p>
+                      <p class="schedule-status schedule-status-{{ $block['status'] ?? 'available' }}">{{ $block['status_label'] ?? ucwords(str_replace('-', ' ', $block['status'] ?? 'available')) }}</p>
+                      <p class="schedule-note">{{ $block['note'] }}</p>
+                    </div>
+                    <div class="schedule-track">
+                      @if ($nowInRange)
+                        <span class="schedule-now" data-label="Now {{ $nowLabel }}" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
+                      @endif
+                      @foreach ($block['segments'] ?? [] as $segment)
+                        @php
+                          $state = $segment['status'] ?? 'available';
+                          $offset = (($segment['start'] - $scheduleStart) / $range) * 100;
+                          $width = (($segment['end'] - $segment['start']) / $range) * 100;
                             $offset = max(0, min(100, $offset));
                             $width = max(1, min(100, $width));
                             $label = $stateLabels[$state] ?? ucwords($state);

@@ -1,10 +1,10 @@
-<div class="dropdown" wire:poll="{{ $pollInterval ?? '30s' }}">
-  <button class="btn btn-light border-0 enc-nav-icon-btn position-relative" type="button" id="notifBell" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+<div class="dropdown" wire:poll.30s>
+  <button class="btn btn-light border-0 enc-nav-icon-btn position-relative" type="button" id="notifBell" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications" wire:click="markSeen">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M12 4a5 5 0 00-5 5v3.382l-.894 2.236A1 1 0 007.03 16h9.94a1 1 0 00.924-1.382L17 12.382V9a5 5 0 00-5-5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M10 19a2 2 0 104 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
-    @if(($count ?? 0) > 0)
+    @if(($count ?? 0) > 0 && !($muteBadge ?? false))
       <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger small">
         {{ $count > 99 ? '99+' : $count }}
       </span>
@@ -42,6 +42,8 @@
   <script>
     (() => {
       const userId = {{ auth()->id() }};
+      const dropdownEl = document.getElementById('notifBell');
+
       document.addEventListener('livewire:initialized', () => {
         if (window.Echo && userId) {
           window.Echo.private(`users.${userId}`)
@@ -49,6 +51,17 @@
               Livewire.dispatch('refreshNotifications');
             });
         }
+      });
+
+      // Close dropdown on scroll (navbar hide) and when idle scroll happens
+      const hideDropdown = () => {
+        if (!dropdownEl) return;
+        const instance = bootstrap.Dropdown.getInstance(dropdownEl);
+        if (instance) { instance.hide(); }
+      };
+      window.addEventListener('scroll', hideDropdown, { passive: true });
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) hideDropdown();
       });
     })();
   </script>

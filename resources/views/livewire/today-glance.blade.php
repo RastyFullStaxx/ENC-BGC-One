@@ -27,6 +27,9 @@
                   <p class="schedule-note">{{ $block['note'] }}</p>
                 </div>
                 <div class="schedule-track">
+                  @if ($nowInRange)
+                    <span class="schedule-now" data-label="Now {{ $nowLabel }}" style="--now-offset: {{ $nowOffset }}%;" aria-hidden="true"></span>
+                  @endif
                   @foreach ($block['segments'] ?? [] as $segment)
                     @php
                       $state = $segment['status'] ?? 'available';

@@ -76,7 +76,7 @@
   z-index:2;
 }
 .schedule-now::after{
-  content:attr(data-label);
+  content:"";
   position:absolute;
   top:-9999px;
   left:50%;

@@ -10,6 +10,8 @@ use Livewire\Component;
 class NotificationBell extends Component
 {
     public string $pollInterval = '30s';
+    public bool $muteBadge = false;
+    public int $lastCount = 0;
 
     protected $listeners = [
         'refreshNotifications' => '$refresh',
@@ -20,6 +22,7 @@ class NotificationBell extends Component
         $user = Auth::user();
 
         if (! $user) {
+            $this->lastCount = 0;
             return view('livewire.notification-bell', [
                 'count' => 0,
                 'notifications' => collect(),
@@ -58,9 +61,21 @@ class NotificationBell extends Component
             $q->where('requester_id', $user->id);
         })->count();
 
+        // Unmute badge when new notifications arrive
+        if ($count > $this->lastCount) {
+            $this->muteBadge = false;
+        }
+        $this->lastCount = $count;
+
         return view('livewire.notification-bell', [
             'count' => $count,
             'notifications' => $notifications,
+            'muteBadge' => $this->muteBadge,
         ]);
+    }
+
+    public function markSeen(): void
+    {
+        $this->muteBadge = true;
     }
 }

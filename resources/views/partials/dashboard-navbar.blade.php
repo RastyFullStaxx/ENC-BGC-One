@@ -89,7 +89,7 @@
       {{-- Help/FAQ --}}
       <a
         href="{{ route('faq') }}"
-        class="btn btn-light enc-nav-icon-btn"
+        class="btn btn-light border-0 enc-nav-icon-btn"
         aria-label="Help and FAQ"
         title="Help & FAQ"
       >
@@ -101,41 +101,8 @@
         </svg>
       </a>
 
-      {{-- Notifications --}}
-      <div class="dropdown">
-        <button
-          class="btn btn-light position-relative enc-nav-icon-btn"
-          id="appNotificationsMenu"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-          aria-label="Notifications"
-          onclick="loadNotifications()"
-        >
-          {{-- Bell icon --}}
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M6 8a6 6 0 1112 0c0 5 2 6 2 6H4s2-1 2-6z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M10 20a2 2 0 004 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          @if($notificationsCount > 0)
-            <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
-              <span class="visually-hidden">{{ $notificationsCount }} new notifications</span>
-            </span>
-          @endif
-        </button>
-        <div class="dropdown-menu dropdown-menu-end p-0 shadow" aria-labelledby="appNotificationsMenu" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
-          <div class="dropdown-header d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
-            <span class="fw-semibold">Notifications</span>
-            <span id="notificationCount" class="badge bg-primary rounded-pill">{{ $notificationsCount }}</span>
-          </div>
-          <div id="notificationsList" class="p-2">
-            <div class="text-center py-3">
-              <div class="spinner-border spinner-border-sm text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {{-- Notifications via Livewire (poll + Echo) --}}
+      <livewire:notification-bell />
 
       <script>
         let notificationsLoaded = false;
