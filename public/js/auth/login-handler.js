@@ -2,6 +2,7 @@
  * Login Form Handler with Error Display
  */
 
+
 // Clear all error messages
 function clearLoginErrors() {
     const errorMessages = document.querySelectorAll('.validation-error');

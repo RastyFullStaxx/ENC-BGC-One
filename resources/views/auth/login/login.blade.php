@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/auth/login/loading.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/auth/login-loading.css') }}">
 @endpush
 
 @section('content')
@@ -43,7 +43,7 @@
             <!-- Email -->
             <div class="relative mb-4">
                 <input type="email" id="email" name="email" placeholder="your.email@ministry.gov"
-                    pattern="[a-zA-Z0-9._-]+@ministry\.gov"
+                    pattern="[a-zA-Z0-9._\-]+@ministry\.gov"
                     title="Email must be in the format: your.name@ministry.gov"
                     value="{{ old('email') }}"
                     class="w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 enc-text-strong"
