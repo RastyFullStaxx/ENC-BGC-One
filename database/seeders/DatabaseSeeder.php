@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             OperatingHoursTableSeeder::class,
             FacilityPhotosTableSeeder::class,
             FacilityEquipmentTableSeeder::class,
+            BookingsPreviewSeeder::class,
         ]);
 
         User::factory()->create([

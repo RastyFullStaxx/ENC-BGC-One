@@ -34,6 +34,9 @@
 
         @auth
           <li class="nav-item me-2">
+            <livewire:notification-bell />
+          </li>
+          <li class="nav-item me-2">
             <a class="btn btn-light border-0 enc-nav-icon-btn" href="{{ route('user.dashboard') }}" aria-label="Dashboard">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5a1 1 0 01-1-1v-5H9v5a1 1 0 01-1 1H3a1 1 0 01-1-1V10z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>

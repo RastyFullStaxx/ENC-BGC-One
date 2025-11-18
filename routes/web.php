@@ -8,11 +8,10 @@ use App\Http\Controllers\UserBookingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
+use App\Http\Controllers\LandingPageController;
 
 
-Route::get('/', function () {
-    return view('marketing/landing');
-})->name('landing');
+Route::get('/', LandingPageController::class)->name('landing');
 
 // Facility catalog (public for preview)
 Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');

@@ -89,6 +89,9 @@
       ['id' => 'refreshments', 'label' => 'Refreshments'],
     ];
   }
+
+  // Ensure notifications count is always defined (preview route passes none)
+  $notificationsCount = $notificationsCount ?? 0;
 @endphp
 
 @section('app-navbar')
