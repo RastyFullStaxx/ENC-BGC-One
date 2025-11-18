@@ -20,6 +20,20 @@ class UserDashboardController extends Controller
         $baseQuery = Booking::with(['facility.building', 'details'])
             ->where('requester_id', $user->id);
 
+        $monthParam = request('month');
+        try {
+            $calendarMonth = $monthParam
+                ? Carbon::parse($monthParam, 'Asia/Manila')->startOfMonth()
+                : Carbon::now('Asia/Manila')->startOfMonth();
+        } catch (\Exception $e) {
+            $calendarMonth = Carbon::now('Asia/Manila')->startOfMonth();
+        }
+
+        $calendarStart = $calendarMonth->copy()->startOfMonth();
+        $calendarEnd = $calendarMonth->copy()->endOfMonth();
+        $prevMonth = $calendarMonth->copy()->subMonth()->format('Y-m-01');
+        $nextMonth = $calendarMonth->copy()->addMonth()->format('Y-m-01');
+
         $totalBookings    = (clone $baseQuery)->count();
         $pendingCount     = (clone $baseQuery)->where('status', 'pending')->count();
         $confirmedCount   = (clone $baseQuery)->whereIn('status', ['approved', 'confirmed'])->count();
@@ -36,12 +50,11 @@ class UserDashboardController extends Controller
             ->take(5)
             ->get();
 
-        $upcomingBookings = (clone $baseQuery)
-            ->whereDate('date', '>=', Carbon::today('Asia/Manila'))
-            ->whereIn('status', ['pending', 'approved'])
+        $approvedCalendarBookings = (clone $baseQuery)
+            ->whereBetween('date', [$calendarStart->toDateString(), $calendarEnd->toDateString()])
+            ->whereIn('status', ['approved', 'confirmed'])
             ->orderBy('date')
             ->orderBy('start_at')
-            ->take(10)
             ->get();
 
         $dashboardBookings = [
@@ -57,15 +70,33 @@ class UserDashboardController extends Controller
             'bookings' => $recentBookings->map(fn ($booking) => $this->formatSnapshotBooking($booking))->all(),
         ];
 
-        $upcomingBookingsCards = $upcomingBookings->map(function($booking) {
+        $calendarEvents = $approvedCalendarBookings->map(function (Booking $booking) {
             return [
-                'date'     => Carbon::parse($booking->date, 'Asia/Manila')->format('D, M j, Y'),
-                'time'     => $this->formatTimeRange($booking),
+                'day' => Carbon::parse($booking->date, 'Asia/Manila')->day,
                 'facility' => $booking->facility->name ?? 'Facility',
-                'purpose'  => $booking->details->purpose ?? 'Scheduled booking',
-                'location' => $this->formatLocation($booking),
+                'title' => $booking->details->purpose ?? 'Approved booking',
+                'status' => $booking->status,
             ];
-        })->toArray();
+        })->groupBy('day');
+
+        $favoriteRooms = (clone $baseQuery)
+            ->whereHas('facility')
+            ->selectRaw('facility_id, COUNT(*) as total')
+            ->groupBy('facility_id')
+            ->orderByDesc('total')
+            ->with('facility.building')
+            ->take(3)
+            ->get()
+            ->map(function ($booking) {
+                return [
+                    'name' => $booking->facility->name ?? 'Facility',
+                    'capacity' => ($booking->facility->capacity ?? null) ? ($booking->facility->capacity . ' seats') : 'Capacity TBA',
+                    'location' => $this->formatFacilityLocation($booking->facility?->building?->name ?? null, $booking->facility?->floor ?? null),
+                    'status' => 'Available',
+                    'tone' => 'info',
+                    'image' => $booking->facility->photo_url ?? 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop',
+                ];
+            });
 
         $bookingStats = [
             'pending'   => $pendingCount,
@@ -74,10 +105,20 @@ class UserDashboardController extends Controller
             'total'     => $totalBookings,
         ];
 
+        $announcements = [
+            ['title' => 'Facility catalog refreshed', 'date' => Carbon::now('Asia/Manila')->format('M j, Y'), 'summary' => 'New media rooms added for Q1 planning.'],
+            ['title' => 'Booking SLA update', 'date' => Carbon::now('Asia/Manila')->subDays(2)->format('M j, Y'), 'summary' => 'Approvals now target under 45 minutes during business hours.'],
+        ];
+
         return view('user.dashboard', [
             'dashboardBookings'   => $dashboardBookings,
             'bookingStats'        => $bookingStats,
-            'upcomingBookingsCards' => $upcomingBookingsCards,
+            'calendarEvents'      => $calendarEvents,
+            'calendarMonth'       => $calendarMonth,
+            'prevMonth'           => $prevMonth,
+            'nextMonth'           => $nextMonth,
+            'favoriteRooms'       => $favoriteRooms,
+            'announcements'       => $announcements,
             'notificationsCount' => $notificationsCount,
         ]);
     }
@@ -123,6 +164,18 @@ class UserDashboardController extends Controller
         }
 
         return implode(' · ', $parts);
+    }
+
+    private function formatFacilityLocation(?string $building, ?string $floor): string
+    {
+        $parts = [];
+        if ($building) {
+            $parts[] = $building;
+        }
+        if ($floor) {
+            $parts[] = ucfirst($floor) . ' Floor';
+        }
+        return $parts ? implode(' · ', $parts) : 'Location TBA';
     }
 
     private function normalizeStatus(?string $status): string

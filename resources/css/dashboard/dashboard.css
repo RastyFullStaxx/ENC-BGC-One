@@ -1146,6 +1146,46 @@ body {
     color: #1e2939 !important;
 }
 
+/* Announcements */
+.announcements-shell {
+    width: 100%;
+    max-width: var(--enc-shell-max-width, 1760px);
+    margin: -0.5rem auto 3rem;
+    padding: 0 var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
+}
+
+.announcements-card {
+    border: 1px solid rgba(0, 24, 64, 0.08);
+    border-radius: 18px;
+    box-shadow: 0 25px 50px -36px rgba(0, 24, 64, 0.4);
+    padding: 0;
+}
+
+.announcements-header {
+    background: linear-gradient(135deg, rgba(0, 36, 99, 0.95), #001840 45%, #155dfc);
+    padding: 18px 20px;
+    border-radius: 18px 18px 0 0;
+}
+
+.announcements-body {
+    padding: 18px 20px;
+}
+
+.announcements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.announcements-item {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 24, 64, 0.06);
+}
+
+.announcements-item:last-child {
+    border-bottom: none;
+}
+
 .enc-booking-status.is-pending {
     background: #dfe8ff;
     color: #001840;

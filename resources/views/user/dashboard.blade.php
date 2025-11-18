@@ -118,14 +118,8 @@
                         $startWeekday = ($startOfMonth->dayOfWeekIso - 1); // 0-based
                         $calendarDays = [];
                         for ($i = 0; $i < $startWeekday; $i++) { $calendarDays[] = null; }
-                        for ($d = 1; $d <= $daysInMonth; $d++) { $calendarDays[] = $now->copy()->day($d); }
+                        for ($d = 1; $d <= $daysInMonth; $d++) { $calendarDays[] = $calendarMonth->copy()->day($d); }
                         $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                        $events = collect($upcomingBookingsCards ?? [])->filter(function ($item) {
-                            return str_contains(strtolower($item['status'] ?? ''), 'approved') || str_contains(strtolower($item['status'] ?? ''), 'confirmed');
-                        });
-                        $eventsByDay = $events->groupBy(function($item) {
-                            return \Carbon\Carbon::parse($item['date'])->day;
-                        });
                     @endphp
                     <div class="enc-my-bookings-card__header">
                         <div class="enc-my-bookings-card__heading">
@@ -133,14 +127,14 @@
                             <h3 class="enc-my-bookings-card__title mb-0">All rooms in one view</h3>
                             <p class="enc-my-bookings-card__subtitle mb-0">Quick preview of {{ $now->format('F Y') }}. Open the full calendar for details.</p>
                         </div>
-                        <a href="{{ route('admin.calendar') }}" class="enc-my-bookings-card__cta">Open calendar</a>
+                        
                     </div>
                     <div class="p-3 p-md-4">
                         <div class="wizard-calendar">
                             <div class="wizard-calendar-header">
-                                <button class="wizard-calendar-nav-btn" type="button" aria-label="Previous month">‹</button>
-                                <div class="wizard-calendar-month text-center">{{ $now->format('F Y') }}</div>
-                                <button class="wizard-calendar-nav-btn" type="button" aria-label="Next month">›</button>
+                                <a class="wizard-calendar-nav-btn" href="{{ route('user.dashboard', ['month' => $prevMonth]) }}" aria-label="Previous month">‹</a>
+                                <div class="wizard-calendar-month text-center">{{ $calendarMonth->format('F Y') }}</div>
+                                <a class="wizard-calendar-nav-btn" href="{{ route('user.dashboard', ['month' => $nextMonth]) }}" aria-label="Next month">›</a>
                             </div>
                             <div class="wizard-calendar-daynames">
                                 @foreach($weekdays as $day)
@@ -152,7 +146,7 @@
                                     @if(!$day)
                                         <button class="wizard-calendar-day is-muted" type="button" disabled></button>
                                     @else
-                                        @php $dayEvents = $eventsByDay->get($day->day, collect()); @endphp
+                                        @php $dayEvents = ($calendarEvents[$day->day] ?? collect()); @endphp
                                         <button class="wizard-calendar-day {{ $day->isToday() ? 'is-today' : '' }}" type="button">
                                             <span class="wizard-calendar-daynumber">{{ $day->day }}</span>
                                             @foreach($dayEvents as $ev)
@@ -247,6 +241,32 @@
                     @include('partials.my-bookings-card', $dashboardBookings)
                 @endif
             </section>
+        </div>
+    </div>
+</section>
+
+<section class="announcements-shell">
+    <div class="card announcements-card">
+        <div class="enc-my-bookings-card__header announcements-header">
+            <div class="enc-my-bookings-card__heading">
+                <p class="enc-my-bookings-card__eyebrow mb-1">Announcements</p>
+                <h3 class="enc-my-bookings-card__title mb-0">Latest highlights</h3>
+            </div>
+        </div>
+        <div class="announcements-body">
+            <ul class="list-unstyled announcements-list mb-0">
+                @foreach(($announcements ?? []) as $item)
+                    <li class="announcements-item">
+                        <div>
+                            <p class="mb-1 fw-semibold">{{ $item['title'] }}</p>
+                            <p class="mb-0 text-muted small">{{ $item['date'] }}</p>
+                            @if(!empty($item['summary']))
+                                <p class="mb-0 text-muted small">{{ $item['summary'] }}</p>
+                            @endif
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
         </div>
     </div>
 </section>
