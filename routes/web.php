@@ -9,12 +9,13 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\FacilityCatalogController;
 
 
 Route::get('/', LandingPageController::class)->name('landing');
 
 // Facility catalog (public for preview)
-Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catalog');
+Route::get('/facilities/catalog', FacilityCatalogController::class)->name('facilities.catalog');
 
 // Help/FAQ - Accessible to all users (guest and authenticated)
 Route::get('/faq', function () {

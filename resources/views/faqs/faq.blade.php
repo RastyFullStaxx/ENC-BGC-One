@@ -1,14 +1,6 @@
 @extends('layouts.app')
 
 @section('app-navbar')
-    @include('partials.navbar', [
-        'brand' => 'ONE Services',
-        'actions' => [
-            ['href' => route('faq')],
-            ['href' => route('login')],
-            ['href' => route('signup.index')],
-        ],
-    ])
 @endsection
 
 @push('styles')

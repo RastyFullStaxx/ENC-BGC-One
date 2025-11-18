@@ -35,18 +35,28 @@
 
   <a href="#main" class="skip-link">Skip to content</a>
 
+  @php
+    $isAuthenticated = auth()->check();
+    $homeButtonRoute = null;
+    if ($isAuthenticated) {
+      $role = strtolower(auth()->user()->role ?? '');
+      $homeButtonRoute = $role === 'admin' ? route('admin.dashboard') : route('user.dashboard');
+    }
+  @endphp
+
   @include('partials.dashboard-navbar', [
-    'mode' => 'public',
+    'mode' => $isAuthenticated ? 'app' : 'public',
     'showStepper' => false,
     'showBookingsToggle' => false,
-    'showNotifications' => false,
-    'showUserMenu' => false,
+    'showNotifications' => $isAuthenticated,
+    'showUserMenu' => $isAuthenticated,
     'showRolePill' => false,
     'homeRoute' => route('landing'),
     'bookingsCount' => 0,
     'notificationsCount' => 0,
+    'showHomeButton' => $isAuthenticated,
+    'homeButtonRoute' => $homeButtonRoute,
     'guestActions' => [
-      ['label' => 'Help/FAQ', 'href' => route('faq'), 'variant' => 'ghost'],
       ['label' => 'Log In', 'href' => route('login'), 'variant' => 'outline'],
       ['label' => 'Sign Up', 'href' => route('signup.index'), 'variant' => 'primary'],
     ],

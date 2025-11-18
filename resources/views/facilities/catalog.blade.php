@@ -11,257 +11,10 @@
 @endpush
 
 @php
-  $facilityRooms = [
-    [
-      'id' => 'enc-a301',
-      'name' => 'Conference Room A-301',
-      'short_label' => 'Room A-301',
-      'image' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Available now',
-        'variant' => 'success',
-        'copy' => 'Open until 11:00 AM · Daily reset at 4:30 PM',
-      ],
-      'capacity' => 12,
-      'capacity_label' => '12 seats',
-      'layout' => 'Boardroom · VC ready',
-      'location' => 'ENC Tower A · 3rd Floor',
-      'size' => 'Medium',
-      'prep_time' => '10 mins prep',
-      'description' => 'Bright corner room ideal for leadership syncs, client reviews, and hybrid pitches. Dual displays keep both in-room and remote teams aligned.',
-      'amenities' => ['Dual 75" display', 'Poly Studio X70', 'Wireless screen share', 'Writable glass wall', 'Acoustic ceiling', 'Mini pantry access'],
-      'highlights' => [
-        'Dedicated concierge support during peak hours',
-        'Auto-dims blinds for video confidence',
-        'Integrates with Teams / Zoom with a single tap',
-      ],
-      'timeline' => [
-        ['label' => 'Current Status', 'copy' => 'Clear for booking until 11:00 AM'],
-        ['label' => 'Hold Notice', 'copy' => 'Leadership sync blocked 1:30 PM – 3:00 PM'],
-        ['label' => 'Care Window', 'copy' => 'Daily reset from 4:30 PM'],
-      ],
-      'tags' => ['Boardroom', 'Dual display', 'Hybrid ready'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Room%20A-301',
-      'bookings_today' => 2,
-      'availability' => [
-        '2025-03-20' => ['state' => 'available', 'copy' => 'Wide open 8:00 AM – 5:00 PM'],
-        '2025-03-21' => ['state' => 'limited', 'copy' => 'Free before 1:30 PM'],
-        '2025-03-22' => ['state' => 'occupied', 'copy' => 'Leadership sync all day'],
-      ],
-    ],
-    [
-      'id' => 'enc-b215',
-      'name' => 'Huddle Room B-215',
-      'short_label' => 'Room B-215',
-      'image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Ready in 5 min',
-        'variant' => 'success',
-        'copy' => 'Last booking wrapping up · Auto clean queued',
-      ],
-      'capacity' => 6,
-      'capacity_label' => '6 seats',
-      'layout' => 'Informal · Corner sofa + table',
-      'location' => 'ENC Tower B · 2nd Floor',
-      'size' => 'Small',
-      'prep_time' => '5 mins prep',
-      'description' => 'Perfect for design reviews and quick stand-ups. Built-in writable wall and compact camera makes hybrid catch-ups painless.',
-      'amenities' => ['4K wide-angle camera', 'Writable wall', '60" display', 'USB-C + HDMI', 'Mood lighting', 'Privacy acoustic panels'],
-      'highlights' => [
-        'Focus lighting presets let you switch from ideation to presentation mode',
-        'Wall-to-wall acoustic panels keep conversations private',
-      ],
-      'timeline' => [
-        ['label' => 'Current Status', 'copy' => 'Hand-off ongoing · Sanitizing until 9:05 AM'],
-        ['label' => 'Next Booking', 'copy' => 'Product Design at 11:00 AM'],
-        ['label' => 'Buffer', 'copy' => '15-min buffer reserved every 2 hours'],
-      ],
-      'tags' => ['Focus', 'Writable wall', 'USB-C'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Room%20B-215',
-      'bookings_today' => 1,
-      'availability' => [
-        '2025-03-20' => ['state' => 'available', 'copy' => 'Available all day'],
-        '2025-03-21' => ['state' => 'available', 'copy' => 'Wide open for huddles'],
-        '2025-03-22' => ['state' => 'limited', 'copy' => 'Reserved after 3:00 PM'],
-      ],
-    ],
-    [
-      'id' => 'enc-c401',
-      'name' => 'Innovation Lab C-401',
-      'short_label' => 'Innovation Lab',
-      'image' => 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Limited slots',
-        'variant' => 'warning',
-        'copy' => 'Hold placed 2:00 PM – 6:00 PM for Hack Week',
-      ],
-      'capacity' => 24,
-      'capacity_label' => '24 seats',
-      'layout' => 'Modular · Workshop pods',
-      'location' => 'ENC Tower C · 4th Floor',
-      'size' => 'Large',
-      'prep_time' => '25 mins prep',
-      'description' => 'Split the room into pod clusters or clear the floor for demos. Includes ceiling rig for livestreams and lockable storage for prototypes.',
-      'amenities' => ['Modular desks', 'Ceiling rig for AV', '4 movable displays', 'Floor power rails', 'Equipment lockers', 'On-call tech'],
-      'highlights' => [
-        'Room presets for workshop / gallery / hackathon modes',
-        'Integrated AV booth for light livestream setups',
-        'Extended booking support up to 10 hours',
-      ],
-      'timeline' => [
-        ['label' => 'Morning Window', 'copy' => 'Open 8:00 AM – 12:30 PM'],
-        ['label' => 'Afternoon Hold', 'copy' => 'Hack Week build in progress 2:00 PM – 6:00 PM'],
-        ['label' => 'Reset', 'copy' => 'Full reset 6:30 PM – 7:00 PM'],
-      ],
-      'tags' => ['Workshop', 'Livestream', 'Modular'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Innovation%20Lab%20C-401',
-      'bookings_today' => 3,
-      'availability' => [
-        '2025-03-20' => ['state' => 'available', 'copy' => 'Free before 1:00 PM'],
-        '2025-03-21' => ['state' => 'hold', 'copy' => 'Hack Week install 12:00 PM onwards'],
-        '2025-03-22' => ['state' => 'occupied', 'copy' => 'Reserved for demos'],
-      ],
-    ],
-    [
-      'id' => 'enc-d510',
-      'name' => 'Strategy Forum D-510',
-      'short_label' => 'Forum D-510',
-      'image' => 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Fully booked',
-        'variant' => 'danger',
-        'copy' => 'Townhall rehearsal 8:00 AM – 5:00 PM',
-      ],
-      'capacity' => 30,
-      'capacity_label' => '30 seats',
-      'layout' => 'Arena · Tiered seating',
-      'location' => 'ENC Tower D · 5th Floor',
-      'size' => 'Large',
-      'prep_time' => '30 mins prep',
-      'description' => 'Tiered seating with spotlight-ready lighting and premium audio. Ideal for trainings, leadership briefings, and investor updates.',
-      'amenities' => ['140" LED wall', 'Broadcast audio rack', 'Stage lighting presets', 'Confidence monitors', 'Side lounge', 'Dedicated AV concierge'],
-      'highlights' => [
-        'Simultaneous interpretation booth on standby',
-        'Auto-ingest recordings to your OneDrive',
-      ],
-      'timeline' => [
-        ['label' => 'Today', 'copy' => 'Townhall rehearsal (full day)'],
-        ['label' => 'Next Opening', 'copy' => 'Tomorrow 8:00 AM onwards'],
-        ['label' => 'Prep Reminder', 'copy' => 'Book 48 hrs in advance for AV concierge'],
-      ],
-      'tags' => ['Townhall', 'AV concierge', 'Tiered seating'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Strategy%20Forum%20D-510',
-      'bookings_today' => 4,
-      'availability' => [
-        '2025-03-20' => ['state' => 'occupied', 'copy' => 'Townhall rehearsals all day'],
-        '2025-03-21' => ['state' => 'occupied', 'copy' => 'All-hands prep 7:00 AM – 6:00 PM'],
-        '2025-03-22' => ['state' => 'hold', 'copy' => 'Pending leadership approval'],
-      ],
-    ],
-    [
-      'id' => 'enc-lobby',
-      'name' => 'Townhall Studio L-01',
-      'short_label' => 'Studio L-01',
-      'image' => 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Plan ahead',
-        'variant' => 'info',
-        'copy' => 'Great for all-hands and launches · Requires approvals',
-      ],
-      'capacity' => 80,
-      'capacity_label' => '80 seats',
-      'layout' => 'Bleachers + standing room',
-      'location' => 'Lobby Pavilion',
-      'size' => 'XL',
-      'prep_time' => '45 mins prep',
-      'description' => 'Immersive lobby studio with LED wall wrap, ceiling wash lights, and broadcast audio. Use it for demos, launches, or people celebrations.',
-      'amenities' => ['360° lighting rig', '3-camera capture', 'Stage risers', 'Green room', 'Backline storage', 'Dedicated safety marshal'],
-      'highlights' => [
-        'Pair with shuttle ops for guest arrivals',
-        'Safety marshal and ushering crew on standby',
-      ],
-      'timeline' => [
-        ['label' => 'Lead Time', 'copy' => 'Minimum 5 days for layout + safety approvals'],
-        ['label' => 'Dry Run', 'copy' => 'Recommended slot the day before show'],
-        ['label' => 'Wrap Down', 'copy' => 'Crew teardown 2 hours post-event'],
-      ],
-      'tags' => ['Launch', 'Livestream', 'Large'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Townhall%20Studio%20L-01',
-      'bookings_today' => 5,
-      'availability' => [
-        '2025-03-20' => ['state' => 'hold', 'copy' => 'Safety walkthrough 9:00 AM'],
-        '2025-03-21' => ['state' => 'limited', 'copy' => 'Partial setup 3:00 PM onwards'],
-        '2025-03-22' => ['state' => 'occupied', 'copy' => 'Product launch 10:00 AM'],
-      ],
-    ],
-    [
-      'id' => 'enc-westhub',
-      'name' => 'Training Hub West-212',
-      'short_label' => 'Training Hub',
-      'image' => 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?q=80&w=1600&auto=format&fit=crop',
-      'status' => [
-        'label' => 'Available this afternoon',
-        'variant' => 'success',
-        'copy' => 'Free 1:00 PM – 6:00 PM',
-      ],
-      'capacity' => 18,
-      'capacity_label' => '18 seats',
-      'layout' => 'Classroom + breakout',
-      'location' => 'Training Wing · 2nd Floor',
-      'size' => 'Medium',
-      'prep_time' => '20 mins prep',
-      'description' => 'Designed for enablement sessions with fast-switch breakouts. Comes with three movable dividers and ceiling microphones.',
-      'amenities' => ['Mobile dividers', 'Ceiling mics', '4k touch display', 'Charging drawers', 'Dedicated whiteboards', 'Snack rail'],
-      'highlights' => [
-        'Switch between lecture and breakout in under 3 minutes',
-        'Preset camera angles for instructor + class',
-      ],
-      'timeline' => [
-        ['label' => 'Morning', 'copy' => 'Compliance refresh 8:00 AM – 11:30 AM'],
-        ['label' => 'Buffer', 'copy' => 'Maintenance sweep 11:30 AM – 12:30 PM'],
-        ['label' => 'Afternoon', 'copy' => 'Open slots 1:00 PM – 6:00 PM'],
-      ],
-      'tags' => ['Training', 'Breakout', 'Ceiling mics'],
-      'support_contact' => 'mailto:facilities@enc.com?subject=Facility%20Support%20-%20Training%20Hub%20West-212',
-      'bookings_today' => 2,
-      'availability' => [
-        '2025-03-20' => ['state' => 'available', 'copy' => 'Wide open after lunch'],
-        '2025-03-21' => ['state' => 'available', 'copy' => 'Ready for enablement sessions'],
-        '2025-03-22' => ['state' => 'limited', 'copy' => 'Blocked 9:00 AM – 12:00 PM'],
-      ],
-    ],
-  ];
-
-  $statusRank = [
-    'success' => 0,
-    'warning' => 1,
-    'info'    => 2,
-    'danger'  => 3,
-  ];
-
-  usort($facilityRooms, function ($a, $b) use ($statusRank) {
-    $statusDiff = ($statusRank[$a['status']['variant']] ?? 99) <=> ($statusRank[$b['status']['variant']] ?? 99);
-    if ($statusDiff !== 0) {
-      return $statusDiff;
-    }
-
-    $bookingDiff = ($a['bookings_today'] ?? 99) <=> ($b['bookings_today'] ?? 99);
-    if ($bookingDiff !== 0) {
-      return $bookingDiff;
-    }
-
-    return strcmp($a['name'], $b['name']);
-  });
-
-  $availableRooms = array_reduce($facilityRooms, function ($carry, $room) {
-    return $carry + ($room['status']['variant'] === 'success' ? 1 : 0);
-  }, 0);
-
-  $totalSeats = array_reduce($facilityRooms, function ($carry, $room) {
-    return $carry + $room['capacity'];
-  }, 0);
-
-  $activeFacility = $facilityRooms[0] ?? null;
+  $facilityRooms = $facilityRooms ?? [];
+  $activeFacility = $activeFacility ?? ($facilityRooms[0] ?? null);
+  $availableRooms = $availableRooms ?? collect($facilityRooms)->filter(fn($room) => ($room['status']['variant'] ?? null) === 'success')->count();
+  $totalSeats = $totalSeats ?? collect($facilityRooms)->sum('capacity');
 @endphp
 
 @push('scripts')
@@ -469,7 +222,7 @@
 
           <div class="facility-layout">
             <div class="facility-grid" id="facilityCardGrid">
-              @foreach ($facilityRooms as $room)
+              @forelse ($facilityRooms as $room)
                 @php
                   $availabilityPayload = e(json_encode($room['availability']));
                 @endphp
@@ -501,7 +254,11 @@
                     <p class="facility-card-note">{{ $room['status']['copy'] }}</p>
                   </div>
                 </article>
-              @endforeach
+              @empty
+                <div class="facility-empty mt-3 w-100">
+                  No facilities are available yet. Please check back after the admin publishes rooms.
+                </div>
+              @endforelse
             </div>
             <div class="facility-empty mt-3" id="facilityAvailabilityEmpty" hidden>
               No open rooms for <span id="facilityAvailabilityEmptyDate">your selected date</span>. Try another day or tap a card to join the waitlist.

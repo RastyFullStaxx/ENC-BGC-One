@@ -37,6 +37,7 @@
   $showUserMenu = $showUserMenu ?? !$isPublicNav;
   $showRolePill = $showRolePill ?? !$isPublicNav;
   $homeRoute = $homeRoute ?? ($isPublicNav ? route('landing') : route('user.dashboard'));
+  $brandHomeRoute = route('landing');
   $guestActions = $guestActions ?? [
     ['label' => 'Help/FAQ', 'href' => route('faq'), 'variant' => 'ghost'],
     ['label' => 'Log In', 'href' => route('login'), 'variant' => 'outline'],
@@ -49,7 +50,7 @@
   <div class="container-fluid align-items-center px-3 px-lg-4 px-xxl-5">
 
     {{-- Brand --}}
-    <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ $homeRoute }}">
+    <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ $brandHomeRoute }}">
         <!-- Replace ONE with image -->
         <img src="{{ asset('images/enclogo.png') }}" alt="Enclogo" style="height: 60px; width: auto;" class="d-inline-block align-middle">
 
@@ -62,6 +63,7 @@
     </a>
 
 
+    {{-- Right-side controls --}}
     {{-- Right-side controls --}}
     <div class="ms-auto d-flex align-items-center gap-2">
 
@@ -121,12 +123,11 @@
                     </a>
                     <hr class="dropdown-divider my-1">
                   `).join('');
-                  
-                  // Remove last divider
-                  const lastDivider = container.querySelector('hr:last-child');
-                  if (lastDivider) lastDivider.remove();
+
+                  // Remove trailing divider
+                  container.innerHTML = container.innerHTML.replace(/<hr class="dropdown-divider my-1">\s*$/, '');
                 }
-                
+
                 countBadge.textContent = notifications.length;
                 notificationsLoaded = true;
               })
@@ -148,6 +149,22 @@
             return colors[status] || 'secondary';
           }
         </script>
+      @endif
+
+      @if(($showHomeButton ?? false) && ($homeButtonRoute ?? false))
+        <a
+          href="{{ $homeButtonRoute }}"
+          class="btn btn-light border-0 enc-nav-icon-btn d-inline-flex align-items-center gap-2"
+          aria-label="Home"
+          title="Home"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M3 10.5 12 4l9 6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 10v9h14v-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 19v-5a2 2 0 0 1 2-2v0a2 2 0 0 1 2 2v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="d-none d-md-inline fw-semibold">Home</span>
+        </a>
       @endif
 
       @if ($showRolePill)
