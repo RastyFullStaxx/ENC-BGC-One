@@ -20,7 +20,7 @@
 
         {{-- signin with ministry email --}}
         <a href="{{ route('login.form') }}"
-        class="w-full py-2.5 rounded-md transition-colors mb-4 flex items-center justify-center space-x-2 fw-semibold"
+        class="w-full py-2.5 rounded-md transition-colors mb-4 flex items-center justify-center space-x-2 fw-semibold text-decoration-none"
         style="background-color: var(--enc-color-brand-primary); color: var(--enc-color-light);">
             <img src="{{ asset('images/login/ministryicon.png') }}" alt="ENC Logo" class="h-4">
             <span>Sign in with Ministry Email (SSO)</span>
@@ -35,7 +35,7 @@
 
         {{-- signin with normal email--}}
         <a href="{{ route('login.form') }}"
-        class="w-full border border-gray-200 py-2.5 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 enc-text-strong">
+        class="w-full border border-gray-200 py-2.5 rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center space-x-2 enc-text-strong text-decoration-none">
                 <img src="{{ asset('images/login/emailicon.png') }}" alt="ENC Logo" class="h-4">
             <span>Sign in with Email/Password</span>
         </a>
