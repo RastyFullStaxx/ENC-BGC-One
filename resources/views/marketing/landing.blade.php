@@ -35,52 +35,22 @@
 
   <a href="#main" class="skip-link">Skip to content</a>
 
-  {{-- Reusable Navbar (Bootstrap). If you build partials, this include will be used; otherwise a Bootstrap fallback renders. --}}
-  @includeIf('partials.navbar', [
-    'brand' => 'ONE Services',
-    'actions' => [
-      ['label' => 'Help/FAQ', 'href' => route('faq')],
-      ['label' => 'Log In',   'href' => route('login')],
-      ['label' => 'Sign Up',  'href' => route('signup.index')]
-    ]
+  @include('partials.dashboard-navbar', [
+    'mode' => 'public',
+    'showStepper' => false,
+    'showBookingsToggle' => false,
+    'showNotifications' => false,
+    'showUserMenu' => false,
+    'showRolePill' => false,
+    'homeRoute' => route('landing'),
+    'bookingsCount' => 0,
+    'notificationsCount' => 0,
+    'guestActions' => [
+      ['label' => 'Help/FAQ', 'href' => route('faq'), 'variant' => 'ghost'],
+      ['label' => 'Log In', 'href' => route('login'), 'variant' => 'outline'],
+      ['label' => 'Sign Up', 'href' => route('signup.index'), 'variant' => 'primary'],
+    ],
   ])
-
-  @if (!view()->exists('partials.navbar'))
-  <header class="sticky-top bg-white site-header header-slide" role="banner" aria-label="Primary">
-    <nav class="navbar navbar-expand-md bg-white">
-      <div class="container d-flex align-items-center justify-content-between flex-wrap flex-md-nowrap gap-3">
-        <a class="navbar-brand d-flex align-items-center gap-3 text-decoration-none py-2 me-auto" href="{{ route('landing') }}">
-          <span class="brand-mark d-inline-flex align-items-center justify-content-center rounded-2" aria-hidden="true">
-            <span class="fw-bold small">ONE</span>
-          </span>
-          <span class="brand-copy d-none d-md-inline text-start lh-sm">
-            <span class="d-block fw-semibold">ONE Services</span>
-            <span class="d-block text-muted small">Shared Services Portal</span>
-          </span>
-        </a>
-
-        <button class="navbar-toggler ms-auto d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
-                aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div id="topNav" class="collapse navbar-collapse justify-content-md-end flex-grow-0">
-          <ul class="navbar-nav align-items-center ms-md-auto ms-lg-0 flex-row flex-md-row gap-2">
-            <li class="nav-item me-2">
-              <a class="nav-link" href="{{ url('/help') }}">Help/FAQ</a>
-            </li>
-            <li class="nav-item me-2">
-              <a class="btn btn-outline-secondary" href="{{ route('login') }}">Log In</a>
-            </li>
-            <li class="nav-item">
-              <a class="btn btn-primary" href="{{ url('/register') }}">Sign Up</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-  @endif
 
   <main id="main" tabindex="-1">
 
