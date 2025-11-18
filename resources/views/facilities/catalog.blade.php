@@ -268,7 +268,7 @@
   <script>
     window.facilityCatalogData = @json($facilityRooms);
   </script>
-  @vite(['resources/js/facility-catalog.js'])
+  @vite(['resources/js/facility/catalog.js'])
 @endpush
 
 @section('content')

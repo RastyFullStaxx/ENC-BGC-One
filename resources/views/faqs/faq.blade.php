@@ -13,8 +13,8 @@
 
 @push('styles')
   @vite(['resources/css/wizard/base.css'])
-  @vite(['resources/css/user/account.css'])
-  @vite(['resources/css/user/faq/faq.css'])
+  @vite(['resources/css/profile/account.css'])
+  @vite(['resources/css/faqs/faq.css'])
 @endpush
 
 

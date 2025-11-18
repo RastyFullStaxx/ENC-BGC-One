@@ -17,7 +17,7 @@
     'resources/css/landing/how-it-works.css',
     'resources/css/landing/policies.css',
     'resources/css/landing/cta.css',
-    'resources/js/landing.js'
+    'resources/js/landing/index.js'
   ])
 
   {{-- Page-specific assets --}}

@@ -9,9 +9,9 @@ ENC BGC One streamlines how teams discover, request, and track shared resources 
 ## Feature Highlights
 
 - Story-driven landing page that walks visitors through availability stats, featured facilities, booking policies, and strong CTAs before sign-up (esources/views/marketing/landing.blade.php).
-- Real-time inspired widgets such as the "Quick Availability Glance" heat bars, recommended slots, and free-room cards (animated by esources/js/landing.js).
+- Real-time inspired widgets such as the "Quick Availability Glance" heat bars, recommended slots, and free-room cards (animated by `resources/js/landing/index.js`).
 - Reusable navbar and footer partials that keep branding, accessibility, and support information consistent across future pages (esources/views/partials).
-- Accessibility polish out of the box: focus-visible styles, reduced-motion fallbacks, smooth keyboard scrolling, and idle header/footer treatment all live in the landing CSS modules and `resources/js/landing.js`.
+- Accessibility polish out of the box: focus-visible styles, reduced-motion fallbacks, smooth keyboard scrolling, and idle header/footer treatment all live in the landing CSS modules and `resources/js/landing/index.js`.
 - Modern asset pipeline backed by Vite 6, ES modules, and Bootstrap 5.3.8 with room to add Tailwind 4 utilities through @tailwindcss/vite.
 - Laravel 12 foundation with routing (outes/web.php), queue-ready scripts, Laravel Pint, PHPUnit, Sail, Pail, and other first-party tooling already configured in composer.json.
 
@@ -84,7 +84,7 @@ Deploy the public/ assets together with compiled configuration caches to your ho
 
 - esources/views/marketing/landing.blade.php – marketing page with modular sections and placeholder analytics data.
 - `resources/css/landing/` – design tokens, responsive layout rules, and per-section styles (hero, availability, facilities, policies, CTA).
-- esources/js/landing.js – Bootstrap import plus smooth scrolling, idle header/footer logic, and IntersectionObserver-based animations.
+- `resources/js/landing/index.js` – Bootstrap import plus smooth scrolling, idle header/footer logic, and IntersectionObserver-based animations.
 - esources/views/partials – reusable navbar and footer components with configurable links.
 - outes/web.php – current public routes (landing plus auth placeholders) with clear extension points for additional modules.
 

@@ -18,7 +18,7 @@ Route::view('/facilities/catalog', 'facilities.catalog')->name('facilities.catal
 
 // Help/FAQ - Accessible to all users (guest and authenticated)
 Route::get('/faq', function () {
-    return view('user.faq');
+    return view('faqs.faq');
 })->name('faq');
 
 
@@ -56,8 +56,8 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
     // Profile & Settings
-    Route::view('/user/profile', 'user.profile')->name('user.profile');
-    Route::view('/user/settings', 'user.settings')->name('user.settings');
+    Route::view('/user/profile', 'profile.profile')->name('user.profile');
+    Route::view('/user/settings', 'settings.settings')->name('user.settings');
 
 
     // Booking API endpoints
@@ -110,5 +110,5 @@ Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {
-    return view('user.booking.wizard');
+    return view('booking.wizard');
 })->name('booking.wizard');

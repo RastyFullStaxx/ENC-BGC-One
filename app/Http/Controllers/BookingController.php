@@ -28,7 +28,7 @@ class BookingController extends Controller
             $query->where('requester_id', $user->id);
         })->count();
 
-        return view('user.booking.wizard', [
+        return view('booking.wizard', [
             'notificationsCount' => $notificationsCount,
         ]);
     }

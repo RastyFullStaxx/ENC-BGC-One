@@ -17,7 +17,7 @@
     'resources/css/landing/how-it-works.css',
     'resources/css/landing/policies.css',
     'resources/css/landing/cta.css',
-    'resources/js/landing.js'
+    'resources/js/landing/index.js'
   ])
   @livewireStyles
 
@@ -30,12 +30,6 @@
   <meta property="og:title" content="ENC BGC One — Shared Services Portal">
   <meta property="og:description" content="Request rooms and facilities easily with real-time availability, instant confirmations, and smart approvals.">
   <meta property="og:image" content="/images/social-card.png">
-
-  <style>
-    /* keep skip-link always available */
-    .skip-link{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
-    .skip-link:focus{left:12px;top:12px;width:auto;height:auto;padding:.625rem .875rem;background:#111;color:#fff;border-radius:.6rem;z-index:1055}
-  </style>
 </head>
 <body class="landing enc-type-body">
 
