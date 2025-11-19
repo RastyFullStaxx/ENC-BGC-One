@@ -39,6 +39,8 @@ export default defineConfig({
                 'resources/js/dashboard/dashboard.js',
                 'resources/css/auth/login/loading.css',
                 'resources/js/auth/login/loading.js',
+                'resources/css/admin/approvals.css',
+                
             ],
             refresh: true,
         }),

@@ -30,7 +30,7 @@
 
             <!-- ENC Staff / SFI -->
             <a href="{{ route('signup.staff') }}" 
-               class="border border-gray-300 rounded-lg p-4 hover:border-blue-600 hover:shadow-lg transition-all duration-200 block bg-white">
+               class="border border-gray-300 rounded-lg p-4 hover:border-blue-600 hover:shadow-lg transition-all duration-200 block bg-white text-decoration-none">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
                         <img src="{{ asset('images/signup/staff.png') }}" alt="ENC Staff" class="w-10 h-10">
@@ -48,7 +48,7 @@
 
             <!-- Guest -->
             <a href="#" 
-               class="border border-gray-300 rounded-lg p-4 hover:border-blue-600 hover:shadow-lg transition-all duration-200 block bg-white">
+               class="border border-gray-300 rounded-lg p-4 hover:border-blue-600 hover:shadow-lg transition-all duration-200 block bg-white text-decoration-none">
                 <div class="flex items-start space-x-3">
                     <div class="flex-shrink-0">
                         <img src="{{ asset('images/signup/guest.png') }}" alt="Guest" class="w-10 h-10">
