@@ -3,6 +3,16 @@
             id="wizardMethodSection"
             class="wizard-method-section mt-4"
           >
+            <button
+              type="button"
+              class="admin-back-button wizard-method-back"
+              id="wizardMethodBack"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Back to previous page
+            </button>
             <div class="text-center mb-4">
               <h2 class="wizard-method-title mb-2" tabindex="-1">
                 What do you need to book today?
@@ -92,4 +102,15 @@
               </div>
             </div>
           </section>
-
+          <div class="wizard-method-backwrap">
+            <button
+              type="button"
+              class="admin-back-button wizard-method-back"
+              id="wizardMethodBack"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Back to previous page
+            </button>
+          </div>

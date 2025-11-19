@@ -7,8 +7,13 @@ export const initBookingWizard = () => {
   const landingSection    = landingShell?.closest('.wizard-shell');
   const manualStage       = document.getElementById('wizardManualStage');
   const wizardAppNavWrap  = document.getElementById('wizardAppNav');
+  const flowPreferenceSection = document.getElementById('wizardFlowPreferenceSection');
+  const flowPreferenceBackWrap = document.getElementById('wizardFlowBackWrap');
+  const flowPreferenceBackBtn = document.getElementById('wizardFlowPreferenceBack');
+  const methodBackBtn    = document.getElementById('wizardMethodBack');
   const roomsGrid         = document.getElementById('wizardRoomsGrid');
   const loadFacilities = (filters = {}) => fetchFacilities(roomsGrid, filters);
+  let facilitiesLoaded = false;
   const nextDateBtn       = document.querySelector('.wizard-next-date');
   const bookingsSidebar   = document.getElementById('wizardBookingsSidebar');
   const stageSidebarWrap  = document.getElementById('wizardStageSidebar');
@@ -20,6 +25,7 @@ export const initBookingWizard = () => {
   const detailsPanel      = document.getElementById('wizardDetailsPanel');
   const roomsActions      = document.getElementById('wizardRoomsActions');
   const backToRoomsBtn    = document.getElementById('wizardBackToRooms');
+  const backToMethodsBtn  = document.getElementById('wizardBackToMethods');
   const nextDetailsBtn    = document.getElementById('wizardNextDetails');
   const backToDateBtn     = document.getElementById('wizardBackToDate');
   const nextReviewBtn     = document.getElementById('wizardNextReview');
@@ -43,6 +49,8 @@ export const initBookingWizard = () => {
   const durationLabel     = document.getElementById('wizardDurationLabel');
   const selectedRoomLabel = document.getElementById('wizardSelectedRoomName');
   const stepperItems      = document.querySelectorAll('.enc-stepper-item');
+  const flowPreferenceCards = document.querySelectorAll('[data-flow-preference]');
+  const abortButtons        = document.querySelectorAll('[data-action="wizard-abort-booking"]');
   const calendarGrid      = document.getElementById('wizardCalendarGrid');
   const calendarMonthLbl  = document.getElementById('wizardCalendarMonth');
   const calendarPrevBtn   = document.getElementById('wizardCalendarPrev');
@@ -73,6 +81,14 @@ export const initBookingWizard = () => {
   const roomFloor         = document.getElementById('roomFloor');
   const roomSize          = document.getElementById('roomSize');
 
+  const defaultStepPositions = {
+    rooms: 1,
+    date: 2,
+    details: 3,
+    review: 4,
+    success: 5,
+  };
+
   const wizardState = {
     roomId: null,
     roomName: '',
@@ -91,6 +107,74 @@ export const initBookingWizard = () => {
     },
     userName: window.currentUser?.firstName || successUserLabel?.textContent?.trim() || 'User',
     referenceCode: '',
+    flowPreference: 'room-first',
+    stepPositions: { ...defaultStepPositions },
+  };
+
+  const getStepPosition = (key) => wizardState.stepPositions?.[key] || defaultStepPositions[key] || 1;
+
+  const applyStepPositions = () => {
+    stepperItems.forEach(item => {
+      const key = item.dataset.stepKey;
+      if (!key) return;
+      const order = getStepPosition(key);
+      // Use flex order so items visually rearrange when preference changes
+      item.style.order = order;
+      const circle = item.querySelector('.enc-stepper-circle');
+      if (circle) {
+        circle.dataset.stepNumber = order;
+      }
+    });
+  };
+
+  const updateFlowCopy = () => {
+    if (wizardState.flowPreference === 'date-first') {
+      if (backToMethodsBtn) backToMethodsBtn.textContent = 'Back to Date & Time';
+      if (nextDateBtn) nextDateBtn.textContent = 'Next: Meeting Details';
+      if (backToRoomsBtn) backToRoomsBtn.textContent = 'Back to flow choices';
+      if (nextDetailsBtn) nextDetailsBtn.textContent = 'Next: Choose a Room';
+      if (backToDateBtn) backToDateBtn.textContent = 'Back to Room Selection';
+    } else {
+      if (backToMethodsBtn) backToMethodsBtn.textContent = 'Change start preference';
+      if (nextDateBtn) nextDateBtn.textContent = 'Next: Select Date & Time';
+      if (backToRoomsBtn) backToRoomsBtn.textContent = 'Go Back to Select Room';
+      if (nextDetailsBtn) nextDetailsBtn.textContent = 'Next: Add Details';
+      if (backToDateBtn) backToDateBtn.textContent = 'Back to Date & Time';
+    }
+  };
+
+  const setFlowPreference = (preference = 'room-first') => {
+    const normalized = preference === 'date-first' ? 'date-first' : 'room-first';
+    wizardState.flowPreference = normalized;
+    wizardState.stepPositions = normalized === 'date-first'
+      ? { date: 1, rooms: 2, details: 3, review: 4, success: 5 }
+      : { ...defaultStepPositions };
+    applyStepPositions();
+    updateFlowCopy();
+  };
+
+  const showFlowPreference = () => {
+    if (!flowPreferenceSection) {
+      setFlowPreference('room-first');
+      showManualStage();
+      return;
+    }
+    methodSection?.classList.add('d-none');
+    methodSection.hidden = true;
+    flowPreferenceSection.classList.remove('d-none');
+    flowPreferenceSection.hidden = false;
+    flowPreferenceBackWrap?.classList.remove('d-none');
+    landingShell?.classList.remove('d-none');
+    landingSection?.classList.remove('d-none');
+    wizardAppNavWrap?.classList.add('d-none');
+    flowPreferenceSection.querySelector('.wizard-flow-title')?.focus?.();
+  };
+
+  const hideFlowPreference = () => {
+    if (!flowPreferenceSection) return;
+    flowPreferenceSection.classList.add('d-none');
+    flowPreferenceSection.hidden = true;
+    flowPreferenceBackWrap?.classList.add('d-none');
   };
 
   const updateReviewSummary = () => {
@@ -189,7 +273,7 @@ export const initBookingWizard = () => {
     successPanel.classList.remove('d-none');
     successPanel.hidden = false;
     populateSuccessPanel();
-    updateStepperState(5);
+    updateStepperState(getStepPosition('success'));
     const top = successPanel.offsetTop || 0;
     window.scrollTo({ top: Math.max(top - 40, 0), behavior: 'smooth' });
   };
@@ -198,15 +282,17 @@ export const initBookingWizard = () => {
 
     methodSection.classList.remove('d-none');
     methodSection.hidden = false;
+    hideFlowPreference();
     landingShell?.classList.remove('d-none');
     landingSection?.classList.remove('d-none');
 
     methodSection.querySelector('.wizard-method-title')?.focus?.();
     wizardAppNavWrap?.classList.add('d-none');
   };
+  setFlowPreference('room-first');
   showMethodSelection();
 
-  const updateStepperState = (currentStep = 1) => {
+  const updateStepperState = (currentStep = getStepPosition('rooms')) => {
     stepperItems.forEach((item, index) => {
       item.classList.remove('is-active', 'is-complete', 'is-upcoming');
       const circle = item.querySelector('.enc-stepper-circle');
@@ -224,7 +310,23 @@ export const initBookingWizard = () => {
       }
     });
   };
-  updateStepperState(1);
+  updateStepperState(getStepPosition('rooms'));
+
+  const showRoomsStep = () => {
+    roomsPanel?.classList.remove('d-none');
+    roomsActions?.classList.remove('d-none');
+    datePanel?.classList.add('d-none');
+    detailsPanel?.classList.add('d-none');
+    updateStepperState(getStepPosition('rooms'));
+  };
+
+  const showDateStep = () => {
+    datePanel?.classList.remove('d-none');
+    roomsPanel?.classList.add('d-none');
+    roomsActions?.classList.add('d-none');
+    detailsPanel?.classList.add('d-none');
+    updateStepperState(getStepPosition('date'));
+  };
 
   const showManualStage = () => {
     if (!manualStage) return;
@@ -233,6 +335,7 @@ export const initBookingWizard = () => {
       methodSection.classList.add('d-none');
       methodSection.hidden = true;
     }
+    hideFlowPreference();
 
     landingShell?.classList.add('d-none');
     landingSection?.classList.add('d-none');
@@ -247,11 +350,21 @@ export const initBookingWizard = () => {
       myBookingsToggle.classList.remove('btn-bookings-active');
     }
 
-    manualStage.querySelector('.wizard-rooms-title')?.focus?.();
-    updateStepperState(1);
+    const focusTarget = wizardState.flowPreference === 'date-first'
+      ? datePanel?.querySelector('.wizard-rooms-title')
+      : manualStage.querySelector('.wizard-rooms-title');
+    focusTarget?.focus?.();
+    if (wizardState.flowPreference === 'date-first') {
+      showDateStep();
+    } else {
+      showRoomsStep();
+    }
     
     // Load facilities from API
-    loadFacilities();
+    if (!facilitiesLoaded) {
+      loadFacilities();
+      facilitiesLoaded = true;
+    }
   };
 
   // Method selection → branch to Smart or Manual
@@ -260,7 +373,7 @@ export const initBookingWizard = () => {
       const method = card.dataset.method;
 
       if (method === 'manual') {
-        showManualStage();
+        showFlowPreference();
         return;
       }
 
@@ -271,6 +384,22 @@ export const initBookingWizard = () => {
       }
     });
   });
+
+  flowPreferenceCards.forEach(card => {
+    card.addEventListener('click', () => {
+      const preference = card.dataset.flowPreference || 'room-first';
+      setFlowPreference(preference);
+      hideFlowPreference();
+      showManualStage();
+    });
+  });
+
+  if (flowPreferenceBackBtn) {
+    flowPreferenceBackBtn.addEventListener('click', () => {
+      hideFlowPreference();
+      showMethodSelection();
+    });
+  }
 
   // Sidebar toggle (My Bookings)
   if (myBookingsToggle && bookingsSidebar && stageSidebarWrap && stageRow) {
@@ -309,6 +438,64 @@ export const initBookingWizard = () => {
 
   if (backToDashboardBtn) {
     backToDashboardBtn.addEventListener('click', promptBackToDashboard);
+  }
+
+  const navigateToPreviousPage = () => {
+    const referrer = document.referrer;
+    if (referrer && referrer !== window.location.href) {
+      window.location.href = referrer;
+      return;
+    }
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    window.location.href = '/user/dashboard';
+  };
+
+  const promptAbortBooking = () => {
+    if (window.Swal?.fire) {
+      Swal.fire({
+        title: 'Abort this booking?',
+        text: 'All progress will be discarded and you will return to your dashboard.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Abort booking',
+        cancelButtonText: 'Stay here',
+        customClass: {
+          popup: 'enc-swal-popup',
+          confirmButton: 'btn btn-outline-danger',
+          cancelButton: 'btn btn-light',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          window.location.href = '/user/dashboard';
+        }
+      });
+      return;
+    }
+    window.location.href = '/user/dashboard';
+  };
+
+  if (backToMethodsBtn) {
+    backToMethodsBtn.addEventListener('click', () => {
+      if (wizardState.flowPreference === 'date-first') {
+        showDateStep();
+        return;
+      }
+      manualStage?.classList.add('d-none');
+      if (manualStage) manualStage.hidden = true;
+      showFlowPreference();
+    });
+  }
+
+  abortButtons.forEach(btn => {
+    btn.addEventListener('click', promptAbortBooking);
+  });
+
+  if (methodBackBtn) {
+    methodBackBtn.addEventListener('click', navigateToPreviousPage);
   }
 
   // Step 1 (manual): enable "Next: Select Date & Time" after selecting a room
@@ -400,19 +587,30 @@ export const initBookingWizard = () => {
     if (nextDateBtn) {
       nextDateBtn.addEventListener('click', () => {
         if (nextDateBtn.disabled) return;
-        roomsPanel?.classList.add('d-none');
+        if (wizardState.flowPreference === 'date-first') {
+          roomsPanel?.classList.add('d-none');
+          roomsActions?.classList.add('d-none');
+          detailsPanel?.classList.remove('d-none');
+          updateStepperState(getStepPosition('details'));
+          return;
+        }
         datePanel?.classList.remove('d-none');
+        roomsPanel?.classList.add('d-none');
         roomsActions?.classList.add('d-none');
-        updateStepperState(2);
+        updateStepperState(getStepPosition('date'));
       });
     }
 
     if (nextDetailsBtn) {
       nextDetailsBtn.addEventListener('click', () => {
         if (nextDetailsBtn.disabled) return;
+        if (wizardState.flowPreference === 'date-first') {
+          showRoomsStep();
+          return;
+        }
         datePanel?.classList.add('d-none');
         detailsPanel?.classList.remove('d-none');
-        updateStepperState(3);
+        updateStepperState(getStepPosition('details'));
         
         // Update capacity badge and help text when entering details panel
         if (wizardState.roomCapacity > 0) {
@@ -448,10 +646,13 @@ export const initBookingWizard = () => {
 
     if (backToRoomsBtn) {
       backToRoomsBtn.addEventListener('click', () => {
-        datePanel?.classList.add('d-none');
-        roomsPanel?.classList.remove('d-none');
-        roomsActions?.classList.remove('d-none');
-        updateStepperState(1);
+        if (wizardState.flowPreference === 'date-first') {
+          manualStage?.classList.add('d-none');
+          if (manualStage) manualStage.hidden = true;
+          showFlowPreference();
+          return;
+        }
+        showRoomsStep();
         if (nextDetailsBtn) nextDetailsBtn.disabled = true;
       });
     }
@@ -766,15 +967,25 @@ export const initBookingWizard = () => {
 
     backToDateBtn?.addEventListener('click', () => {
       detailsPanel.classList.add('d-none');
-      datePanel?.classList.remove('d-none');
-      updateStepperState(2);
+      if (wizardState.flowPreference === 'date-first') {
+        roomsPanel?.classList.remove('d-none');
+        roomsActions?.classList.remove('d-none');
+        datePanel?.classList.add('d-none');
+        updateStepperState(getStepPosition('rooms'));
+      } else {
+        datePanel?.classList.remove('d-none');
+        roomsPanel?.classList.add('d-none');
+        roomsActions?.classList.add('d-none');
+        updateStepperState(getStepPosition('date'));
+      }
+      if (nextReviewBtn) nextReviewBtn.disabled = true;
     });
 
     nextReviewBtn?.addEventListener('click', () => {
       if (nextReviewBtn.disabled) return;
       detailsPanel.classList.add('d-none');
       reviewPanel?.classList.remove('d-none');
-      updateStepperState(4);
+      updateStepperState(getStepPosition('review'));
       updateReviewSummary();
     });
 
@@ -784,7 +995,7 @@ export const initBookingWizard = () => {
   backToDetailsBtn?.addEventListener('click', () => {
     reviewPanel?.classList.add('d-none');
     detailsPanel?.classList.remove('d-none');
-    updateStepperState(3);
+    updateStepperState(getStepPosition('details'));
   });
 
   submitRequestBtn?.addEventListener('click', () => {

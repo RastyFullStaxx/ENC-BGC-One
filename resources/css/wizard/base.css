@@ -417,6 +417,22 @@
   border-radius: 1.5rem;
   background: rgba(253, 253, 253, 0.96);
   box-shadow: 0 18px 45px rgba(0, 24, 64, 0.18);
+  position: relative;
+  overflow: visible;
+}
+
+.wizard-method-back,
+.wizard-flow-back {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  transform: translateY(-50%);
+  background: #fff;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 24, 64, 0.12);
+  border: 1px solid rgba(0, 24, 64, 0.08);
+  z-index: 2;
 }
 
 .wizard-method-title {
@@ -587,6 +603,126 @@
 
 .wizard-shell .btn {
   font-weight: 600;
+}
+
+/* Flow preference cards */
+.wizard-flow-preference {
+  background: #FDFDFD;
+  border-radius: 1.25rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 20px 60px rgba(0, 24, 64, 0.08);
+  position: relative;
+}
+
+.wizard-flow-pretitle {
+  letter-spacing: 0.3em;
+  color: #155DFC;
+}
+
+.wizard-flow-title {
+  font-weight: 700;
+  color: #001840;
+}
+
+.wizard-flow-subtitle {
+  color: #1E2939;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wizard-flow-card {
+  border: 2px solid transparent;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(130deg, #155DFC, #001840);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 220% 220%;
+  background-position: 0 0, 0% 50%;
+  animation: wizard-border-flow 8s linear infinite;
+  color: #001840;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  min-height: 240px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 15px 35px rgba(0, 24, 64, 0.05);
+}
+
+.wizard-flow-card:hover,
+.wizard-flow-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 24, 64, 0.12);
+  background-position: 0 0, 85% 50%;
+  outline: none;
+}
+
+.wizard-flow-card--accent {
+  background-image:
+    linear-gradient(rgba(248, 251, 255, 0.95), #ffffff),
+    linear-gradient(130deg, #4F8FFF, #155DFC);
+}
+
+.wizard-flow-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(0, 24, 64, 0.08);
+  color: #001840;
+  margin-bottom: 1rem;
+}
+
+.wizard-flow-card--accent .wizard-flow-chip {
+  background: rgba(0, 201, 80, 0.15);
+  color: #0B5B38;
+}
+
+.wizard-flow-card-body {
+  flex: 1 1 auto;
+}
+
+.wizard-flow-card-title {
+  font-weight: 700;
+  color: #000206;
+}
+
+.wizard-flow-card-desc {
+  color: #1E2939;
+}
+
+.wizard-flow-backwrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3;
+}
+
+.wizard-abort-btn {
+  border: 1.5px solid #9F0712;
+  color: #9F0712;
+  font-weight: 600;
+  background-color: transparent;
+}
+
+.wizard-abort-btn:hover,
+.wizard-abort-btn:focus-visible {
+  background-color: rgba(159, 7, 18, 0.08);
+  color: #9F0712;
+  border-color: #9F0712;
+}
+
+@media (max-width: 767.98px) {
+  .wizard-flow-preference {
+    padding: 2rem 1.5rem;
+  }
 }
 
 /* Responsiveness */

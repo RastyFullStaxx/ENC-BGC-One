@@ -88,6 +88,9 @@
                     <button type="button" class="btn btn-outline-primary">
                       Save as draft
                     </button>
+                    <button type="button" class="btn wizard-abort-btn" data-action="wizard-abort-booking">
+                      Abort booking
+                    </button>
                     <button type="button" class="btn btn-room-submit btn-lg" id="wizardSubmitRequest">
                       Submit booking request
                     </button>

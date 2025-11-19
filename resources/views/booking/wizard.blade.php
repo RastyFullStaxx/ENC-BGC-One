@@ -1,6 +1,8 @@
 {{-- resources/views/booking/wizard.blade.php --}}
 @extends('layouts.app')
 
+@section('hideFooter')@endsection
+
 @section('title', 'One Services Booking — Wizard')
 
 @push('styles')  {{-- CSS will come next --}}
@@ -112,6 +114,7 @@
       <div class="row justify-content-center">
         <div class="col-12 col-lg-10">
           @include('booking.wizard.sections.method-selection')
+          @include('booking.wizard.sections.flow-preference')
         </div>
       </div>
     </div>
