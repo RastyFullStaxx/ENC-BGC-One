@@ -81,6 +81,13 @@
                   </button>
                   <button
                     type="button"
+                    class="btn btn-outline-primary wizard-save-draft"
+                    data-draft-step="rooms"
+                  >
+                    Save as draft
+                  </button>
+                  <button
+                    type="button"
                     class="btn btn-room-available wizard-next-date ms-auto"
                     disabled
                   >

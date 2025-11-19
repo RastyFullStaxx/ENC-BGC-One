@@ -133,9 +133,18 @@
                       Abort booking
                     </button>
                   </div>
-                  <button type="button" class="btn btn-room-available ms-md-auto" id="wizardNextDetails" disabled>
-                    Next: Add Details
-                  </button>
+                  <div class="d-flex flex-wrap gap-2 align-items-center ms-md-auto">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary wizard-save-draft"
+                      data-draft-step="date"
+                    >
+                      Save as draft
+                    </button>
+                    <button type="button" class="btn btn-room-available" id="wizardNextDetails" disabled>
+                      Next: Add Details
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

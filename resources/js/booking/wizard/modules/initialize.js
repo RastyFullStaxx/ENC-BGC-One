@@ -80,6 +80,16 @@ export const initBookingWizard = () => {
   const roomSearch        = document.getElementById('roomSearch');
   const roomFloor         = document.getElementById('roomFloor');
   const roomSize          = document.getElementById('roomSize');
+  const saveDraftButtons  = document.querySelectorAll('.wizard-save-draft');
+  const draftModal        = document.getElementById('wizardDraftModal');
+  const draftContinueBtn  = document.getElementById('wizardDraftContinue');
+  const draftResetBtn     = document.getElementById('wizardDraftReset');
+  const draftDismissBtn   = document.getElementById('wizardDraftDismiss');
+  const draftStepLabel    = document.getElementById('wizardDraftStepLabel');
+  const draftRoomLabel    = document.getElementById('wizardDraftRoomLabel');
+  const draftScheduleLabel = document.getElementById('wizardDraftScheduleLabel');
+  const draftDetailsLabel = document.getElementById('wizardDraftDetailsLabel');
+  const draftSavedAtLabel = document.getElementById('wizardDraftSavedAt');
 
   const defaultStepPositions = {
     rooms: 1,
@@ -88,6 +98,14 @@ export const initBookingWizard = () => {
     review: 4,
     success: 5,
   };
+  const DRAFT_STORAGE_KEY = 'encWizardDraft.v1';
+  const draftStepLabels = {
+    rooms: 'Step 1 — Select a room',
+    date: 'Step 2 — Date & Time',
+    details: 'Step 3 — Booking details',
+    review: 'Step 4 — Review & submit',
+  };
+  let pendingDraft = null;
 
   const wizardState = {
     roomId: null,
@@ -109,6 +127,314 @@ export const initBookingWizard = () => {
     referenceCode: '',
     flowPreference: 'room-first',
     stepPositions: { ...defaultStepPositions },
+  };
+
+  const getDraftStepLabel = (stepKey = 'rooms') => draftStepLabels[stepKey] || draftStepLabels.rooms;
+
+  const readDraftFromStorage = () => {
+    try {
+      const rawValue = window.localStorage?.getItem(DRAFT_STORAGE_KEY);
+      if (!rawValue) return null;
+      return JSON.parse(rawValue);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('Unable to read wizard draft from storage', error);
+      return null;
+    }
+  };
+
+  const writeDraftToStorage = (snapshot) => {
+    try {
+      window.localStorage?.setItem(DRAFT_STORAGE_KEY, JSON.stringify(snapshot));
+      return true;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Unable to write wizard draft to storage', error);
+      showError('We could not save your draft. Please enable storage or try again.');
+      return false;
+    }
+  };
+
+  const clearDraftFromStorage = () => {
+    try {
+      window.localStorage?.removeItem(DRAFT_STORAGE_KEY);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn('Unable to clear wizard draft from storage', error);
+    }
+  };
+
+  const buildDraftSnapshot = (stepKey = 'rooms') => ({
+    version: 1,
+    savedAt: new Date().toISOString(),
+    lastStep: stepKey,
+    flowPreference: wizardState.flowPreference,
+    room: {
+      id: wizardState.roomId,
+      name: wizardState.roomName,
+      capacity: wizardState.roomCapacity,
+    },
+    schedule: {
+      date: wizardState.date,
+      startTime: wizardState.startTime,
+      endTime: wizardState.endTime,
+      durationText: wizardState.durationText,
+    },
+    attendees: wizardState.attendees,
+    agenda: wizardState.agenda,
+    support: {
+      enabled: wizardState.support.enabled,
+      count: wizardState.support.count,
+      equipment: [...wizardState.support.equipment],
+      notes: wizardState.support.notes,
+    },
+  });
+
+  const formatDraftSavedAt = (value) => {
+    if (!value) return 'Just now';
+    const savedDate = new Date(value);
+    if (Number.isNaN(savedDate.getTime())) return 'Just now';
+    return savedDate.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
+
+  const buildScheduleSummary = (schedule = {}) => {
+    if (!schedule.date) return 'No date selected';
+    const dateLabel = formatDateLabel(schedule.date);
+    if (schedule.startTime && schedule.endTime) {
+      return `${dateLabel}, ${formatTimeLabel(schedule.startTime)} – ${formatTimeLabel(schedule.endTime)}`;
+    }
+    return dateLabel;
+  };
+
+  const buildDetailsSummary = (draft) => {
+    const parts = [];
+    if (draft.attendees) {
+      parts.push(`${draft.attendees} attendee${draft.attendees > 1 ? 's' : ''}`);
+    }
+    if (draft.agenda) {
+      const agendaPreview = draft.agenda.length > 160
+        ? `${draft.agenda.slice(0, 157)}…`
+        : draft.agenda;
+      parts.push(agendaPreview);
+    }
+    if (draft.support?.enabled) {
+      const supportBits = [];
+      if (draft.support.count) {
+        supportBits.push(`${draft.support.count} support`);
+      }
+      if (draft.support.equipment?.length) {
+        supportBits.push(draft.support.equipment.join(', '));
+      }
+      if (draft.support.notes) {
+        supportBits.push(draft.support.notes.length > 60
+          ? `${draft.support.notes.slice(0, 57)}…`
+          : draft.support.notes);
+      }
+      parts.push(`Support: ${supportBits.join(', ') || 'Requested'}`);
+    } else {
+      parts.push('No facilities support requested');
+    }
+    return parts.join(' • ') || 'No additional details yet';
+  };
+
+  const toggleDraftModal = (show = false) => {
+    if (!draftModal) return;
+    if (show) {
+      draftModal.classList.remove('d-none');
+      draftModal.classList.add('is-visible');
+      document.body.classList.add('wizard-modal-open');
+    } else {
+      draftModal.classList.add('d-none');
+      draftModal.classList.remove('is-visible');
+      document.body.classList.remove('wizard-modal-open');
+    }
+  };
+
+  const populateDraftModal = (draft) => {
+    if (!draft) return;
+    if (draftStepLabel) draftStepLabel.textContent = getDraftStepLabel(draft.lastStep);
+    if (draftRoomLabel) draftRoomLabel.textContent = draft.room?.name || 'No room selected';
+    if (draftScheduleLabel) draftScheduleLabel.textContent = buildScheduleSummary(draft.schedule);
+    if (draftDetailsLabel) draftDetailsLabel.textContent = buildDetailsSummary(draft);
+    if (draftSavedAtLabel) draftSavedAtLabel.textContent = formatDraftSavedAt(draft.savedAt);
+  };
+
+  const showDraftPrompt = (draft) => {
+    pendingDraft = draft;
+    populateDraftModal(draft);
+    toggleDraftModal(true);
+  };
+
+  const hideDraftPrompt = () => {
+    pendingDraft = null;
+    toggleDraftModal(false);
+  };
+
+  const getCurrentStepKey = () => {
+    if (!manualStage || manualStage.classList.contains('d-none')) {
+      return 'rooms';
+    }
+    if (reviewPanel && !reviewPanel.classList.contains('d-none')) {
+      return 'review';
+    }
+    if (detailsPanel && !detailsPanel.classList.contains('d-none')) {
+      return 'details';
+    }
+    if (datePanel && !datePanel.classList.contains('d-none')) {
+      return 'date';
+    }
+    return 'rooms';
+  };
+
+  const applyRoomCapacityHints = () => {
+    if (!wizardState.roomCapacity) return;
+    if (attendeesInput) {
+      attendeesInput.dataset.max = wizardState.roomCapacity;
+      const currentValue = Number(attendeesInput.value || wizardState.attendees || 1);
+      const clamped = Math.min(currentValue, wizardState.roomCapacity);
+      attendeesInput.value = clamped;
+      if (attendeesValue) attendeesValue.textContent = clamped;
+      wizardState.attendees = clamped;
+    }
+    const maxBadge = document.getElementById('wizardAttendeesMaxBadge');
+    if (maxBadge) {
+      maxBadge.textContent = `Max in-room: ${wizardState.roomCapacity}`;
+    }
+    const helpText = document.getElementById('wizardAttendeesHelp');
+    if (helpText) {
+      helpText.textContent = `Need more than ${wizardState.roomCapacity}? Leave a note so we can suggest larger venues or hybrid setups.`;
+    }
+  };
+
+  const persistDraft = (stepKey = 'rooms') => {
+    const snapshot = buildDraftSnapshot(stepKey);
+    const saved = writeDraftToStorage(snapshot);
+    return saved ? snapshot : null;
+  };
+
+  const handleDraftSave = (stepKey = 'rooms') => {
+    const snapshot = persistDraft(stepKey);
+    if (!snapshot) return;
+    showSuccess('Draft saved. We\'ll return you to your dashboard.');
+    setTimeout(() => {
+      window.location.href = '/user/dashboard';
+    }, 450);
+  };
+
+  const ensureSupportState = (draft) => {
+    if (!draft.support) return;
+    wizardState.support.enabled = Boolean(draft.support.enabled);
+    wizardState.support.count = Number(draft.support.count) || 1;
+    wizardState.support.equipment = Array.isArray(draft.support.equipment)
+      ? [...draft.support.equipment]
+      : [];
+    wizardState.support.notes = draft.support.notes || '';
+    if (supportToggle) {
+      supportToggle.checked = wizardState.support.enabled;
+      supportToggle.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (supportCountInput) {
+      supportCountInput.value = wizardState.support.count;
+      if (supportCountValue) supportCountValue.textContent = wizardState.support.count;
+    }
+    if (supportEquipmentInputs.length) {
+      const equipmentSet = new Set(wizardState.support.equipment);
+      supportEquipmentInputs.forEach(input => {
+        input.checked = equipmentSet.has(input.value);
+      });
+      wizardState.support.equipment = Array
+        .from(supportEquipmentInputs)
+        .filter(input => input.checked)
+        .map(input => input.value);
+    }
+    if (supportNotesInput) {
+      supportNotesInput.value = wizardState.support.notes;
+    }
+  };
+
+  const resumeDraftFlow = (draft) => {
+    if (!draft) return;
+    setFlowPreference(draft.flowPreference || 'room-first');
+    wizardState.roomId = draft.room?.id ?? null;
+    wizardState.roomName = draft.room?.name || '';
+    wizardState.roomCapacity = draft.room?.capacity || 0;
+    if (selectedRoomLabel) {
+      selectedRoomLabel.textContent = wizardState.roomName || 'None selected yet';
+    }
+    applyRoomCapacityHints();
+    wizardState.date = draft.schedule?.date || '';
+    wizardState.startTime = draft.schedule?.startTime || '';
+    wizardState.endTime = draft.schedule?.endTime || '';
+    wizardState.durationText = draft.schedule?.durationText || '';
+    wizardState.attendees = draft.attendees || wizardState.attendees;
+    wizardState.agenda = draft.agenda || '';
+    ensureSupportState(draft);
+    if (bookingDateInput && draft.schedule?.date) {
+      bookingDateInput.value = draft.schedule.date;
+      bookingDateInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (bookingStartTime && draft.schedule?.startTime) {
+      bookingStartTime.value = draft.schedule.startTime;
+      bookingStartTime.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (bookingEndTime && draft.schedule?.endTime) {
+      bookingEndTime.value = draft.schedule.endTime;
+      bookingEndTime.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    if (durationLabel && wizardState.durationText) {
+      durationLabel.textContent = wizardState.durationText;
+    }
+    if (attendeesInput && wizardState.attendees) {
+      attendeesInput.value = wizardState.attendees;
+      if (attendeesValue) attendeesValue.textContent = wizardState.attendees;
+    }
+    if (agendaInput) {
+      agendaInput.value = wizardState.agenda;
+      agendaInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (supportNotesInput) {
+      supportNotesInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    const targetStep = draft.lastStep || 'rooms';
+    showManualStage();
+    reviewPanel?.classList.add('d-none');
+    detailsPanel?.classList.add('d-none');
+    datePanel?.classList.add('d-none');
+    roomsPanel?.classList.add('d-none');
+    roomsActions?.classList.add('d-none');
+    if (targetStep === 'review') {
+      reviewPanel?.classList.remove('d-none');
+      updateStepperState(getStepPosition('review'));
+      updateReviewSummary();
+    } else if (targetStep === 'details') {
+      detailsPanel?.classList.remove('d-none');
+      updateStepperState(getStepPosition('details'));
+    } else if (targetStep === 'date') {
+      showDateStep();
+    } else {
+      showRoomsStep();
+    }
+    if (nextDateBtn) {
+      nextDateBtn.disabled = !wizardState.roomId;
+    }
+    if (nextReviewBtn) {
+      const attendeeCount = Number(attendeesInput?.value || 0);
+      const hasAgenda = Boolean(agendaInput?.value.trim());
+      const supportEnabled = supportToggle?.checked;
+      const supportCount = Number(supportCountInput?.value || 0);
+      const withinAttendeesRange = attendeeCount >= Number(attendeesInput?.dataset.min || 1)
+        && (!attendeesInput?.dataset.max || attendeeCount <= Number(attendeesInput.dataset.max));
+      const withinSupportRange = !supportEnabled
+        || (supportCount >= Number(supportCountInput?.dataset.min || 1)
+          && (!supportCountInput?.dataset.max || supportCount <= Number(supportCountInput.dataset.max)));
+      nextReviewBtn.disabled = !(withinAttendeesRange && hasAgenda && withinSupportRange);
+    }
+    updateReviewSummary();
   };
 
   const getStepPosition = (key) => wizardState.stepPositions?.[key] || defaultStepPositions[key] || 1;
@@ -273,6 +599,7 @@ export const initBookingWizard = () => {
     successPanel.classList.remove('d-none');
     successPanel.hidden = false;
     populateSuccessPanel();
+    clearDraftFromStorage();
     updateStepperState(getStepPosition('success'));
     const top = successPanel.offsetTop || 0;
     window.scrollTo({ top: Math.max(top - 40, 0), behavior: 'smooth' });
@@ -376,6 +703,11 @@ export const initBookingWizard = () => {
       }
 
       if (method === 'manual') {
+        const storedDraft = readDraftFromStorage();
+        if (storedDraft) {
+          showDraftPrompt(storedDraft);
+          return;
+        }
         showFlowPreference();
         return;
       }
@@ -387,6 +719,24 @@ export const initBookingWizard = () => {
       }
     });
   });
+
+  draftContinueBtn?.addEventListener('click', () => {
+    const draft = pendingDraft || readDraftFromStorage();
+    hideDraftPrompt();
+    if (draft) {
+      resumeDraftFlow(draft);
+    } else {
+      showFlowPreference();
+    }
+  });
+
+  draftResetBtn?.addEventListener('click', () => {
+    clearDraftFromStorage();
+    hideDraftPrompt();
+    showFlowPreference();
+  });
+
+  draftDismissBtn?.addEventListener('click', hideDraftPrompt);
 
   flowPreferenceCards.forEach(card => {
     card.addEventListener('click', () => {
@@ -433,8 +783,10 @@ export const initBookingWizard = () => {
       buttonsStyling: false,
     }).then(result => {
       if (result.isConfirmed) {
-        // TODO: Hook draft persistence here.
-        window.location.href = '/user/dashboard';
+        const snapshot = persistDraft(getCurrentStepKey());
+        if (snapshot) {
+          window.location.href = '/user/dashboard';
+        }
       }
     });
   };
@@ -495,6 +847,38 @@ export const initBookingWizard = () => {
 
   abortButtons.forEach(btn => {
     btn.addEventListener('click', promptAbortBooking);
+  });
+
+  const confirmDraftSave = (stepKey = 'rooms') => {
+    if (window.Swal?.fire) {
+      Swal.fire({
+        title: 'Save this as a draft?',
+        text: 'We\'ll keep your progress so you can resume from where you stopped.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Save & exit',
+        cancelButtonText: 'Keep working',
+        customClass: {
+          popup: 'enc-swal-popup',
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-link text-dark',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.isConfirmed) {
+          handleDraftSave(stepKey);
+        }
+      });
+    } else {
+      handleDraftSave(stepKey);
+    }
+  };
+
+  saveDraftButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const stepKey = btn.dataset.draftStep || getCurrentStepKey();
+      confirmDraftSave(stepKey);
+    });
   });
 
   if (methodBackBtn) {
