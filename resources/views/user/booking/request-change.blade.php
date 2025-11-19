@@ -33,10 +33,10 @@
 
         <header class="booking-detail-hero">
             <div class="booking-hero-content">
-                <span class="status-pill is-neutral">Need help?</span>
-                <h1 class="booking-hero-title">Request a change</h1>
+                <span class="status-pill is-warning">Change requested</span>
+                <h1 class="booking-hero-title">Respond to Shared Services</h1>
                 <p class="booking-hero-subtitle">
-                    Tell Shared Services what needs to be adjusted. We’ll reopen the booking for review and keep you posted.
+                    Review the notes below, adjust the schedule if needed, or leave a message for the operations team. Finish the change or cancel the booking from here.
                 </p>
             </div>
             <div class="booking-meta-grid">
@@ -51,14 +51,15 @@
             </div>
         </header>
 
-        @if ($existingRequest)
-            <div class="alert alert-warning mb-4" role="alert">
-                <strong>Change request already submitted.</strong>
-                <p class="mb-1">Status: {{ ucfirst($existingRequest['status']) }}</p>
-                <p class="mb-0">{{ $existingRequest['notes'] }}</p>
-                @if($existingRequest['opened_at'])
-                    <p class="small text-muted mb-0">Sent {{ $existingRequest['opened_at'] }}</p>
-                @endif
+        @if($adminRequest)
+            <div class="booking-callout booking-callout--warning mb-4">
+                <div>
+                    <h3 class="mb-1">Shared Services needs an update</h3>
+                    <p class="mb-1">{{ $adminRequest['notes'] ?? 'Please review the scheduling details.' }}</p>
+                    @if($adminRequest['opened_at'])
+                        <p class="small text-muted mb-0">Requested {{ $adminRequest['opened_at'] }}</p>
+                    @endif
+                </div>
             </div>
         @endif
 
@@ -75,48 +76,131 @@
 
         <div class="booking-detail-grid">
             <article class="detail-card">
-                <h3>Change request form</h3>
+                <h3>{{ $canEditBooking ? 'Update booking' : 'Booking overview' }}</h3>
+                <form action="{{ route('user.booking.update', $booking['id']) }}" method="POST" novalidate>
+                    @csrf
+                    @method('PUT')
+                    <div class="mb-3">
+                        <label for="editDate" class="form-label text-uppercase small fw-semibold">Date</label>
+                        <input
+                            id="editDate"
+                            type="date"
+                            name="date"
+                            class="form-control"
+                            value="{{ old('date', $booking['date_value']) }}"
+                            @disabled(!$canEditBooking)
+                            required
+                        >
+                    </div>
+                    <div class="mb-3 d-flex gap-3 flex-wrap">
+                        <div class="flex-fill">
+                            <label for="editStartTime" class="form-label text-uppercase small fw-semibold">Start time</label>
+                            <input
+                                id="editStartTime"
+                                type="time"
+                                name="start_time"
+                                class="form-control"
+                                value="{{ old('start_time', $booking['start_time_value']) }}"
+                                @disabled(!$canEditBooking)
+                                required
+                            >
+                        </div>
+                        <div class="flex-fill">
+                            <label for="editEndTime" class="form-label text-uppercase small fw-semibold">End time</label>
+                            <input
+                                id="editEndTime"
+                                type="time"
+                                name="end_time"
+                                class="form-control"
+                                value="{{ old('end_time', $booking['end_time_value']) }}"
+                                @disabled(!$canEditBooking)
+                                required
+                            >
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPurpose" class="form-label text-uppercase small fw-semibold">Purpose / agenda</label>
+                        <textarea
+                            id="editPurpose"
+                            name="purpose"
+                            rows="3"
+                            class="form-control"
+                            @disabled(!$canEditBooking)
+                            required
+                        >{{ old('purpose', $booking['purpose']) }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAttendees" class="form-label text-uppercase small fw-semibold">Attendees</label>
+                        <input
+                            id="editAttendees"
+                            type="number"
+                            name="attendees"
+                            class="form-control"
+                            min="1"
+                            value="{{ old('attendees', $booking['attendees']) }}"
+                            placeholder="How many participants?"
+                            @disabled(!$canEditBooking)
+                        >
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNotes" class="form-label text-uppercase small fw-semibold">Special instructions</label>
+                        <textarea
+                            id="editNotes"
+                            name="additional_notes"
+                            rows="3"
+                            class="form-control"
+                            placeholder="Optional — remind us about equipment, support, or prep needed."
+                            @disabled(!$canEditBooking)
+                        >{{ old('additional_notes', $booking['notes']) }}</textarea>
+                    </div>
+                    <p class="small text-muted mb-3">
+                        @if($canEditBooking)
+                            Updating will send the revised schedule back to Shared Services.
+                        @else
+                            This booking can’t be edited right now. Leave a note to request admin assistance.
+                        @endif
+                    </p>
+                    <button type="submit" class="btn btn-primary w-100" @disabled(!$canEditBooking)>
+                        Finish change
+                    </button>
+                </form>
+                <form action="{{ route('user.booking.cancel', $booking['id']) }}" method="POST" class="mt-3">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        Cancel booking
+                    </button>
+                </form>
+            </article>
+            <article class="detail-card">
+                <h3>Send additional context</h3>
                 @if(!$existingRequest)
                     <form action="{{ route('user.booking.request-change.store', $booking['id']) }}" method="POST" novalidate>
                         @csrf
                         <div class="mb-3">
-                            <label for="changeNotes" class="form-label text-uppercase small fw-semibold">What needs to change?</label>
+                            <label for="changeNotes" class="form-label text-uppercase small fw-semibold">Message to Shared Services</label>
                             <textarea
                                 id="changeNotes"
                                 name="notes"
                                 rows="5"
                                 class="form-control"
-                                placeholder="Tell us what needs to be adjusted (time, duration, support, etc.)"
+                                placeholder="Explain what needs to be adjusted or forfeited."
                                 required
                             >{{ old('notes') }}</textarea>
                         </div>
-                        <p class="small text-muted mb-3">
-                            We’ll notify you once an admin responds. Requesting a change temporarily pauses the approved slot.
-                        </p>
-                        <button type="submit" class="btn btn-primary w-100">
-                            Submit change request
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            Send request
                         </button>
                     </form>
                 @else
-                    <p class="mb-0 text-muted">Please wait for the admin team to respond before submitting another request.</p>
+                    <div class="alert alert-info mb-0" role="alert">
+                        <strong>Request submitted.</strong>
+                        <p class="mb-1">Status: {{ ucfirst($existingRequest['status']) }}</p>
+                        <p class="mb-0">{{ $existingRequest['notes'] }}</p>
+                        @if($existingRequest['opened_at'])
+                            <p class="small text-muted mb-0">Sent {{ $existingRequest['opened_at'] }}</p>
+                        @endif
+                    </div>
                 @endif
-            </article>
-            <article class="detail-card">
-                <h3>Tips</h3>
-                <ul class="detail-list">
-                    <li>
-                        <span class="label">Be specific</span>
-                        <span class="value">Let us know the new time, what needs to be forfeited, or additional context.</span>
-                    </li>
-                    <li>
-                        <span class="label">Keep contacts updated</span>
-                        <span class="value">If you’re looped with other teams, cc them so everyone knows a change is pending.</span>
-                    </li>
-                    <li>
-                        <span class="label">Need urgent help?</span>
-                        <span class="value">Call Shared Services for high-priority conflicts, then log the change here for traceability.</span>
-                    </li>
-                </ul>
             </article>
         </div>
     </section>

@@ -88,7 +88,7 @@
         @endif
 
         @if($changeRequest)
-            <div id="change-request" class="booking-callout booking-callout--warning">
+            <div id="change-request" class="booking-callout booking-callout--warning flex-column flex-md-row">
                 <div>
                     <h3>Shared Services needs an update</h3>
                     <p class="mb-1">{{ $changeRequest['notes'] ?? 'Please review your booking details.' }}</p>
@@ -96,12 +96,23 @@
                         <p class="small text-muted mb-0">Requested {{ $changeRequest['opened_at'] }}</p>
                     @endif
                 </div>
-                <form action="{{ route('user.booking.change-request.acknowledge', $changeRequest['id']) }}" method="POST">
-                    @csrf
-                    <button type="submit" class="btn btn-light">
-                        Mark as reviewed
-                    </button>
-                </form>
+                <div class="d-flex flex-column flex-md-row gap-2">
+                    <a href="{{ route('user.booking.request-change.form', $summary['id']) }}" class="btn btn-primary">
+                        Finish change
+                    </a>
+                    <form action="{{ route('user.booking.cancel', $summary['id']) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger">
+                            Cancel booking
+                        </button>
+                    </form>
+                    <form action="{{ route('user.booking.change-request.acknowledge', $changeRequest['id']) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-light">
+                            Mark as reviewed
+                        </button>
+                    </form>
+                </div>
             </div>
         @elseif($userChangeRequest)
             <div class="booking-callout booking-callout--info">

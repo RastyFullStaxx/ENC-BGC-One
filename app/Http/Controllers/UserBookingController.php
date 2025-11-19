@@ -202,7 +202,9 @@ class UserBookingController extends Controller
             abort(403);
         }
 
-        if (! $this->canEditBooking($booking)) {
+        $hasAdminChangeRequest = $this->hasOpenAdminChangeRequest($booking);
+
+        if (! $this->canEditBooking($booking) && ! $hasAdminChangeRequest) {
             return redirect()->route('user.booking.show', $booking)
                 ->with('statusMessage', 'This booking can no longer be edited.');
         }
@@ -297,16 +299,44 @@ class UserBookingController extends Controller
             ->first(fn ($request) => $request->requested_by === $user->id
                 && in_array($request->status, ['open', 'acknowledged']));
 
+        $adminRequest = $booking->changeRequests
+            ->first(fn ($request) => $request->requested_by_role === 'admin'
+                && in_array($request->status, ['open', 'acknowledged']));
+
+        $canEdit = $this->canEditBooking($booking) || (bool) $adminRequest;
+
+        $bookingForm = [
+            'id' => $booking->id,
+            'reference' => $booking->reference_code ?? 'N/A',
+            'facility' => $booking->facility->name ?? 'Facility',
+            'date_label' => $booking->date
+                ? Carbon::parse($booking->date, 'Asia/Manila')->format('l, F j, Y')
+                : 'Date to be confirmed',
+            'time_label' => $this->formatTimeRange($booking),
+            'date_value' => $booking->date
+                ? Carbon::parse($booking->date, 'Asia/Manila')->format('Y-m-d')
+                : null,
+            'start_time_value' => $booking->start_at
+                ? Carbon::parse($booking->start_at, 'Asia/Manila')->format('H:i')
+                : null,
+            'end_time_value' => $booking->end_at
+                ? Carbon::parse($booking->end_at, 'Asia/Manila')->format('H:i')
+                : null,
+            'purpose' => $booking->details->purpose ?? '',
+            'attendees' => $booking->details->attendees_count ?? null,
+            'notes' => $booking->details->additional_notes ?? null,
+        ];
+
         return view('user.booking.request-change', [
-            'booking' => [
-                'id' => $booking->id,
-                'reference' => $booking->reference_code ?? 'N/A',
-                'facility' => $booking->facility->name ?? 'Facility',
-                'date_label' => $booking->date
-                    ? Carbon::parse($booking->date, 'Asia/Manila')->format('l, F j, Y')
-                    : 'Date to be confirmed',
-                'time_label' => $this->formatTimeRange($booking),
-            ],
+            'booking' => $bookingForm,
+            'canEditBooking' => $canEdit,
+            'adminRequest' => $adminRequest ? [
+                'status' => $adminRequest->status,
+                'notes' => $adminRequest->notes,
+                'opened_at' => optional($adminRequest->created_at)
+                    ? Carbon::parse($adminRequest->created_at)->timezone('Asia/Manila')->format('M j, Y · g:i A')
+                    : null,
+            ] : null,
             'existingRequest' => $existingRequest ? [
                 'status' => $existingRequest->status,
                 'notes' => $existingRequest->notes,
@@ -390,6 +420,28 @@ class UserBookingController extends Controller
         return redirect()->back()->with('statusMessage', 'Marked as reviewed.');
     }
 
+    public function cancelBooking(Booking $booking)
+    {
+        $user = Auth::user();
+        if (!$user || $booking->requester_id !== $user->id) {
+            abort(403);
+        }
+
+        if (in_array($booking->status, ['cancelled', 'rejected'])) {
+            return redirect()->route('user.booking.show', $booking)
+                ->with('statusMessage', 'This booking was already ' . $booking->status . '.');
+        }
+
+        $booking->status = 'cancelled';
+        $booking->save();
+
+        NotificationLog::logEvent($booking, 'booking_cancelled');
+        NotificationLog::logEvent($booking, 'booking_cancelled_user', 'EMAIL', null, 'admin');
+
+        return redirect()->route('user.booking.show', $booking)
+            ->with('statusMessage', 'Booking cancelled successfully.');
+    }
+
     private function formatBookingListItem(Booking $booking, $user): array
     {
         $status = $this->normalizeStatus($booking->status ?? 'pending');
@@ -470,6 +522,14 @@ class UserBookingController extends Controller
                 && in_array($request->status, ['open', 'acknowledged']));
 
         return ! (bool) $hasOpenRequest;
+    }
+
+    private function hasOpenAdminChangeRequest(Booking $booking): bool
+    {
+        return $booking->changeRequests()
+            ->where('requested_by_role', 'admin')
+            ->whereIn('status', ['open', 'acknowledged'])
+            ->exists();
     }
 
     private function bookingStartsAfterThreshold(Booking $booking, int $hours = 24): bool
