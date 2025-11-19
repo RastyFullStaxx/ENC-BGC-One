@@ -230,6 +230,7 @@ CREATE TABLE `notification_logs` (
   `channel` ENUM('EMAIL','SMS','CHAT') NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NULL DEFAULT NULL,
+  `seen_at` TIMESTAMP NULL DEFAULT NULL,
   CONSTRAINT `fk_notification_booking` FOREIGN KEY (`booking_id`) REFERENCES `bookings`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
