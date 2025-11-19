@@ -338,8 +338,7 @@ class BookingController extends Controller
                 }
             }
 
-            // Create notification log for the booking
-            $this->createNotificationLog($booking, 'booking_created');
+            NotificationLog::logEvent($booking, 'booking_created');
 
             DB::commit();
 
@@ -510,29 +509,12 @@ class BookingController extends Controller
         $booking->status = 'cancelled';
         $booking->save();
 
-        // Create notification log for cancellation
-        $this->createNotificationLog($booking, 'booking_cancelled');
+        NotificationLog::logEvent($booking, 'booking_cancelled');
 
         return response()->json([
             'success' => true,
             'message' => 'Booking cancelled successfully',
         ]);
-    }
-
-    /**
-     * Create a notification log entry for a booking event.
-     */
-    private function createNotificationLog(Booking $booking, string $notificationType)
-    {
-        try {
-            NotificationLog::create([
-                'booking_id' => $booking->id,
-                'channel' => 'EMAIL',
-            ]);
-        } catch (\Exception $e) {
-            // Log the error but don't fail the booking operation
-            \Log::error('Failed to create notification log: ' . $e->getMessage());
-        }
     }
 
     /**
@@ -556,7 +538,7 @@ class BookingController extends Controller
             ->get()
             ->map(function ($notification) {
                 $booking = $notification->booking;
-                $message = $this->getNotificationMessage($booking);
+                $message = $this->getNotificationMessage($booking, $notification);
                 
                 return [
                     'id' => $notification->id,
@@ -577,22 +559,22 @@ class BookingController extends Controller
     /**
      * Generate notification message based on booking status.
      */
-    private function getNotificationMessage($booking)
+    private function getNotificationMessage($booking, ?NotificationLog $notification = null)
     {
         $facilityName = $booking->facility->name ?? 'Facility';
-        
-        switch ($booking->status) {
-            case 'pending':
-                return "Your booking request for {$facilityName} is awaiting approval";
-            case 'approved':
-            case 'confirmed':
-                return "Your booking for {$facilityName} has been confirmed";
-            case 'cancelled':
-                return "Your booking for {$facilityName} was cancelled";
-            case 'rejected':
-                return "Your booking request for {$facilityName} was declined";
-            default:
-                return "Update on your booking for {$facilityName}";
-        }
+        $event = $notification?->event;
+
+        return match ($event) {
+            'booking_created' => "We received your booking request for {$facilityName}.",
+            'booking_cancelled' => "You cancelled your booking for {$facilityName}.",
+            'change_requested_admin' => "Shared Services requested changes to your {$facilityName} booking.",
+            default => match ($booking->status) {
+                'pending' => "Your booking request for {$facilityName} is awaiting approval",
+                'approved', 'confirmed' => "Your booking for {$facilityName} has been confirmed",
+                'cancelled' => "Your booking for {$facilityName} was cancelled",
+                'rejected' => "Your booking request for {$facilityName} was declined",
+                default => "Update on your booking for {$facilityName}",
+            },
+        };
     }
 }

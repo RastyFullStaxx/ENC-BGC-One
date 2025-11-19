@@ -19,6 +19,9 @@
     $requester = $booking->requester;
     $department = optional($requester?->department)->name;
     $reference = $booking->reference_code;
+    $currentStatus = strtolower($booking->status ?? 'pending');
+    $isApproved = $currentStatus === 'approved';
+    $isRejected = $currentStatus === 'rejected';
 @endphp
 
 @section('content')
@@ -41,11 +44,7 @@
                 &lt; Back to approvals queue
             </a>
         </div>
-        @if (session('statusMessage'))
-            <div class="admin-flash">
-                {{ session('statusMessage') }}
-            </div>
-        @endif
+        <div id="approvalStatusFlash" class="d-none" data-status-message="{{ session('statusMessage') }}"></div>
 
         <article class="approval-detail-hero">
             <div>
@@ -180,7 +179,8 @@
                                 data-decision-trigger
                                 data-form="detail-decision-approve"
                                 data-confirm-title="Approve booking?"
-                                data-confirm-text="Requester will be notified of the approval.">
+                                data-confirm-text="Requester will be notified of the approval."
+                                @if($isApproved) disabled aria-disabled="true" title="Already approved" @endif>
                             Approve
                         </button>
                         <button class="btn btn-outline-danger flex-1"
@@ -188,7 +188,8 @@
                                 data-decision-trigger
                                 data-form="detail-decision-reject"
                                 data-confirm-title="Reject booking?"
-                                data-confirm-text="Are you sure you want to reject this booking?">
+                                data-confirm-text="Are you sure you want to reject this booking?"
+                                @if($isRejected) disabled aria-disabled="true" title="Already rejected" @endif>
                             Reject
                         </button>
                         <button class="btn btn-outline-secondary flex-1"
@@ -236,6 +237,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('[data-decision-trigger]').forEach(button => {
+                if (button.disabled) return;
                 button.addEventListener('click', () => {
                     const formId = button.dataset.form;
                     const form = document.getElementById(formId);
@@ -283,6 +285,23 @@
                     });
                 });
             });
+
+            const flashEl = document.getElementById('approvalStatusFlash');
+            const statusMessage = flashEl?.dataset?.statusMessage;
+            if (statusMessage) {
+                Swal.fire({
+                    title: 'Success',
+                    text: statusMessage,
+                    icon: 'success',
+                    confirmButtonColor: '#001840',
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: 'admin-swal-btn admin-swal-btn--primary',
+                        popup: 'admin-swal-popup',
+                        title: 'admin-swal-title',
+                    },
+                });
+            }
         });
     </script>
 @endpush

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\NotificationCreated;
+use App\Models\Booking;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -15,6 +16,7 @@ class NotificationLog extends Model
         'id',
         'booking_id',
         'channel',
+        'event',
     ];
 
     public $incrementing = false;
@@ -37,11 +39,27 @@ class NotificationLog extends Model
         });
     }
 
-    /**
-     * Get the booking associated with this notification.
-     */
     public function booking()
     {
         return $this->belongsTo(Booking::class);
+    }
+
+    public static function logEvent(Booking $booking, string $event, string $channel = 'EMAIL'): ?self
+    {
+        try {
+            return static::create([
+                'booking_id' => $booking->id,
+                'channel' => $channel,
+                'event' => $event,
+            ]);
+        } catch (\Throwable $exception) {
+            \Log::error('Unable to create notification log', [
+                'booking_id' => $booking->id,
+                'event' => $event,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return null;
+        }
     }
 }

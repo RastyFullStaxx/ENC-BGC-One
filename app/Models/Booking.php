@@ -72,6 +72,11 @@ class Booking extends Model
         return $this->hasOne(BookingApproval::class);
     }
 
+    public function changeRequests()
+    {
+        return $this->hasMany(BookingChangeRequest::class);
+    }
+
     /**
      * Generate a unique reference code for the booking.
      */

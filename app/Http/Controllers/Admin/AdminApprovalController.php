@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingApproval;
+use App\Models\BookingChangeRequest;
+use App\Models\NotificationLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -107,6 +109,28 @@ class AdminApprovalController extends Controller
             'reject' => 'Booking rejected.',
             default => 'Changes requested from requester.',
         };
+
+        if ($data['action'] === 'changes') {
+            $booking->changeRequests()
+                ->where('requested_by_role', 'admin')
+                ->whereIn('status', ['open', 'acknowledged'])
+                ->update([
+                    'status' => 'resolved',
+                    'resolved_at' => now(),
+                    'resolved_by' => auth()->id(),
+                    'resolution_notes' => 'Superseded by a new admin request',
+                ]);
+
+            BookingChangeRequest::create([
+                'booking_id' => $booking->id,
+                'requested_by' => auth()->id(),
+                'requested_by_role' => 'admin',
+                'type' => 'adjustment',
+                'notes' => $data['notes'] ?? null,
+            ]);
+
+            NotificationLog::logEvent($booking, 'change_requested_admin');
+        }
 
         return redirect($data['redirect'] ?? url()->previous())
             ->with('statusMessage', $message);

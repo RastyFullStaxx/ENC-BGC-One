@@ -233,6 +233,36 @@
 
             filteredBookings.forEach(booking => {
                 const statusMeta = getStatusMeta(booking.status);
+                const attentionBadgeParts = [];
+                if (booking.attention) {
+                    attentionBadgeParts.push(`<span class="table-attention">${booking.attention.label}</span>`);
+                }
+                if (booking.userChangeRequest) {
+                    attentionBadgeParts.push(`<span class="table-attention table-attention--muted">Change request pending</span>`);
+                }
+                const attentionBadge = attentionBadgeParts.join('');
+                const editAction = booking.editUrl
+                    ? `<a class="icon-btn" href="${booking.editUrl}" title="Edit booking">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M4 20h4.243l11-11a1 1 0 000-1.414l-2.829-2.829a1 1 0 00-1.414 0l-11 11V20z" />
+                            </svg>
+                        </a>`
+                    : '';
+                const requestAction = booking.requestChangeUrl
+                    ? `<a class="icon-btn" href="${booking.requestChangeUrl}" title="Request change">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582M20 20v-5h-.582M7 9a5 5 0 0110 0c0 5-5 7-5 7s-5-2-5-7z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 13v.01" />
+                            </svg>
+                        </a>`
+                    : '';
+                const reviewAction = booking.attention
+                    ? `<a class="icon-btn icon-btn--attention" href="${booking.attention.reviewUrl}" title="Review change request">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l2.5 1.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </a>`
+                    : '';
 
                 const row = document.createElement('tr');
                 row.setAttribute('data-id', booking.id);
@@ -247,6 +277,7 @@
                             <div class="booking-room__meta">
                                 <h4>${booking.facility}</h4>
                                 <span>${booking.facilityType}</span>
+                                ${attentionBadge}
                             </div>
                         </div>
                     </td>
@@ -270,6 +301,9 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
                             </a>
+                            ${editAction}
+                            ${requestAction}
+                            ${reviewAction}
                             <button class="icon-btn icon-btn--danger" onclick="cancelBooking(${booking.id})" title="Cancel booking">
                                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -288,6 +322,7 @@
                         <div>
                             <strong>${booking.facility}</strong>
                             <div class="mobile-card__label">${booking.facilityType}</div>
+                            ${attentionBadge}
                         </div>
                         <span class="booking-status ${statusMeta.tone}">
                             ${statusMeta.label}
@@ -312,6 +347,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                             </svg>
                         </a>
+                        ${editAction}
+                        ${requestAction}
+                        ${reviewAction}
                         <button class="icon-btn icon-btn--danger" onclick="cancelBooking(${booking.id})" title="Cancel booking">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
