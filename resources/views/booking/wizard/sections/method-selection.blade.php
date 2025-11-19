@@ -52,8 +52,10 @@
               {{-- SEI --}}
               <div class="col-12 col-lg-4 d-flex">
                 <button type="button"
-                        class="wizard-method-card w-100 text-start d-flex flex-column flex-grow-1"
-                        data-method="sei">
+                        class="wizard-method-card is-disabled w-100 text-start d-flex flex-column flex-grow-1"
+                        data-method="sei"
+                        disabled
+                        aria-disabled="true">
                   <div class="text-center mb-3">
                     <span class="wizard-method-icon d-inline-flex align-items-center justify-content-center rounded-3 mx-auto mb-3">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -70,7 +72,7 @@
                   </div>
                   <div class="wizard-method-footnote d-flex align-items-center gap-1">
                     <span aria-hidden="true">🛠️</span>
-                    <span>Perfect for events, exhibits, and custom layouts.</span>
+                    <span>Coming soon — special setups will reopen here.</span>
                   </div>
                 </button>
               </div>
@@ -78,8 +80,10 @@
               {{-- Transportation & Shuttle --}}
               <div class="col-12 col-lg-4 d-flex">
                 <button type="button"
-                        class="wizard-method-card w-100 text-start d-flex flex-column flex-grow-1"
-                        data-method="transport">
+                        class="wizard-method-card is-disabled w-100 text-start d-flex flex-column flex-grow-1"
+                        data-method="transport"
+                        disabled
+                        aria-disabled="true">
                   <div class="text-center mb-3">
                     <span class="wizard-method-icon d-inline-flex align-items-center justify-content-center rounded-3 mx-auto mb-3">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -96,21 +100,9 @@
                     </div>
                   </div>
                   <div class="wizard-method-footnote">
-                    Need to move teams or equipment? We’ll plan the trip for you.
+                    Need to move teams or equipment? Shuttle booking is paused.
                   </div>
                 </button>
               </div>
             </div>
           </section>
-          <div class="wizard-method-backwrap">
-            <button
-              type="button"
-              class="admin-back-button wizard-method-back"
-              id="wizardMethodBack"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-              </svg>
-              Back to previous page
-            </button>
-          </div>

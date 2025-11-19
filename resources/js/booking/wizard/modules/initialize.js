@@ -371,6 +371,9 @@ export const initBookingWizard = () => {
   document.querySelectorAll('.wizard-method-card').forEach(card => {
     card.addEventListener('click', () => {
       const method = card.dataset.method;
+      if (card.classList.contains('is-disabled') || card.disabled) {
+        return;
+      }
 
       if (method === 'manual') {
         showFlowPreference();
