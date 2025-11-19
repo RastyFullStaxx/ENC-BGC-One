@@ -50,9 +50,10 @@
               </div>
               <div class="small text-muted">{{ $item['purpose'] }} @if($item['time']) • {{ $item['time'] }} @endif</div>
               <div class="d-flex justify-content-between align-items-center mt-1">
-                <span class="badge bg-primary-subtle text-primary border-primary-subtle small">{{ $item['status'] }}</span>
+                <span class="{{ $item['event_class'] ?? 'badge bg-primary-subtle text-primary border-primary-subtle small' }}">{{ $item['event_label'] ?? $item['status'] }}</span>
                 <span class="text-muted small">{{ $item['created_at'] }}</span>
               </div>
+              <div class="small text-muted">Status: {{ $item['status'] }}</div>
             </div>
           @endforeach
         </div>

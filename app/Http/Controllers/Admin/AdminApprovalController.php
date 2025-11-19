@@ -130,6 +130,10 @@ class AdminApprovalController extends Controller
             ]);
 
             NotificationLog::logEvent($booking, 'change_requested_admin');
+        } elseif ($data['action'] === 'approve') {
+            NotificationLog::logEvent($booking, 'booking_approved');
+        } elseif ($data['action'] === 'reject') {
+            NotificationLog::logEvent($booking, 'booking_rejected');
         }
 
         return redirect($data['redirect'] ?? url()->previous())
