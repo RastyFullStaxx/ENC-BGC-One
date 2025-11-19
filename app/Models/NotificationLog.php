@@ -15,6 +15,8 @@ class NotificationLog extends Model
     protected $fillable = [
         'id',
         'booking_id',
+        'recipient_id',
+        'recipient_role',
         'channel',
         'event',
     ];
@@ -44,11 +46,22 @@ class NotificationLog extends Model
         return $this->belongsTo(Booking::class);
     }
 
-    public static function logEvent(Booking $booking, string $event, string $channel = 'EMAIL'): ?self
+    public static function logEvent(
+        Booking $booking,
+        string $event,
+        string $channel = 'EMAIL',
+        ?int $recipientId = null,
+        ?string $recipientRole = null
+    ): ?self
     {
         try {
+            $recipientRole = $recipientRole ?? 'user';
+            $recipientId = $recipientId ?? ($recipientRole === 'user' ? $booking->requester_id : null);
+
             return static::create([
                 'booking_id' => $booking->id,
+                'recipient_id' => $recipientId,
+                'recipient_role' => $recipientRole,
                 'channel' => $channel,
                 'event' => $event,
             ]);
@@ -61,5 +74,20 @@ class NotificationLog extends Model
 
             return null;
         }
+    }
+
+    public function scopeForRecipient($query, $user)
+    {
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->role === 'admin') {
+            return $query->where('recipient_role', 'admin');
+        }
+
+        return $query
+            ->where('recipient_role', 'user')
+            ->where('recipient_id', $user->id);
     }
 }

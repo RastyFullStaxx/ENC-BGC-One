@@ -40,9 +40,7 @@ class UserDashboardController extends Controller
         $cancelledCount   = (clone $baseQuery)->where('status', 'cancelled')->count();
 
         // Get notification count
-        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
-            $query->where('requester_id', $user->id);
-        })->count();
+        $notificationsCount = NotificationLog::forRecipient($user)->count();
 
         $recentBookings = (clone $baseQuery)
             ->latest('date')

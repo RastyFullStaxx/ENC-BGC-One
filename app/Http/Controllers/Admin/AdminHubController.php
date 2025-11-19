@@ -40,6 +40,7 @@ class AdminHubController extends Controller
             ->values();
 
         $policyUpdates = NotificationLog::with('booking')
+            ->where('recipient_role', 'admin')
             ->latest('created_at')
             ->limit(4)
             ->get()
@@ -69,8 +70,11 @@ class AdminHubController extends Controller
             })
             ->values();
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.admin-hub', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'utilization' => $utilization,
             'avgSla' => $avgSla,
             'incidentsCount' => $incidents->count(),
@@ -81,6 +85,7 @@ class AdminHubController extends Controller
             'approversOnDuty' => $staffing->count(),
             'facilitiesOnline' => $facilitiesOnline,
             'totalFacilities' => $totalFacilities,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 

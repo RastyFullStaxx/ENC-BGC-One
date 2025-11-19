@@ -22,11 +22,8 @@ class BookingController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
-        // Get notification count
-        $notificationsCount = NotificationLog::whereHas('booking', function ($query) use ($user) {
-            $query->where('requester_id', $user->id);
-        })->count();
+
+        $notificationsCount = NotificationLog::forRecipient($user)->count();
 
         return view('booking.wizard', [
             'notificationsCount' => $notificationsCount,
@@ -339,6 +336,7 @@ class BookingController extends Controller
             }
 
             NotificationLog::logEvent($booking, 'booking_created');
+            NotificationLog::logEvent($booking, 'booking_submitted', 'EMAIL', null, 'admin');
 
             DB::commit();
 
@@ -510,6 +508,7 @@ class BookingController extends Controller
         $booking->save();
 
         NotificationLog::logEvent($booking, 'booking_cancelled');
+        NotificationLog::logEvent($booking, 'booking_cancelled_user', 'EMAIL', null, 'admin');
 
         return response()->json([
             'success' => true,
@@ -530,9 +529,8 @@ class BookingController extends Controller
         }
         
         $notifications = NotificationLog::with(['booking.facility'])
-            ->whereHas('booking', function ($query) use ($userId) {
-                $query->where('requester_id', $userId);
-            })
+            ->where('recipient_role', 'user')
+            ->where('recipient_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()

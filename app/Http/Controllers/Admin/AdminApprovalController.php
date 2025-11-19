@@ -54,14 +54,18 @@ class AdminApprovalController extends Controller
             'openIncidents' => Booking::where('status', 'rejected')->count(),
         ];
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.approvals.queue', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'bookings' => $bookings,
             'queueStats' => $queueStats,
             'latestPending' => $latestPending,
             'statusFilter' => $statusFilter,
             'availableStatuses' => $statuses,
             'heroStats' => $heroStats,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 
@@ -69,11 +73,15 @@ class AdminApprovalController extends Controller
     {
         $booking->load(['facility', 'requester.department', 'details', 'approval.approver']);
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.approvals.show', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'booking' => $booking,
             'detail' => $booking->details,
             'approvalRecord' => $booking->approval,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 

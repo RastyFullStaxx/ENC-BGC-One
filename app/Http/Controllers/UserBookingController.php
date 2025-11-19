@@ -273,6 +273,8 @@ class UserBookingController extends Controller
                 'resolution_notes' => 'Requester provided updated booking details.',
             ]);
 
+        NotificationLog::logEvent($booking, 'booking_updated_user', 'EMAIL', null, 'admin');
+
         return redirect()->route('user.booking.show', $booking)
             ->with('statusMessage', 'Booking updated successfully.');
     }
@@ -351,6 +353,8 @@ class UserBookingController extends Controller
             'type' => $data['type'] ?? 'adjustment',
             'notes' => $data['notes'],
         ]);
+
+        NotificationLog::logEvent($booking, 'change_requested_user', 'EMAIL', null, 'admin');
 
         $booking->status = 'pending';
         $booking->save();
@@ -487,9 +491,7 @@ class UserBookingController extends Controller
             return 0;
         }
 
-        return NotificationLog::whereHas('booking', function ($query) use ($user) {
-            $query->where('requester_id', $user->id);
-        })->count();
+        return NotificationLog::forRecipient($user)->count();
     }
 
     private function formatTimeRange(Booking $booking): string

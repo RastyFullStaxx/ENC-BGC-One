@@ -35,7 +35,7 @@ class NotificationBell extends Component
                 'booking.facility',
                 'booking.details',
             ])
-            ->whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
+            ->forRecipient($user)
             ->latest('created_at')
             ->limit(6)
             ->get()
@@ -58,7 +58,7 @@ class NotificationBell extends Component
             });
 
         // Count only unread notifications
-        $count = NotificationLog::whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
+        $count = NotificationLog::forRecipient($user)
             ->whereNull('seen_at')
             ->count();
 
@@ -84,7 +84,7 @@ class NotificationBell extends Component
         if (!$user) return;
 
         // Update all unseen notifications to set seen_at
-        NotificationLog::whereHas('booking', fn($q) => $q->where('requester_id', $user->id))
+        NotificationLog::forRecipient($user)
             ->whereNull('seen_at')
             ->update(['seen_at' => now()]);
 
@@ -103,11 +103,14 @@ class NotificationBell extends Component
     {
         $map = [
             'booking_created' => ['label' => 'Booking submitted', 'class' => 'badge bg-primary text-white small'],
+            'booking_submitted' => ['label' => 'New booking', 'class' => 'badge bg-primary text-white small'],
             'booking_cancelled' => ['label' => 'Booking cancelled', 'class' => 'badge bg-secondary text-white small'],
+            'booking_cancelled_user' => ['label' => 'Requester cancelled', 'class' => 'badge bg-secondary text-white small'],
             'booking_approved' => ['label' => 'Booking approved', 'class' => 'badge bg-success text-white small'],
             'booking_rejected' => ['label' => 'Booking rejected', 'class' => 'badge bg-danger text-white small'],
             'change_requested_admin' => ['label' => 'Action required', 'class' => 'badge bg-warning text-dark small'],
             'change_requested_user' => ['label' => 'Change submitted', 'class' => 'badge bg-info text-dark small'],
+            'booking_updated_user' => ['label' => 'Booking updated', 'class' => 'badge bg-info text-dark small'],
         ];
 
         if (isset($map[$event])) {

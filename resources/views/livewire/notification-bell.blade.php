@@ -65,12 +65,19 @@
 @auth
 <script>
   document.addEventListener('livewire:initialized', () => {
-    const userId = {{ auth()->id() }};
+    const userId = @json(auth()->id());
+    const userRole = @json(auth()->user()->role ?? 'staff');
 
-    if (window.Echo && userId) {
+    if (!window.Echo) return;
+
+    if (userRole === 'admin') {
+      Echo.private('admins')
+        .listen('.notification.created', () => {
+          Livewire.dispatch('refreshNotifications');
+        });
+    } else if (userId) {
       Echo.private(`users.${userId}`)
         .listen('.notification.created', () => {
-          // This triggers $refresh → updates badge + list instantly
           Livewire.dispatch('refreshNotifications');
         });
     }
