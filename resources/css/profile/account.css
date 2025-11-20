@@ -95,6 +95,30 @@
   font-size: 0.8rem;
 }
 
+.account-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 12px;
+  padding: 0.4rem 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.account-pill-staff {
+  background: #15803d;
+  color: #fff;
+}
+
+.account-pill-admin {
+  background: #7f1d1d;
+  color: #fff;
+}
+
+.account-pill-status {
+  background: #e5e7eb;
+  color: #111827;
+}
+
 .account-section + .account-section {
   border-top: 1px solid var(--account-border);
   margin-top: 1.5rem;

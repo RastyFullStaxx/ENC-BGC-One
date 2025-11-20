@@ -116,7 +116,7 @@
                     <div class="fw-semibold">Role & access</div>
                     <div class="small text-muted">What you can do in ONE Services</div>
                   </div>
-                  <span class="badge text-bg-light text-primary">{{ $roleLabel }}</span>
+                  <span class="account-pill {{ $isAdmin ? 'account-pill-admin' : 'account-pill-staff' }}">{{ $roleLabel }}</span>
                 </li>
                 <li class="d-flex justify-content-between flex-wrap gap-2">
                   <div>
@@ -130,7 +130,7 @@
                     <div class="fw-semibold">Status</div>
                     <div class="small text-muted">Active / suspended accounts</div>
                   </div>
-                  <span class="badge text-bg-light">{{ $status }}</span>
+                  <span class="account-pill account-pill-status">{{ $status }}</span>
                 </li>
                 <li class="d-flex justify-content-between flex-wrap gap-2">
                   <div>
