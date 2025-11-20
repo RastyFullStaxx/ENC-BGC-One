@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 
@@ -109,8 +110,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 // Temporary preview route for Admin Facilities Management
 Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
 
-// Temporary preview route for Admin Analytics
-Route::view('/admin/analytics', 'admin.analytics')->name('admin.analytics');
+Route::get('/admin/analytics', [AdminAnalyticsController::class, 'index'])->name('admin.analytics');
 
 // Temporary preview route for Admin Policies
 Route::view('/admin/policies', 'admin.policies')->name('admin.policies');

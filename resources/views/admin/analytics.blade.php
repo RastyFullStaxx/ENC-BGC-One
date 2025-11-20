@@ -77,8 +77,9 @@
     $noShowPairs = $pairs($noShowReasons['labels'], $noShowReasons['values'])->sortByDesc('value')->values();
     $noShowTop = $noShowPairs->first() ?? ['name' => 'N/A', 'value' => 0];
 
-    $recurrenceFirst = $recurrenceStats['values'][0] ?? 0;
-    $recurrenceLast = last($recurrenceStats['values']) ?? 0;
+    $recurrenceValues = collect($recurrenceStats['values']);
+    $recurrenceFirst = $recurrenceValues->first() ?? 0;
+    $recurrenceLast = $recurrenceValues->last() ?? 0;
     $recurrenceDeltaPct = $recurrenceFirst ? round((($recurrenceLast - $recurrenceFirst) / $recurrenceFirst) * 100) : 0;
 
     $insights = [
