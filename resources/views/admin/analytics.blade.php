@@ -64,11 +64,13 @@
     $peakSecond = $peakPairs->get(1) ?? ['name' => 'N/A', 'value' => 0];
     $peakLow = $peakPairs->sortBy('value')->first() ?? ['name' => 'N/A', 'value' => 0];
 
-    $deptPairs = $pairs($departmentShare['labels'], $departmentShare['values'])->sortByDesc('value')->values();
+    $deptValues = collect($departmentShare['values']);
+    $deptPairs = $pairs($departmentShare['labels'], $deptValues)->sortByDesc('value')->values();
     $deptTop = $deptPairs->first() ?? ['name' => 'N/A', 'value' => 0];
     $deptLow = $deptPairs->last() ?? ['name' => 'N/A', 'value' => 0];
 
-    $statusPairs = $pairs($statusBreakdown['labels'], $statusBreakdown['values']);
+    $statusValues = collect($statusBreakdown['values']);
+    $statusPairs = $pairs($statusBreakdown['labels'], $statusValues);
     $statusTotal = max($statusPairs->sum('value'), 1);
     $statusCancelled = data_get($statusPairs->firstWhere('name', 'Cancelled'), 'value', 0);
     $statusNoShow = data_get($statusPairs->firstWhere('name', 'No-show'), 'value', 0);
@@ -82,38 +84,70 @@
     $recurrenceLast = $recurrenceValues->last() ?? 0;
     $recurrenceDeltaPct = $recurrenceFirst ? round((($recurrenceLast - $recurrenceFirst) / $recurrenceFirst) * 100) : 0;
 
-    $insights = [
-        'utilization' => [
-            "<strong>{$utilTop['name']}</strong> leads at {$utilTop['value']}% utilization — keep current scheduling.",
-            "<strong>{$utilBottomText}</strong> trail utilization; reroute recurring bookings here to balance load.",
-            "<strong>Action:</strong> apply soft holds to underused rooms during mid-week peaks.",
-        ],
-        'peakHours' => [
-            "Highest load at <strong>{$peakTop['name']}:00</strong> ({$peakTop['value']} bookings); watch for collisions.",
-            "Secondary peak at <strong>{$peakSecond['name']}:00</strong>; batch approvals to avoid stacking.",
-            "Off-peak near <strong>{$peakLow['name']}:00</strong> — best window for maintenance or rebooked slots.",
-        ],
-        'department' => [
-            "<strong>{$deptTop['name']}</strong> drives the most bookings — consider nudging them to alternate buildings.",
-            "<strong>{$deptLow['name']}</strong> holds the smallest share; opportunities to free inventory there.",
-            "<strong>Action:</strong> share weekly slot inventory with heavy users to reduce ad-hoc conflicts.",
-        ],
-        'status' => [
-            "Combined <strong>cancelled + no-show</strong> at {$statusCancelledPct}% of requests — track reductions weekly.",
-            "<strong>Pending</strong> volume stays low; approvals are flowing as expected.",
-            "<strong>Action:</strong> auto-email teams with multiple declines to rebook off-peak times.",
-        ],
-        'noShow' => [
-            "<strong>{$noShowTop['name']}</strong> is the top no-show driver — target coaching with approvers.",
-            "<strong>Action:</strong> auto-release slots 15 minutes post start if no check-in is recorded.",
-            "<strong>Action:</strong> require reason codes for same-day cancellations to capture patterns.",
-        ],
-        'recurrence' => [
-            "Recurring bookings are up <strong>{$recurrenceDeltaPct}%</strong> vs. week 1; growth looks healthy.",
-            "<strong>Action:</strong> lock recurring series into underutilized rooms first.",
-            "<strong>Action:</strong> flag weeks with >20% jump so facilities can pre-stage equipment.",
-        ],
-    ];
+    $tone = function ($value, $warn, $crit) {
+        if ($value >= $crit) return 'critical';
+        if ($value >= $warn) return 'watch';
+        return 'healthy';
+    };
+
+    $insights = [];
+
+    // Utilization insights
+    $utilLow = $utilPairs->sortBy('value')->first() ?? ['name' => 'N/A', 'value' => 0];
+    $utilSpread = $utilTop['value'] - $utilLow['value'];
+    $underUtilCount = $utilPairs->where('value', '<', 70)->count();
+    $utilTone = $tone($utilLow['value'] < 60 ? 2 : ($utilSpread > 25 ? 1 : 0), 1, 2);
+    $utilLabel = ucfirst($utilTone);
+    $insights['utilization'][] = "<strong>{$utilLabel}:</strong> {$utilTop['name']} leads at {$utilTop['value']}% utilization — keep current scheduling.";
+    $insights['utilization'][] = $underUtilCount > 0
+        ? "{$underUtilCount} room(s) below 70% (e.g., <strong>{$utilLow['name']}</strong>) — reroute recurring bookings here."
+        : "All tracked rooms are above 70% — maintain current allocation.";
+    $insights['utilization'][] = $utilSpread > 20
+        ? "<strong>Action:</strong> apply soft holds to low performers and steer approvals during mid-week peaks."
+        : "<strong>Action:</strong> keep monitoring — utilization spread is balanced.";
+
+    // Peak hours insights
+    $peakSpread = $peakTop['value'] - $peakLow['value'];
+    $insights['peakHours'][] = "Heaviest load at <strong>{$peakTop['name']}:00</strong> ({$peakTop['value']} bookings); collisions likely.";
+    $insights['peakHours'][] = "Next spike at <strong>{$peakSecond['name']}:00</strong>; batch approvals or suggest alternatives here.";
+    $insights['peakHours'][] = $peakSpread > 30
+        ? "Off-peak near <strong>{$peakLow['name']}:00</strong> — best for maintenance or rebooked slots."
+        : "Demand is fairly even — still schedule maintenance after-hours where possible.";
+
+    // Department insights
+    $deptTotal = max($deptValues->sum() ?? 0, 1);
+    $deptTopPct = round(($deptTop['value'] / $deptTotal) * 100);
+    $deptLowPct = round(($deptLow['value'] / $deptTotal) * 100);
+    $insights['department'][] = "<strong>{$deptTop['name']}</strong> owns {$deptTopPct}% of bookings — balance them with Building B/A overflow.";
+    $insights['department'][] = "<strong>{$deptLow['name']}</strong> sits at {$deptLowPct}% — consider freeing their recurring slots for others.";
+    $insights['department'][] = "<strong>Action:</strong> send weekly slot inventory to heavy users to lower ad-hoc conflicts.";
+
+    // Status insights
+    $pendingCount = data_get($statusPairs->firstWhere('name', 'Pending'), 'value', 0);
+    $approvedCount = data_get($statusPairs->firstWhere('name', 'Approved'), 'value', 0);
+    $pendingPct = $statusTotal ? round(($pendingCount / $statusTotal) * 100) : 0;
+    $approvedPct = $statusTotal ? round(($approvedCount / $statusTotal) * 100) : 0;
+    $statusTone = $tone($statusCancelledPct, 10, 18);
+    $statusLabel = ucfirst($statusTone);
+    $insights['status'][] = "<strong>{$statusLabel}:</strong> approvals at {$approvedPct}%; pending sits at {$pendingPct}%.";
+    $insights['status'][] = "Cancelled + no-show at <strong>{$statusCancelledPct}%</strong> — aim to drive this under 10%.";
+    $insights['status'][] = $pendingPct > 15
+        ? "<strong>Action:</strong> clear the pending queue (>$pendingPct%) before peak hours."
+        : "<strong>Action:</strong> auto-notify teams with multiple declines to rebook off-peak times.";
+
+    // No-show insights
+    $noShowSecond = $noShowPairs->get(1) ?? ['name' => 'Next cause', 'value' => 0];
+    $insights['noShow'][] = "<strong>{$noShowTop['name']}</strong> leads no-show/cancel drivers ({$noShowTop['value']} cases).";
+    $insights['noShow'][] = "Next driver: <strong>{$noShowSecond['name']}</strong> ({$noShowSecond['value']}); target both with nudges.";
+    $insights['noShow'][] = "<strong>Action:</strong> auto-release slots 15 minutes post start and require reason codes for same-day changes.";
+
+    // Recurrence insights
+    $trend = $recurrenceDeltaPct > 0 ? 'up' : ($recurrenceDeltaPct < 0 ? 'down' : 'flat');
+    $trendTone = $tone(abs($recurrenceDeltaPct), 10, 25);
+    $trendLabel = ucfirst($trendTone);
+    $insights['recurrence'][] = "<strong>{$trendLabel}:</strong> recurring bookings are <strong>{$trend}</strong> {$recurrenceDeltaPct}% vs. week 1.";
+    $insights['recurrence'][] = "<strong>Action:</strong> lock recurring series into underutilized rooms first.";
+    $insights['recurrence'][] = "<strong>Action:</strong> flag weeks with >20% jump so facilities can pre-stage equipment.";
 @endphp
 
 <section class="admin-analytics-page">
