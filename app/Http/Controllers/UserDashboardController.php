@@ -20,6 +20,8 @@ class UserDashboardController extends Controller
         $baseQuery = Booking::with(['facility.building', 'details', 'requester'])
             ->where('requester_id', $user->id);
 
+        $calendarScope = request('calendar_scope') === 'global' ? 'global' : 'mine';
+
         $monthParam = request('month');
         try {
             $calendarMonth = $monthParam
@@ -33,6 +35,17 @@ class UserDashboardController extends Controller
         $calendarEnd = $calendarMonth->copy()->endOfMonth();
         $prevMonth = $calendarMonth->copy()->subMonth()->format('Y-m-01');
         $nextMonth = $calendarMonth->copy()->addMonth()->format('Y-m-01');
+        $now = Carbon::now('Asia/Manila');
+
+        $startWeekday = ($calendarStart->dayOfWeekIso - 1);
+        $calendarDays = [];
+        for ($i = 0; $i < $startWeekday; $i++) {
+            $calendarDays[] = null;
+        }
+        for ($d = 1; $d <= $calendarMonth->daysInMonth; $d++) {
+            $calendarDays[] = $calendarMonth->copy()->day($d);
+        }
+        $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
         $totalBookings    = (clone $baseQuery)->count();
         $pendingCount     = (clone $baseQuery)->where('status', 'pending')->count();
@@ -50,12 +63,17 @@ class UserDashboardController extends Controller
             ->take(5)
             ->get();
 
-        $approvedCalendarBookings = (clone $baseQuery)
+        $calendarQuery = Booking::with(['facility.building', 'details', 'requester'])
             ->whereBetween('date', [$calendarStart->toDateString(), $calendarEnd->toDateString()])
             ->whereIn('status', ['approved', 'confirmed'])
             ->orderBy('date')
-            ->orderBy('start_at')
-            ->get();
+            ->orderBy('start_at');
+
+        if ($calendarScope === 'mine') {
+            $calendarQuery->where('requester_id', $user->id);
+        }
+
+        $approvedCalendarBookings = $calendarQuery->get();
 
         $dashboardBookings = [
             'title' => 'My Bookings',
@@ -70,7 +88,7 @@ class UserDashboardController extends Controller
             'bookings' => $recentBookings->map(fn ($booking) => $this->formatSnapshotBooking($booking))->all(),
         ];
 
-        $calendarEvents = $approvedCalendarBookings->map(function (Booking $booking) {
+        $calendarEvents = $approvedCalendarBookings->map(function (Booking $booking) use ($calendarScope) {
             return [
                 'id' => $booking->id,
                 'day' => Carbon::parse($booking->date, 'Asia/Manila')->day,
@@ -80,6 +98,7 @@ class UserDashboardController extends Controller
                 'date_display' => Carbon::parse($booking->date, 'Asia/Manila')->format('D, M j, Y'),
                 'time' => $this->formatTimeRange($booking),
                 'requester' => $booking->requester->name ?? 'You',
+                'scope' => $calendarScope,
             ];
         })->groupBy('day');
 
@@ -114,6 +133,25 @@ class UserDashboardController extends Controller
             ['title' => 'Booking SLA update', 'date' => Carbon::now('Asia/Manila')->subDays(2)->format('M j, Y'), 'summary' => 'Approvals now target under 45 minutes during business hours.'],
         ];
 
+        if (request()->ajax() && request()->boolean('calendar_only')) {
+            $calendarHtml = view('partials.dashboard-calendar', [
+                'calendarDays'    => $calendarDays,
+                'weekdays'        => $weekdays,
+                'calendarEvents'  => $calendarEvents,
+                'calendarMonth'   => $calendarMonth,
+                'prevMonth'       => $prevMonth,
+                'nextMonth'       => $nextMonth,
+                'calendarScope'   => $calendarScope,
+                'now'             => $now,
+            ])->render();
+
+            return response()->json([
+                'calendarHtml' => $calendarHtml,
+                'calendarScope' => $calendarScope,
+                'month' => $calendarMonth->format('Y-m-01'),
+            ]);
+        }
+
         return view('user.dashboard', [
             'dashboardBookings'   => $dashboardBookings,
             'bookingStats'        => $bookingStats,
@@ -124,6 +162,10 @@ class UserDashboardController extends Controller
             'favoriteRooms'       => $favoriteRooms,
             'announcements'       => $announcements,
             'notificationsCount' => $notificationsCount,
+            'calendarScope'       => $calendarScope,
+            'calendarDays'        => $calendarDays,
+            'weekdays'            => $weekdays,
+            'now'                 => $now,
         ]);
     }
 

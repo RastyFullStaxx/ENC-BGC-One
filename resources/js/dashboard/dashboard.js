@@ -77,49 +77,42 @@ document.addEventListener('DOMContentLoaded', function() {
         item.style.cursor = 'pointer';
     });
 
-    // Calendar event detail modal
+    // Calendar event detail modal + async calendar reload
     const eventModal = document.getElementById('calendarEventModal');
-    if (eventModal) {
+    const body = document.body;
+
+    const closeEventModal = () => {
+        if (!eventModal) return;
+        eventModal.setAttribute('hidden', '');
+        body.style.removeProperty('overflow');
+    };
+
+    const openEventModal = (payload = {}) => {
+        if (!eventModal) return;
         const eventDate = document.getElementById('calendarEventDate');
         const eventTitle = document.getElementById('calendarEventTitle');
         const eventFacility = document.getElementById('calendarEventFacility');
         const eventRequester = document.getElementById('calendarEventRequester');
         const eventTime = document.getElementById('calendarEventTime');
-        const body = document.body;
 
-        const closeEventModal = () => {
-            eventModal.setAttribute('hidden', '');
-            body.style.removeProperty('overflow');
-        };
+        if (eventDate) eventDate.textContent = payload.date || 'Date TBA';
+        if (eventTitle) eventTitle.textContent = payload.title || 'Booking details';
+        if (eventFacility) eventFacility.textContent = payload.facility || 'Facility';
+        if (eventRequester) eventRequester.textContent = payload.requester || 'Requester';
+        const timeText = payload.time && payload.time.trim() ? payload.time : 'Timeframe TBA';
+        if (eventTime) eventTime.textContent = timeText;
 
-        const openEventModal = (payload = {}) => {
-            if (eventDate) eventDate.textContent = payload.date || 'Date TBA';
-            if (eventTitle) eventTitle.textContent = payload.title || 'Booking details';
-            if (eventFacility) eventFacility.textContent = payload.facility || 'Facility';
-            if (eventRequester) eventRequester.textContent = payload.requester || 'Requester';
-            const timeText = payload.time && payload.time.trim() ? payload.time : 'Timeframe TBA';
-            if (eventTime) eventTime.textContent = timeText;
+        eventModal.removeAttribute('hidden');
+        body.style.overflow = 'hidden';
 
-            eventModal.removeAttribute('hidden');
-            body.style.overflow = 'hidden';
+        const closeBtn = eventModal.querySelector('[data-dismiss="calendar-event"]');
+        if (closeBtn) {
+            closeBtn.focus({ preventScroll: true });
+        }
+    };
 
-            const closeBtn = eventModal.querySelector('[data-dismiss=\"calendar-event\"]');
-            if (closeBtn) {
-                closeBtn.focus({ preventScroll: true });
-            }
-        };
-
-        const dismissElements = eventModal.querySelectorAll('[data-dismiss=\"calendar-event\"]');
-        dismissElements.forEach(el => {
-            el.addEventListener('click', closeEventModal);
-        });
-
-        document.addEventListener('keyup', (event) => {
-            if (event.key === 'Escape' && !eventModal.hasAttribute('hidden')) {
-                closeEventModal();
-            }
-        });
-
+    const bindCalendarPills = () => {
+        if (!eventModal) return;
         const calendarPills = document.querySelectorAll('.calendar-event-pill');
         calendarPills.forEach(pill => {
             const openFromPill = () => {
@@ -140,5 +133,88 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+    };
+
+    if (eventModal) {
+        const dismissElements = eventModal.querySelectorAll('[data-dismiss="calendar-event"]');
+        dismissElements.forEach(el => {
+            el.addEventListener('click', closeEventModal);
+        });
+
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Escape' && !eventModal.hasAttribute('hidden')) {
+                closeEventModal();
+            }
+        });
     }
+
+    const calendarContainer = document.getElementById('dashboardCalendar');
+    const setCalendarLoading = (isLoading) => {
+        if (!calendarContainer) return;
+        calendarContainer.classList.toggle('is-loading', isLoading);
+        const existingSpinner = calendarContainer.querySelector('.calendar-loading-overlay');
+        if (isLoading) {
+            if (!existingSpinner) {
+                const overlay = document.createElement('div');
+                overlay.className = 'calendar-loading-overlay';
+                overlay.innerHTML = `
+                    <div class="calendar-loading-spinner">
+                        <span></span><span></span><span></span>
+                    </div>
+                    <p class="calendar-loading-label">Refreshing calendar…</p>
+                `;
+                calendarContainer.appendChild(overlay);
+            }
+        } else if (existingSpinner) {
+            existingSpinner.remove();
+        }
+    };
+
+    const loadCalendar = (url) => {
+        if (!calendarContainer) {
+            window.location.href = url;
+            return;
+        }
+
+        setCalendarLoading(true);
+        const requestUrl = new URL(url, window.location.origin);
+        requestUrl.searchParams.set('calendar_only', '1');
+
+        fetch(requestUrl.toString(), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        }).then(response => {
+            if (!response.ok) throw new Error('Calendar fetch failed');
+            return response.json();
+        }).then(data => {
+            if (!data.calendarHtml) throw new Error('No calendar HTML returned');
+            calendarContainer.innerHTML = data.calendarHtml;
+            attachCalendarInteractions();
+            window.history.replaceState({}, '', url);
+            setCalendarLoading(false);
+        }).catch(() => {
+            setCalendarLoading(false);
+            window.location.href = url;
+        });
+    };
+
+    const attachCalendarInteractions = () => {
+        if (!calendarContainer) return;
+        const navLinks = calendarContainer.querySelectorAll('.wizard-calendar-nav-btn, .wizard-calendar-scope__btn');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (evt) => {
+                evt.preventDefault();
+                const targetUrl = link.getAttribute('href');
+                if (!targetUrl) return;
+                loadCalendar(targetUrl);
+            });
+        });
+
+        bindCalendarPills();
+    };
+
+    attachCalendarInteractions();
+    bindCalendarPills();
 });

@@ -1090,6 +1090,65 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.wizard-calendar-scope {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 0.75rem;
+}
+
+.wizard-calendar-scope__label {
+    font-weight: 700;
+    color: #425066;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.wizard-calendar-scope__toggle {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid rgba(0, 24, 64, 0.12);
+    border-radius: 10px;
+    padding: 4px;
+    box-shadow: 0 14px 28px -18px rgba(0, 24, 64, 0.25);
+    gap: 4px;
+}
+
+.wizard-calendar-scope__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    color: #425066;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.16s ease;
+}
+
+.wizard-calendar-scope__btn:hover {
+    border-color: rgba(21, 93, 252, 0.3);
+    color: #001840;
+    background: rgba(21, 93, 252, 0.06);
+}
+
+.wizard-calendar-scope__btn.is-active {
+    background: linear-gradient(135deg, #155dfc, #4c7dff);
+    color: #fff;
+    border-color: #155dfc;
+    box-shadow: 0 12px 24px -12px rgba(21, 93, 252, 0.45);
+}
+
+.wizard-calendar-scope__btn:focus-visible {
+    outline: 2px solid #155dfc;
+    outline-offset: 2px;
+}
+
 .wizard-calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -1163,6 +1222,36 @@ body {
 .calendar-event-pill:focus-visible {
     outline: 2px solid #155dfc;
     outline-offset: 2px;
+}
+
+.calendar-event-pill.variant-mint {
+    background: #e6fbf1;
+    border-color: rgba(24, 121, 78, 0.28);
+}
+
+.calendar-event-pill.variant-sand {
+    background: #fff6e6;
+    border-color: rgba(180, 122, 16, 0.28);
+}
+
+.calendar-event-pill.variant-lilac {
+    background: #f3efff;
+    border-color: rgba(88, 73, 146, 0.28);
+}
+
+.calendar-event-pill.variant-sky {
+    background: #e9f4ff;
+    border-color: rgba(27, 104, 174, 0.28);
+}
+
+.calendar-event-pill.variant-rose {
+    background: #fff0f3;
+    border-color: rgba(176, 56, 82, 0.28);
+}
+
+.calendar-event-pill.variant-lemon {
+    background: #fbffe6;
+    border-color: rgba(146, 147, 21, 0.28);
 }
 
 /* Calendar event modal */
@@ -1470,4 +1559,57 @@ body {
     .enc-my-bookings-card__tab {
         flex: 1 1 100%;
     }
+}
+#dashboardCalendar {
+    position: relative;
+}
+
+#dashboardCalendar.is-loading .wizard-calendar {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.calendar-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(232, 236, 245, 0.82);
+    backdrop-filter: blur(2px);
+    z-index: 5;
+    border-radius: 16px;
+}
+
+.calendar-loading-spinner {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-loading-spinner span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #155dfc, #4c7dff);
+    display: inline-block;
+    animation: calendarPulse 0.9s ease-in-out infinite;
+}
+
+.calendar-loading-spinner span:nth-child(2) { animation-delay: 0.12s; }
+.calendar-loading-spinner span:nth-child(3) { animation-delay: 0.24s; }
+
+.calendar-loading-label {
+    margin: 0;
+    font-weight: 700;
+    color: #001840;
+    letter-spacing: 0.01em;
+}
+
+@keyframes calendarPulse {
+    0%, 80%, 100% { transform: scale(0.85); opacity: 0.65; }
+    40% { transform: scale(1.12); opacity: 1; }
 }

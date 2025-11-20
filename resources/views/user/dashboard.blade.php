@@ -110,73 +110,17 @@
         <div class="content-grid">
             <div class="d-flex flex-column gap-3">
                 {{-- Global calendar --}}
-                <div class="card p-0 overflow-hidden">
-                    @php
-                        $now = \Carbon\Carbon::now('Asia/Manila');
-                        $startOfMonth = $now->copy()->startOfMonth();
-                        $daysInMonth = $now->daysInMonth;
-                        $startWeekday = ($startOfMonth->dayOfWeekIso - 1); // 0-based
-                        $calendarDays = [];
-                        for ($i = 0; $i < $startWeekday; $i++) { $calendarDays[] = null; }
-                        for ($d = 1; $d <= $daysInMonth; $d++) { $calendarDays[] = $calendarMonth->copy()->day($d); }
-                        $weekdays = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-                    @endphp
-                    <div class="enc-my-bookings-card__header">
-                        <div class="enc-my-bookings-card__heading">
-                            <p class="enc-my-bookings-card__eyebrow mb-1">Global calendar</p>
-                            <h3 class="enc-my-bookings-card__title mb-0">All rooms in one view</h3>
-                            <p class="enc-my-bookings-card__subtitle mb-0">Quick preview of {{ $now->format('F Y') }}. Open the full calendar for details.</p>
-                        </div>
-                        
-                    </div>
-                    <div class="p-3 p-md-4">
-                        <div class="wizard-calendar">
-                            <div class="wizard-calendar-header">
-                                <a class="wizard-calendar-nav-btn" href="{{ route('user.dashboard', ['month' => $prevMonth]) }}" aria-label="Previous month">‹</a>
-                                <div class="wizard-calendar-month text-center">{{ $calendarMonth->format('F Y') }}</div>
-                                <a class="wizard-calendar-nav-btn" href="{{ route('user.dashboard', ['month' => $nextMonth]) }}" aria-label="Next month">›</a>
-                            </div>
-                            <div class="wizard-calendar-daynames">
-                                @foreach($weekdays as $day)
-                                    <span>{{ $day }}</span>
-                                @endforeach
-                            </div>
-                            <div class="wizard-calendar-grid">
-                                @foreach($calendarDays as $day)
-                                    @if(!$day)
-                                        <button class="wizard-calendar-day is-muted" type="button" disabled></button>
-                                    @else
-                                        @php $dayEvents = ($calendarEvents[$day->day] ?? collect()); @endphp
-                                        <button class="wizard-calendar-day {{ $day->isToday() ? 'is-today' : '' }}" type="button">
-                                            <span class="wizard-calendar-daynumber">{{ $day->day }}</span>
-                                            @foreach($dayEvents as $ev)
-                                                <div
-                                                    class="calendar-event-pill"
-                                                    title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}"
-                                                    data-facility="{{ $ev['facility'] }}"
-                                                    data-title="{{ $ev['title'] }}"
-                                                    data-date="{{ $ev['date_display'] ?? '' }}"
-                                                    data-time="{{ $ev['time'] ?? '' }}"
-                                                    data-requester="{{ $ev['requester'] ?? '' }}"
-                                                    tabindex="0"
-                                                    role="button"
-                                                    aria-label="{{ $ev['title'] ?? 'Booking' }} in {{ $ev['facility'] }}"
-                                                >
-                                                    <strong>{{ $ev['facility'] }}</strong>
-                                                    @if(!empty($ev['title']))
-                                                        <span class="d-block small text-muted">{{ $ev['title'] }}</span>
-                                                    @endif
-                                                    @if(!empty($ev['time']))
-                                                        <span class="d-block small text-muted">{{ $ev['time'] }}</span>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        </button>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
+                <div id="dashboardCalendar">
+                    @include('partials.dashboard-calendar', [
+                        'calendarDays' => $calendarDays,
+                        'weekdays' => $weekdays,
+                        'calendarEvents' => $calendarEvents,
+                        'calendarMonth' => $calendarMonth,
+                        'prevMonth' => $prevMonth,
+                        'nextMonth' => $nextMonth,
+                        'calendarScope' => $calendarScope,
+                        'now' => $now ?? \Carbon\Carbon::now('Asia/Manila'),
+                    ])
                 </div>
 
                 <div id="calendarEventModal" class="calendar-event-modal" hidden>
