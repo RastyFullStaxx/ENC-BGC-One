@@ -130,23 +130,26 @@
                 <h1>Analytics & Reports</h1>
                 <p>Insights on facility usage, bookings, and peak demand.</p>
             </div>
-            <div class="analytics-actions">
-                <input type="date" class="analytics-btn" value="{{ now()->subDays(30)->format('Y-m-d') }}">
-                <input type="date" class="analytics-btn" value="{{ now()->format('Y-m-d') }}">
-                <button class="analytics-btn analytics-btn-primary" id="downloadCsvBtn">
+            <form method="GET" action="{{ route('admin.analytics') }}" class="analytics-actions" id="dateRangeForm">
+                <input type="date" name="start_date" class="analytics-btn" value="{{ $startDate->format('Y-m-d') }}">
+                <input type="date" name="end_date" class="analytics-btn" value="{{ $endDate->format('Y-m-d') }}">
+                <button type="submit" class="analytics-btn analytics-btn-primary">
+                    Apply range
+                </button>
+                <button type="button" class="analytics-btn" data-export="csv">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                     </svg>
                     Download CSV
                 </button>
-                <button class="analytics-btn">
+                <button type="button" class="analytics-btn" data-export="pdf">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M5 4h14v16H5z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M8 4v3h8V4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                     </svg>
-                    Download PDF
+                    Download PDF/Print
                 </button>
-            </div>
+            </form>
         </div>
 
         <div class="analytics-surface analytics-guide">
@@ -436,9 +439,9 @@
         <div class="analytics-surface">
             <h3>Reports & exports</h3>
             <div class="analytics-downloads">
-                <button class="analytics-ghost-btn">Download CSV</button>
-                <button class="analytics-ghost-btn">Download PDF</button>
-                <button class="analytics-ghost-btn">Export charts</button>
+                <button class="analytics-ghost-btn" data-export="csv">Download CSV</button>
+                <button class="analytics-ghost-btn" data-export="pdf">Download PDF/Print</button>
+                <button class="analytics-ghost-btn" data-export="charts">Export charts (JSON)</button>
             </div>
         </div>
     </div>
@@ -456,6 +459,29 @@
             noShow: @json($noShowReasons),
             recurrence: @json($recurrenceStats),
         };
+
+        const exportRoutes = {
+            csv: '{{ route('admin.analytics.export.csv') }}',
+            pdf: '{{ route('admin.analytics.export.pdf') }}',
+            charts: '{{ route('admin.analytics.export.charts') }}',
+        };
+
+        const buildRangeParams = () => {
+            const form = document.getElementById('dateRangeForm');
+            const start = form?.querySelector('input[name="start_date"]')?.value || '';
+            const end = form?.querySelector('input[name="end_date"]')?.value || '';
+            return new URLSearchParams({ start_date: start, end_date: end }).toString();
+        };
+
+        document.querySelectorAll('[data-export]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.export;
+                const base = exportRoutes[type];
+                if (!base) return;
+                const query = buildRangeParams();
+                window.location.href = `${base}?${query}`;
+            });
+        });
 
         const createChart = (id, config) => {
             const ctx = document.getElementById(id);

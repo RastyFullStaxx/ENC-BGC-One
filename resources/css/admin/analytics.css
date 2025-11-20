@@ -204,6 +204,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
     gap: 20px;
+    margin-bottom: 32px;
 }
 
 .analytics-card {
@@ -376,6 +377,14 @@
     border-radius: 14px;
     border: 1px solid var(--ana-gray-100);
     background: rgba(255, 255, 255, 0.03);
+}
+
+input[type="date"] {
+    color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
 }
 
 @keyframes adminGradientFlow {

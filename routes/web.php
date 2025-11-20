@@ -105,12 +105,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset');
         Route::post('/bulk/status', [AdminUserController::class, 'bulkStatus'])->name('bulk-status');
     });
+
+    Route::get('/admin/analytics', [AdminAnalyticsController::class, 'index'])->name('admin.analytics');
+    Route::get('/admin/analytics/export/csv', [AdminAnalyticsController::class, 'exportCsv'])->name('admin.analytics.export.csv');
+    Route::get('/admin/analytics/export/charts', [AdminAnalyticsController::class, 'exportCharts'])->name('admin.analytics.export.charts');
+    Route::get('/admin/analytics/export/pdf', [AdminAnalyticsController::class, 'exportPdf'])->name('admin.analytics.export.pdf');
 });
 
 // Temporary preview route for Admin Facilities Management
 Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
-
-Route::get('/admin/analytics', [AdminAnalyticsController::class, 'index'])->name('admin.analytics');
 
 // Temporary preview route for Admin Policies
 Route::view('/admin/policies', 'admin.policies')->name('admin.policies');

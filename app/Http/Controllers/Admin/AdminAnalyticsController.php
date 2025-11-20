@@ -11,6 +11,100 @@ class AdminAnalyticsController extends Controller
 {
     public function index(Request $request)
     {
+        return view('admin.analytics', $this->getAnalyticsData($request));
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $data = $this->getAnalyticsData($request);
+        $filename = 'analytics-' . $data['startDate']->format('Ymd') . '-' . $data['endDate']->format('Ymd') . '.csv';
+
+        return response()->streamDownload(function () use ($data) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Metric', 'Value', 'Note']);
+            foreach ($data['kpis'] as $kpi) {
+                fputcsv($out, [$kpi['label'], $kpi['value'], $kpi['note']]);
+            }
+
+            fputcsv($out, []); fputcsv($out, ['Utilization']);
+            fputcsv($out, array_merge(['Room'], $data['utilizationStats']['labels']->toArray()));
+            fputcsv($out, array_merge(['Util %'], $data['utilizationStats']['values']->toArray()));
+
+            fputcsv($out, []); fputcsv($out, ['Peak Hours']);
+            fputcsv($out, array_merge(['Hour'], $data['peakHoursStats']['labels']->toArray()));
+            fputcsv($out, array_merge(['Bookings'], $data['peakHoursStats']['values']->toArray()));
+
+            fputcsv($out, []); fputcsv($out, ['Department Share']);
+            fputcsv($out, array_merge(['Department'], $data['departmentShare']['labels']->toArray()));
+            fputcsv($out, array_merge(['Bookings'], $data['departmentShare']['values']->toArray()));
+
+            fputcsv($out, []); fputcsv($out, ['Status Breakdown']);
+            fputcsv($out, array_merge(['Status'], $data['statusBreakdown']['labels']->toArray()));
+            fputcsv($out, array_merge(['Count'], $data['statusBreakdown']['values']->toArray()));
+
+            fputcsv($out, []); fputcsv($out, ['No-show / Cancel Reasons']);
+            fputcsv($out, array_merge(['Reason'], $data['noShowReasons']['labels']->toArray()));
+            fputcsv($out, array_merge(['Count'], $data['noShowReasons']['values']->toArray()));
+
+            fputcsv($out, []); fputcsv($out, ['Recurrence (weekly)']);
+            fputcsv($out, array_merge(['Week'], $data['recurrenceStats']['labels']->toArray()));
+            fputcsv($out, array_merge(['Bookings'], $data['recurrenceStats']['values']->toArray()));
+        }, $filename, [
+            'Content-Type' => 'text/csv',
+        ]);
+    }
+
+    public function exportCharts(Request $request)
+    {
+        $data = $this->getAnalyticsData($request);
+        return response()->json([
+            'range' => [
+                'start' => $data['startDate']->toDateString(),
+                'end' => $data['endDate']->toDateString(),
+            ],
+            'kpis' => $data['kpis'],
+            'charts' => [
+                'utilization' => $data['utilizationStats'],
+                'peakHours' => $data['peakHoursStats'],
+                'department' => $data['departmentShare'],
+                'status' => $data['statusBreakdown'],
+                'noShow' => $data['noShowReasons'],
+                'recurrence' => $data['recurrenceStats'],
+            ],
+        ], 200, [], JSON_PRETTY_PRINT);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $data = $this->getAnalyticsData($request);
+        $filename = 'analytics-summary-' . $data['startDate']->format('Ymd') . '-' . $data['endDate']->format('Ymd') . '.html';
+
+        return response()->streamDownload(function () use ($data) {
+            $content = '<!doctype html><html><head><meta charset="UTF-8"><title>Analytics Summary</title></head><body>';
+            $content .= '<h1>Analytics Summary</h1>';
+            $content .= '<p>Range: ' . e($data['startDate']->toFormattedDateString()) . ' - ' . e($data['endDate']->toFormattedDateString()) . '</p>';
+            $content .= '<h2>KPIs</h2><ul>';
+            foreach ($data['kpis'] as $kpi) {
+                $content .= '<li><strong>' . e($kpi['label']) . ':</strong> ' . e($kpi['value']) . ' (' . e($kpi['note']) . ')</li>';
+            }
+            $content .= '</ul>';
+            $content .= '<h2>Charts</h2><pre>' . e(json_encode([
+                'utilization' => $data['utilizationStats'],
+                'peakHours' => $data['peakHoursStats'],
+                'department' => $data['departmentShare'],
+                'status' => $data['statusBreakdown'],
+                'noShow' => $data['noShowReasons'],
+                'recurrence' => $data['recurrenceStats'],
+            ], JSON_PRETTY_PRINT)) . '</pre>';
+            $content .= '</body></html>';
+            echo $content;
+        }, $filename, [
+            'Content-Type' => 'text/html',
+        ]);
+    }
+
+    private function getAnalyticsData(Request $request): array
+    {
         $startDate = Carbon::parse($request->input('start_date', Carbon::now()->subDays(30)->toDateString()))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date', Carbon::now()->toDateString()))->endOfDay();
 
@@ -28,7 +122,7 @@ class AdminAnalyticsController extends Controller
         $recurrenceStats = $this->buildRecurrenceStats($bookings, $startDate, $endDate);
         $demandRanking = $this->buildDemandRanking($bookings);
 
-        return view('admin.analytics', compact(
+        return compact(
             'kpis',
             'demandRanking',
             'utilizationStats',
@@ -36,8 +130,10 @@ class AdminAnalyticsController extends Controller
             'departmentShare',
             'statusBreakdown',
             'noShowReasons',
-            'recurrenceStats'
-        ));
+            'recurrenceStats',
+            'startDate',
+            'endDate'
+        );
     }
 
     private function buildKpis($bookings, Carbon $start, Carbon $end): array
@@ -148,21 +244,48 @@ class AdminAnalyticsController extends Controller
 
     private function buildNoShowReasons($bookings): array
     {
-        // Approximate "drivers" based on available status data.
-        $counts = collect([
-            'Cancelled' => $bookings->where('status', 'cancelled')->count(),
-            'Rejected' => $bookings->where('status', 'rejected')->count(),
-            'Pending (unattended)' => $bookings->where('status', 'pending')->count(),
-            'Approved (no check-in)' => $bookings->where('status', 'approved')->count(),
-        ])->filter(fn ($count) => $count > 0);
+        $formatLabel = function (string $prefix, string $code): string {
+            return $prefix . ': ' . ucwords(str_replace('_', ' ', $code));
+        };
 
-        if ($counts->isEmpty()) {
-            $counts = collect(['No data yet' => 1]);
+        $noShowReasons = $bookings->pluck('no_show_reason_code')->filter();
+        $cancelReasons = $bookings->pluck('cancel_reason_code')->filter();
+
+        $reasonCounts = collect();
+
+        if ($noShowReasons->isNotEmpty()) {
+            $reasonCounts = $reasonCounts->merge(
+                $noShowReasons
+                    ->groupBy(fn ($code) => $formatLabel('No-show', $code))
+                    ->map->count()
+            );
+        }
+
+        if ($cancelReasons->isNotEmpty()) {
+            $reasonCounts = $reasonCounts->merge(
+                $cancelReasons
+                    ->groupBy(fn ($code) => $formatLabel('Cancelled', $code))
+                    ->map->count()
+            );
+        }
+
+        if ($reasonCounts->isEmpty()) {
+            // Fallback approximation using status when structured reasons are missing.
+            $reasonCounts = collect([
+                'Cancelled (no reason recorded)' => $bookings->where('status', 'cancelled')->count(),
+                'Rejected' => $bookings->where('status', 'rejected')->count(),
+                'Pending (unattended)' => $bookings->where('status', 'pending')->count(),
+                'Approved (no check-in)' => $bookings->where('status', 'approved')->count(),
+            ])->filter(fn ($count) => $count > 0);
+        }
+
+        if ($reasonCounts->isEmpty()) {
+            $reasonCounts = collect(['No data yet' => 1]);
         }
 
         return [
-            'labels' => $counts->keys()->values(),
-            'values' => $counts->values(),
+            'labels' => $reasonCounts->keys()->values(),
+            'values' => $reasonCounts->values(),
         ];
     }
 
