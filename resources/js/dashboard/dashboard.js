@@ -76,4 +76,69 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         item.style.cursor = 'pointer';
     });
+
+    // Calendar event detail modal
+    const eventModal = document.getElementById('calendarEventModal');
+    if (eventModal) {
+        const eventDate = document.getElementById('calendarEventDate');
+        const eventTitle = document.getElementById('calendarEventTitle');
+        const eventFacility = document.getElementById('calendarEventFacility');
+        const eventRequester = document.getElementById('calendarEventRequester');
+        const eventTime = document.getElementById('calendarEventTime');
+        const body = document.body;
+
+        const closeEventModal = () => {
+            eventModal.setAttribute('hidden', '');
+            body.style.removeProperty('overflow');
+        };
+
+        const openEventModal = (payload = {}) => {
+            if (eventDate) eventDate.textContent = payload.date || 'Date TBA';
+            if (eventTitle) eventTitle.textContent = payload.title || 'Booking details';
+            if (eventFacility) eventFacility.textContent = payload.facility || 'Facility';
+            if (eventRequester) eventRequester.textContent = payload.requester || 'Requester';
+            const timeText = payload.time && payload.time.trim() ? payload.time : 'Timeframe TBA';
+            if (eventTime) eventTime.textContent = timeText;
+
+            eventModal.removeAttribute('hidden');
+            body.style.overflow = 'hidden';
+
+            const closeBtn = eventModal.querySelector('[data-dismiss=\"calendar-event\"]');
+            if (closeBtn) {
+                closeBtn.focus({ preventScroll: true });
+            }
+        };
+
+        const dismissElements = eventModal.querySelectorAll('[data-dismiss=\"calendar-event\"]');
+        dismissElements.forEach(el => {
+            el.addEventListener('click', closeEventModal);
+        });
+
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Escape' && !eventModal.hasAttribute('hidden')) {
+                closeEventModal();
+            }
+        });
+
+        const calendarPills = document.querySelectorAll('.calendar-event-pill');
+        calendarPills.forEach(pill => {
+            const openFromPill = () => {
+                openEventModal({
+                    facility: pill.dataset.facility,
+                    title: pill.dataset.title,
+                    date: pill.dataset.date,
+                    time: pill.dataset.time,
+                    requester: pill.dataset.requester,
+                });
+            };
+
+            pill.addEventListener('click', openFromPill);
+            pill.addEventListener('keypress', (evt) => {
+                if (evt.key === 'Enter' || evt.key === ' ') {
+                    evt.preventDefault();
+                    openFromPill();
+                }
+            });
+        });
+    }
 });

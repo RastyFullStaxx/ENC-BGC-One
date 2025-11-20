@@ -17,7 +17,7 @@ class UserDashboardController extends Controller
             return redirect()->route('login');
         }
 
-        $baseQuery = Booking::with(['facility.building', 'details'])
+        $baseQuery = Booking::with(['facility.building', 'details', 'requester'])
             ->where('requester_id', $user->id);
 
         $monthParam = request('month');
@@ -72,10 +72,14 @@ class UserDashboardController extends Controller
 
         $calendarEvents = $approvedCalendarBookings->map(function (Booking $booking) {
             return [
+                'id' => $booking->id,
                 'day' => Carbon::parse($booking->date, 'Asia/Manila')->day,
                 'facility' => $booking->facility->name ?? 'Facility',
                 'title' => $booking->details->purpose ?? 'Approved booking',
                 'status' => $booking->status,
+                'date_display' => Carbon::parse($booking->date, 'Asia/Manila')->format('D, M j, Y'),
+                'time' => $this->formatTimeRange($booking),
+                'requester' => $booking->requester->name ?? 'You',
             ];
         })->groupBy('day');
 

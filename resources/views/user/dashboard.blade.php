@@ -150,16 +150,53 @@
                                         <button class="wizard-calendar-day {{ $day->isToday() ? 'is-today' : '' }}" type="button">
                                             <span class="wizard-calendar-daynumber">{{ $day->day }}</span>
                                             @foreach($dayEvents as $ev)
-                                                <div class="calendar-event-pill" title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}">
+                                                <div
+                                                    class="calendar-event-pill"
+                                                    title="{{ $ev['facility'] }} · {{ $ev['time'] ?? '' }}"
+                                                    data-facility="{{ $ev['facility'] }}"
+                                                    data-title="{{ $ev['title'] }}"
+                                                    data-date="{{ $ev['date_display'] ?? '' }}"
+                                                    data-time="{{ $ev['time'] ?? '' }}"
+                                                    data-requester="{{ $ev['requester'] ?? '' }}"
+                                                    tabindex="0"
+                                                    role="button"
+                                                    aria-label="{{ $ev['title'] ?? 'Booking' }} in {{ $ev['facility'] }}"
+                                                >
                                                     <strong>{{ $ev['facility'] }}</strong>
                                                     @if(!empty($ev['title']))
                                                         <span class="d-block small text-muted">{{ $ev['title'] }}</span>
+                                                    @endif
+                                                    @if(!empty($ev['time']))
+                                                        <span class="d-block small text-muted">{{ $ev['time'] }}</span>
                                                     @endif
                                                 </div>
                                             @endforeach
                                         </button>
                                     @endif
                                 @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="calendarEventModal" class="calendar-event-modal" hidden>
+                    <div class="calendar-event-modal__backdrop" data-dismiss="calendar-event" aria-hidden="true"></div>
+                    <div class="calendar-event-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="calendarEventTitle">
+                        <button type="button" class="calendar-event-modal__close" data-dismiss="calendar-event" aria-label="Close">&times;</button>
+                        <p class="calendar-event-modal__eyebrow" id="calendarEventDate">Date</p>
+                        <h4 class="calendar-event-modal__title" id="calendarEventTitle">Booking details</h4>
+                        <div class="calendar-event-modal__meta">
+                            <div class="calendar-event-modal__row">
+                                <span class="calendar-event-modal__label">Facility</span>
+                                <span class="calendar-event-modal__value" id="calendarEventFacility">–</span>
+                            </div>
+                            <div class="calendar-event-modal__row">
+                                <span class="calendar-event-modal__label">Booked by</span>
+                                <span class="calendar-event-modal__value" id="calendarEventRequester">–</span>
+                            </div>
+                            <div class="calendar-event-modal__row">
+                                <span class="calendar-event-modal__label">Timeframe</span>
+                                <span class="calendar-event-modal__value" id="calendarEventTime">–</span>
                             </div>
                         </div>
                     </div>
