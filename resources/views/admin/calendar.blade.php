@@ -11,7 +11,7 @@
     $bookings = [
         [
             'facility' => 'Orion Boardroom',
-            'time' => '9:00 AM – 11:00 AM',
+            'time' => '2024-08-12 09:00 AM – 11:00 AM',
             'status' => 'approved',
             'status_label' => 'Approved',
             'day' => 'Mon',
@@ -75,6 +75,93 @@
     ];
 
     $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    $listBookings = [
+        [
+            'title' => 'Leadership Sync',
+            'facility' => 'Orion Boardroom',
+            'status' => 'approved',
+            'status_label' => 'Approved',
+            'date' => 'Aug 12',
+            'time' => '09:00 – 11:00',
+            'duration' => '2h',
+            'requester' => 'J. Mercado',
+            'owner' => 'Ops • N. Cruz',
+            'type' => 'Leadership',
+        ],
+        [
+            'title' => 'Training Session',
+            'facility' => 'Helios Lab',
+            'status' => 'pending',
+            'status_label' => 'Pending',
+            'date' => 'Aug 12',
+            'time' => '13:00 – 15:00',
+            'duration' => '2h',
+            'requester' => 'A. Santos',
+            'owner' => 'L&D • C. Uy',
+            'type' => 'Training',
+        ],
+        [
+            'title' => 'Town Hall',
+            'facility' => 'Summit Hall',
+            'status' => 'approved',
+            'status_label' => 'Approved',
+            'date' => 'Aug 13',
+            'time' => '10:00 – 16:00',
+            'duration' => '6h',
+            'requester' => 'Exec Office',
+            'owner' => 'Events • L. Garcia',
+            'type' => 'Event',
+        ],
+        [
+            'title' => 'Design Sprint',
+            'facility' => 'Nova Hub',
+            'status' => 'cancelled',
+            'status_label' => 'Cancelled',
+            'date' => 'Aug 14',
+            'time' => '14:00 – 15:30',
+            'duration' => '1.5h',
+            'requester' => 'Creative Team',
+            'owner' => 'Product • K. David',
+            'type' => 'Team',
+        ],
+        [
+            'title' => 'Project Update',
+            'facility' => 'Orion Boardroom',
+            'status' => 'approved',
+            'status_label' => 'Approved',
+            'date' => 'Aug 14',
+            'time' => '16:00 – 18:00',
+            'duration' => '2h',
+            'requester' => 'Strategy',
+            'owner' => 'Ops • D. Cruz',
+            'type' => 'Project',
+        ],
+        [
+            'title' => 'Systems Training',
+            'facility' => 'Helios Lab',
+            'status' => 'pending',
+            'status_label' => 'Pending',
+            'date' => 'Aug 15',
+            'time' => '09:00 – 12:00',
+            'duration' => '3h',
+            'requester' => 'Ops',
+            'owner' => 'L&D • C. Uy',
+            'type' => 'Training',
+        ],
+        [
+            'title' => 'Ministry Event',
+            'facility' => 'Summit Hall',
+            'status' => 'approved',
+            'status_label' => 'Approved',
+            'date' => 'Aug 15',
+            'time' => '13:00 – 17:00',
+            'duration' => '4h',
+            'requester' => 'External Affairs',
+            'owner' => 'Events • L. Garcia',
+            'type' => 'Event',
+        ],
+    ];
 @endphp
 
 <section class="admin-calendar-page">
@@ -121,7 +208,7 @@
 
             <div class="cal-grid week" id="calendarGrid">
                 @foreach ($days as $day)
-                    <div class="cal-day-column" data-day="{{ $day }}">
+                    <div class="cal-day-column {{ in_array($day, ['Sat', 'Sun']) ? 'is-weekend' : '' }}" data-day="{{ $day }}">
                         <div class="cal-day-header">
                             <strong>{{ $day }}</strong>
                             <span class="text-muted small">Today</span>
@@ -146,6 +233,110 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+
+            <div class="cal-secondary">
+                <div class="cal-stats">
+                    <div class="cal-stat-card">
+                        <p class="cal-stat-label">Bookings today</p>
+                        <div class="cal-stat-value">18</div>
+                        <p class="cal-stat-foot text-muted">+4 vs yesterday</p>
+                    </div>
+                    <div class="cal-stat-card">
+                        <p class="cal-stat-label">Pending approvals</p>
+                        <div class="cal-stat-value">6</div>
+                        <p class="cal-stat-foot text-muted">2 urgent</p>
+                    </div>
+                    <div class="cal-stat-card">
+                        <p class="cal-stat-label">Utilization</p>
+                        <div class="cal-progress">
+                            <span style="width: 72%"></span>
+                        </div>
+                        <p class="cal-stat-foot text-muted">72% of bookable hours</p>
+                    </div>
+                    <div class="cal-stat-card">
+                        <p class="cal-stat-label">Cancellations</p>
+                        <div class="cal-stat-value text-warning">2</div>
+                        <p class="cal-stat-foot text-muted">This week</p>
+                    </div>
+                </div>
+
+                <div class="cal-list-bar">
+                    <div class="cal-list-filters">
+                        <div class="cal-search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                                <circle cx="11" cy="11" r="7"/>
+                                <path d="M21 21l-4.35-4.35"/>
+                            </svg>
+                            <input type="search" id="bookingSearch" placeholder="Search by title, room, requester...">
+                        </div>
+                        <div class="cal-toggle-group">
+                            <label class="cal-toggle">
+                                <input type="checkbox" id="mineToggle">
+                                <span>Only mine</span>
+                            </label>
+                            <label class="cal-toggle">
+                                <input type="checkbox" id="weekendsToggle" checked>
+                                <span>Show weekends</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="cal-actions">
+                        <button class="cal-btn">Block time</button>
+                        <button class="cal-btn cal-btn-primary">New booking</button>
+                    </div>
+                </div>
+
+                <div class="cal-list-shell">
+                    <div class="cal-list-header">
+                        <div>
+                            <h3>Upcoming bookings</h3>
+                            <p class="text-muted small mb-0">Sorted by soonest start · Inline actions for quick response</p>
+                        </div>
+                        <div class="cal-chip-row">
+                            <span class="cal-chip" data-filter-type="status" data-filter-value="approved">Approved</span>
+                            <span class="cal-chip" data-filter-type="status" data-filter-value="pending">Pending</span>
+                            <span class="cal-chip" data-filter-type="status" data-filter-value="cancelled">Cancelled</span>
+                            <span class="cal-chip" data-filter-type="type" data-filter-value="Training">Training</span>
+                            <span class="cal-chip" data-filter-type="type" data-filter-value="Event">Event</span>
+                        </div>
+                    </div>
+
+                    <div class="cal-table" id="bookingTable">
+                        <div class="cal-table-head">
+                            <span>Title</span>
+                            <span>Facility</span>
+                            <span>Status</span>
+                            <span>When</span>
+                            <span>Duration</span>
+                            <span>Requester</span>
+                            <span>Owner</span>
+                            <span class="text-end">Action</span>
+                        </div>
+                        @foreach ($listBookings as $list)
+                            <div class="cal-table-row"
+                                data-status="{{ strtolower($list['status']) }}"
+                                data-type="{{ $list['type'] }}"
+                                data-owner="{{ $list['owner'] }}"
+                            >
+                                <span>
+                                    <div class="cal-table-title">{{ $list['title'] }}</div>
+                                    <div class="text-muted small">{{ $list['type'] }}</div>
+                                </span>
+                                <span>{{ $list['facility'] }}</span>
+                                <span><span class="cal-status {{ strtolower($list['status']) }}">{{ $list['status_label'] }}</span></span>
+                                <span>{{ $list['date'] }} · {{ $list['time'] }}</span>
+                                <span>{{ $list['duration'] }}</span>
+                                <span>{{ $list['requester'] }}</span>
+                                <span>{{ $list['owner'] }}</span>
+                                <span class="text-end">
+                                    <button class="cal-link">Open</button>
+                                    <button class="cal-link cal-link-muted">Resched</button>
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -248,6 +439,11 @@
         const filterBtn = document.getElementById('filterBtn');
         const viewSwitch = document.getElementById('viewSwitch');
         const calendarGrid = document.getElementById('calendarGrid');
+        const bookingSearch = document.getElementById('bookingSearch');
+        const bookingRows = Array.from(document.querySelectorAll('.cal-table-row'));
+        const chips = Array.from(document.querySelectorAll('.cal-chip[data-filter-type]'));
+        const mineToggle = document.getElementById('mineToggle');
+        const weekendsToggle = document.getElementById('weekendsToggle');
 
         const openDrawer = (data) => {
             drawer.classList.add('open');
@@ -297,6 +493,68 @@
                 calendarGrid.className = 'cal-grid ' + view;
             });
         });
+
+        const state = {
+            status: null,
+            type: null,
+            mineOnly: false,
+            showWeekends: true,
+            search: '',
+        };
+
+        const filterRows = () => {
+            bookingRows.forEach(row => {
+                const matchesStatus = state.status ? row.dataset.status === state.status : true;
+                const matchesType = state.type ? row.dataset.type === state.type : true;
+                const matchesMine = state.mineOnly ? row.dataset.owner.toLowerCase().includes('ops') : true;
+                const text = row.textContent.toLowerCase();
+                const matchesSearch = state.search ? text.includes(state.search) : true;
+                const visible = matchesStatus && matchesType && matchesMine && matchesSearch;
+                row.style.display = visible ? 'grid' : 'none';
+            });
+        };
+
+        const toggleChip = (chip) => {
+            const type = chip.dataset.filterType;
+            const value = chip.dataset.filterValue.toLowerCase();
+            const isActive = chip.classList.contains('active');
+            chips
+                .filter(c => c.dataset.filterType === type)
+                .forEach(c => c.classList.remove('active'));
+            if (!isActive) {
+                chip.classList.add('active');
+                state[type] = value;
+            } else {
+                state[type] = null;
+            }
+            filterRows();
+        };
+
+        chips.forEach(chip => chip.addEventListener('click', () => toggleChip(chip)));
+
+        bookingSearch?.addEventListener('input', (e) => {
+            state.search = e.target.value.trim().toLowerCase();
+            filterRows();
+        });
+
+        mineToggle?.addEventListener('change', (e) => {
+            state.mineOnly = e.target.checked;
+            filterRows();
+        });
+
+        const handleWeekends = (show) => {
+            document.querySelectorAll('.cal-day-column.is-weekend').forEach(col => {
+                col.style.display = show ? 'flex' : 'none';
+            });
+        };
+
+        weekendsToggle?.addEventListener('change', (e) => {
+            state.showWeekends = e.target.checked;
+            handleWeekends(state.showWeekends);
+        });
+
+        handleWeekends(state.showWeekends);
+        filterRows();
     });
 </script>
 @endpush
