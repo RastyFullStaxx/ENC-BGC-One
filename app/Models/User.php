@@ -23,6 +23,8 @@ class User extends Authenticatable
         'phone',        // added phone
         'department_id',   // added department_id (foreign key)
         'role', // added
+        'status',
+        'last_login_at',
 
     ];
 
@@ -46,6 +48,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 

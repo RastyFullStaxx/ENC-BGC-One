@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -59,11 +60,16 @@ class LoginController extends Controller
 
         // Attempt to authenticate
         $credentials = $request->only('email', 'password');
+        $credentials['status'] = 'active';
         
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             $request->session()->regenerate();
             
             $user = Auth::user();
+
+            $user->forceFill([
+                'last_login_at' => now(),
+            ])->save();
             
             // Determine redirect URL based on role
             if ($user->role === 'admin') {
@@ -93,6 +99,26 @@ class LoginController extends Controller
         }
 
         // Authentication failed
+        $matchedUser = User::where('email', $request->input('email'))->first();
+        if ($matchedUser && $matchedUser->status !== 'active') {
+            $statusMessage = $matchedUser->status === 'inactive'
+                ? 'This account has been deactivated. Please contact an admin to restore access.'
+                : 'This account is pending activation.';
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'errors' => [
+                        'email' => [$statusMessage]
+                    ],
+                    'message' => 'Authentication failed'
+                ], 423);
+            }
+
+            return redirect()->back()
+                ->withErrors(['email' => $statusMessage])
+                ->withInput($request->only('email'));
+        }
+
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'errors' => [

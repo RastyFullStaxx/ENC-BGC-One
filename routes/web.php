@@ -8,6 +8,7 @@ use App\Http\Controllers\UserBookingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
+use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 
@@ -93,10 +94,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/approvals', [AdminApprovalController::class, 'index'])->name('admin.approvals.queue');
     Route::get('/admin/approvals/{booking}', [AdminApprovalController::class, 'show'])->name('admin.approvals.show');
     Route::post('/admin/approvals/{booking}/decision', [AdminApprovalController::class, 'decide'])->name('admin.approvals.decision');
-});
 
-// Temporary preview route for Admin Users & Roles tool
-Route::view('/admin/users', 'admin.users')->name('admin.users');
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
+    Route::prefix('/admin/users')->name('admin.users.')->group(function () {
+        Route::put('/{user}', [AdminUserController::class, 'update'])->name('update');
+        Route::post('/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('deactivate');
+        Route::post('/{user}/activate', [AdminUserController::class, 'activate'])->name('activate');
+        Route::post('/{user}/reset-password', [AdminUserController::class, 'resetPassword'])->name('reset');
+        Route::post('/bulk/status', [AdminUserController::class, 'bulkStatus'])->name('bulk-status');
+    });
+});
 
 // Temporary preview route for Admin Facilities Management
 Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');

@@ -68,6 +68,42 @@
     align-self: flex-start;
 }
 
+.admin-note {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px 24px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: linear-gradient(120deg, rgba(21, 93, 252, 0.14), rgba(0, 201, 80, 0.1));
+    box-shadow: 0 24px 60px rgba(0, 24, 64, 0.35);
+    margin-bottom: 20px;
+}
+
+.admin-note-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 6px;
+}
+
+.admin-note-list {
+    margin: 0;
+    padding-left: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+}
+
+.admin-note-list li + li {
+    margin-top: 4px;
+}
+
+.admin-note-list strong {
+    color: #fff;
+}
+
 .admin-btn {
     border: none;
     border-radius: 12px;
@@ -373,6 +409,7 @@
 .role-badge.admin { background: rgba(238, 182, 65, 0.16); color: #9F6600; }
 .role-badge.approver { background: rgba(21, 93, 252, 0.12); color: var(--admin-blue-light); }
 .role-badge.user { background: rgba(0, 201, 80, 0.14); color: var(--admin-success); }
+.role-badge.staff { background: rgba(0, 201, 80, 0.16); color: var(--admin-success); }
 .role-badge.guest { background: rgba(148, 163, 184, 0.2); color: var(--admin-gray-600); }
 
 .permissions-list {

@@ -8,83 +8,22 @@
 
 @section('content')
 @php
-    $users = [
-        [
-            'name' => 'Ava Santos',
-            'email' => 'ava.santos@enc.gov',
-            'department' => 'Operations Excellence',
-            'roles' => ['Admin', 'Approver'],
-            'role_key' => 'admin',
-            'status' => 'Active',
-            'status_key' => 'active',
-            'last_login' => 'Today · 09:32 AM',
-        ],
-        [
-            'name' => 'Brian Lopez',
-            'email' => 'brian.lopez@enc.gov',
-            'department' => 'Facilities',
-            'roles' => ['Approver'],
-            'role_key' => 'approver',
-            'status' => 'Active',
-            'status_key' => 'active',
-            'last_login' => 'Today · 07:50 AM',
-        ],
-        [
-            'name' => 'Cheska Lim',
-            'email' => 'cheska.lim@enc.gov',
-            'department' => 'Internal Audit',
-            'roles' => ['Auditor'],
-            'role_key' => 'auditor',
-            'status' => 'Pending',
-            'status_key' => 'pending',
-            'last_login' => 'Awaiting activation',
-        ],
-        [
-            'name' => 'Diego Ramos',
-            'email' => 'diego.ramos@enc.gov',
-            'department' => 'Mobility',
-            'roles' => ['User'],
-            'role_key' => 'user',
-            'status' => 'Active',
-            'status_key' => 'active',
-            'last_login' => 'Yesterday · 08:14 PM',
-        ],
-        [
-            'name' => 'Erica Bautista',
-            'email' => 'erica.bautista@enc.gov',
-            'department' => 'Facilities',
-            'roles' => ['User'],
-            'role_key' => 'user',
-            'status' => 'Inactive',
-            'status_key' => 'inactive',
-            'last_login' => 'Aug 11 · 03:40 PM',
-        ],
+    $roleChoices = $roleMap ?? [
+        'admin' => ['title' => 'Admin', 'description' => 'Full control across modules.'],
+        'staff' => ['title' => 'Staff', 'description' => 'Booking access and catalog visibility.'],
     ];
-
-    $roleSummaries = [
-        ['title' => 'Admin', 'count' => 4, 'description' => 'Full system control, access governance.'],
-        ['title' => 'Approver', 'count' => 12, 'description' => 'Can approve or reject bookings.'],
-        ['title' => 'User', 'count' => 31, 'description' => 'Create bookings & view schedules.'],
-        ['title' => 'Guest', 'count' => 7, 'description' => 'Limited catalog visibility.'],
-    ];
-
-    $permissionGroups = [
-        'Bookings' => ['View', 'Create', 'Edit', 'Cancel'],
-        'Facilities' => ['View inventory', 'Manage availability'],
-        'Approvals' => ['View queue', 'Approve / Reject'],
-        'Reports' => ['View dashboards', 'Export logs'],
-        'Admin Modules' => ['Roles & Permissions', 'Audit trail'],
-    ];
-
-    $departments = [
-        ['name' => 'Creative Office', 'head' => 'J. Mercado', 'count' => 14],
-        ['name' => 'Admin Office', 'head' => 'John Doe', 'count' => 8],
-        ['name' => 'Mobility', 'head' => 'Diego Ramos', 'count' => 11],
-        ['name' => 'Facilities', 'head' => 'Marie G.', 'count' => 19],
-    ];
+    $permissionGroups = $permissionGroups ?? [];
+    $overview = $overview ?? ['total' => 0, 'activeRecent' => 0, 'pending' => 0, 'departments' => 0];
 @endphp
 
-<section class="admin-users-page">
+<section
+    class="admin-users-page"
+    data-update-url-template="{{ route('admin.users.update', '__USER__') }}"
+    data-deactivate-url-template="{{ route('admin.users.deactivate', '__USER__') }}"
+    data-activate-url-template="{{ route('admin.users.activate', '__USER__') }}"
+    data-reset-url-template="{{ route('admin.users.reset', '__USER__') }}"
+    data-bulk-status-url="{{ route('admin.users.bulk-status') }}"
+>
     <div class="admin-users-shell">
         <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -106,21 +45,34 @@
             </button>
         </div>
 
+        <div class="admin-note">
+            <div>
+                <p class="admin-note-eyebrow">How this tool behaves</p>
+                <h3 class="mb-1">Live directory, instant writes</h3>
+                <p class="mb-0">Updates save to the database right away and reflect across dashboards.</p>
+            </div>
+            <ul class="admin-note-list">
+                <li><strong>Deactivate</strong> blocks sign-ins and hides the account from approval routing until reactivated.</li>
+                <li><strong>Edit role</strong> switches access between Admin and Staff; changes apply immediately.</li>
+                <li><strong>Reset</strong> issues a new temporary password and sets the status to Active.</li>
+            </ul>
+        </div>
+
         <div class="admin-stats">
             <div class="admin-stat-card">
-                <strong>52</strong>
+                <strong>{{ number_format($overview['total'] ?? 0) }}</strong>
                 <span>Total members</span>
             </div>
             <div class="admin-stat-card">
-                <strong>87%</strong>
-                <span>Active in last 7 days</span>
+                <strong>{{ $overview['activeRate'] ?? 0 }}%</strong>
+                <span>{{ $overview['activeRecent'] ?? 0 }} active in last 7 days</span>
             </div>
             <div class="admin-stat-card">
-                <strong>05</strong>
-                <span>Pending invitations</span>
+                <strong>{{ str_pad(($overview['pending'] ?? 0) + ($overview['inactive'] ?? 0), 2, '0', STR_PAD_LEFT) }}</strong>
+                <span>Need attention · pending / inactive</span>
             </div>
             <div class="admin-stat-card">
-                <strong>12</strong>
+                <strong>{{ str_pad($overview['departments'] ?? 0, 2, '0', STR_PAD_LEFT) }}</strong>
                 <span>Departments</span>
             </div>
         </div>
@@ -136,9 +88,7 @@
                 <div class="admin-filter-group">
                     <button class="admin-filter-chip active" data-filter-role="all">All roles</button>
                     <button class="admin-filter-chip" data-filter-role="admin">Admin</button>
-                    <button class="admin-filter-chip" data-filter-role="approver">Approver</button>
-                    <button class="admin-filter-chip" data-filter-role="user">User</button>
-                    <button class="admin-filter-chip" data-filter-role="guest">Guest</button>
+                    <button class="admin-filter-chip" data-filter-role="staff">Staff</button>
                 </div>
                 <div class="admin-filter-group admin-filter-divider">
                     <button class="admin-filter-chip active" data-filter-status="all">All status</button>
@@ -170,55 +120,74 @@
                         </tr>
                     </thead>
                     <tbody id="adminUserTableBody">
-                        @foreach ($users as $user)
+                        @forelse ($users as $user)
+                            @php
+                                $roleLabel = $roleChoices[$user->role]['title'] ?? ucfirst($user->role);
+                                $statusLabel = ucfirst($user->status);
+                            @endphp
                             <tr
-                                data-role="{{ $user['role_key'] }}"
-                                data-status="{{ $user['status_key'] }}"
-                                data-name="{{ $user['name'] }}"
-                                data-email="{{ $user['email'] }}"
-                                data-department="{{ $user['department'] }}"
-                                data-status-label="{{ $user['status'] }}"
-                                data-roles='@json($user['roles'])'
-                                data-last-login="{{ $user['last_login'] }}"
+                                data-user-id="{{ $user->id }}"
+                                data-role="{{ $user->role }}"
+                                data-status="{{ $user->status }}"
+                                data-name="{{ $user->name }}"
+                                data-email="{{ $user->email }}"
+                                data-department="{{ optional($user->department)->name ?? '—' }}"
+                                data-department-id="{{ $user->department_id }}"
+                                data-status-label="{{ $statusLabel }}"
+                                data-last-login="{{ $user->last_login_at?->toIso8601String() }}"
+                                data-last-login-label="{{ $user->last_login_at?->format('M j · g:i A') ?? 'Never' }}"
+                                data-role-label="{{ $roleLabel }}"
                             >
                                 <td><input type="checkbox" class="row-select"></td>
                                 <td>
                                     <div class="user-pill">
-                                        <span>{{ $user['name'] }}</span>
+                                        <span>{{ $user->name }}</span>
                                     </div>
                                 </td>
-                                <td>{{ $user['email'] }}</td>
-                                <td>{{ $user['department'] }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ optional($user->department)->name ?? '—' }}</td>
                                 <td>
-                                    @foreach ($user['roles'] as $role)
-                                        <span class="role-chip">{{ $role }}</span>
-                                    @endforeach
+                                    <span class="role-chip">{{ $roleLabel }}</span>
                                 </td>
                                 <td>
-                                    <span class="status-chip status-{{ $user['status_key'] }}">{{ $user['status'] }}</span>
+                                    <span class="status-chip status-{{ $user->status }}">{{ $statusLabel }}</span>
                                 </td>
-                                <td>{{ $user['last_login'] }}</td>
+                                <td>{{ $user->last_login_at?->format('M j · g:i A') ?? 'Never' }}</td>
                                 <td>
-                                        <div class="admin-table-actions">
-                                            <button class="admin-quick-btn admin-quick-btn-warning" data-modal-open="editUserModal">Edit</button>
-                                            <button
-                                                class="admin-quick-btn admin-quick-btn-warning"
-                                                data-confirm="Deactivate {{ $user['name'] }}?"
-                                                data-success="{{ $user['name'] }} has been deactivated."
-                                            >
-                                                Deactivate
-                                            </button>
-                                            <button
-                                                class="admin-quick-btn admin-quick-btn-muted"
-                                                data-confirm="Reset password for {{ $user['name'] }}?"
-                                                data-success="Password reset instructions sent to {{ $user['email'] }}."
-                                            >
-                                                Reset
-                                            </button>
-                                        </div>
+                                    <div class="admin-table-actions">
+                                        <button
+                                            class="admin-quick-btn admin-quick-btn-warning"
+                                            data-modal-open="editUserModal"
+                                            data-user-id="{{ $user->id }}"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            class="admin-quick-btn admin-quick-btn-warning"
+                                            data-user-id="{{ $user->id }}"
+                                            data-action="deactivate"
+                                            data-confirm="Deactivate {{ $user->name }}?"
+                                            data-success="{{ $user->name }} has been deactivated."
+                                        >
+                                            Deactivate
+                                        </button>
+                                        <button
+                                            class="admin-quick-btn admin-quick-btn-muted"
+                                            data-user-id="{{ $user->id }}"
+                                            data-action="reset"
+                                            data-confirm="Reset password for {{ $user->name }}?"
+                                            data-success="Password reset generated for {{ $user->email }}."
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">No users yet.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -296,10 +265,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($departments as $dept)
+                            @foreach ($departmentSummaries as $dept)
                                 <tr>
                                     <td>{{ $dept['name'] }}</td>
-                                    <td>{{ $dept['head'] }}</td>
+                                    <td>{{ $dept['head'] ?? '—' }}</td>
                                     <td>{{ $dept['count'] }}</td>
                                     <td>
                                         <div class="admin-table-actions" style="opacity:1;">
@@ -307,7 +276,7 @@
                                                 class="admin-quick-btn admin-quick-btn-warning"
                                                 data-modal-open="departmentModal"
                                                 data-department-name="{{ $dept['name'] }}"
-                                                data-department-head="{{ $dept['head'] }}"
+                                                data-department-head="{{ $dept['head'] ?? '' }}"
                                             >
                                                 Edit
                                             </button>
@@ -351,17 +320,15 @@
                 <select id="inviteDepartment" required>
                     <option value="">Select department</option>
                     @foreach ($departments as $dept)
-                        <option value="{{ $dept['name'] }}">{{ $dept['name'] }}</option>
+                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label>Role</label>
                 <div class="chip-group" id="inviteRoles">
-                    <span class="chip-option" data-role="Admin">Admin – full access</span>
-                    <span class="chip-option" data-role="Approver">Approver – approvals only</span>
-                    <span class="chip-option" data-role="User">User – bookings</span>
-                    <span class="chip-option" data-role="Guest">Guest – view catalog</span>
+                    <span class="chip-option" data-role="admin">Admin – full access</span>
+                    <span class="chip-option" data-role="staff">Staff – bookings & catalog</span>
                 </div>
             </div>
             <div>
@@ -398,23 +365,22 @@
                 <label for="editUserDepartment">Department</label>
                 <select id="editUserDepartment">
                     @foreach ($departments as $dept)
-                        <option value="{{ $dept['name'] }}">{{ $dept['name'] }}</option>
+                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
                 <label>Roles</label>
                 <div class="chip-group" id="editUserRoles">
-                    <span class="chip-option" data-role="Admin">Admin</span>
-                    <span class="chip-option" data-role="Approver">Approver</span>
-                    <span class="chip-option" data-role="User">User</span>
-                    <span class="chip-option" data-role="Guest">Guest</span>
+                    <span class="chip-option" data-role="admin">Admin</span>
+                    <span class="chip-option" data-role="staff">Staff</span>
                 </div>
             </div>
             <div>
                 <label>Status</label>
                 <div class="chip-group">
                     <span class="chip-option active" data-status="active">Active</span>
+                    <span class="chip-option" data-status="pending">Pending</span>
                     <span class="chip-option" data-status="inactive">Inactive</span>
                 </div>
             </div>
@@ -443,7 +409,7 @@
         <form id="editRoleForm">
             <div>
                 <label for="roleName">Role name</label>
-                <input type="text" id="roleName" value="Approver">
+                <input type="text" id="roleName" value="Admin">
             </div>
             <div>
                 <label>Permissions</label>
@@ -497,39 +463,55 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const page = document.querySelector('.admin-users-page');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const urlTemplates = {
+            update: page?.dataset.updateUrlTemplate,
+            deactivate: page?.dataset.deactivateUrlTemplate,
+            activate: page?.dataset.activateUrlTemplate,
+            reset: page?.dataset.resetUrlTemplate,
+            bulkStatus: page?.dataset.bulkStatusUrl,
+        };
+
         const filterRoleButtons = document.querySelectorAll('[data-filter-role]');
         const filterStatusButtons = document.querySelectorAll('[data-filter-status]');
-        const rows = document.querySelectorAll('#adminUserTableBody tr');
+        const rows = Array.from(document.querySelectorAll('#adminUserTableBody tr[data-user-id]'));
         const searchInput = document.querySelector('#adminUserSearch');
         const selectAll = document.querySelector('#selectAllUsers');
         const rowCheckboxes = document.querySelectorAll('.row-select');
         const selectedCount = document.querySelector('#selectedCount');
         const bulkActionBtn = document.querySelector('#bulkActionBtn');
         const bulkActionButtons = document.querySelectorAll('[data-bulk-action]');
-        const inviteForm = document.querySelector('#inviteForm');
-        const sendInviteBtn = document.querySelector('#sendInviteBtn');
-        const inviteRoleContainer = document.querySelector('#inviteRoles');
-        const copyTempPassBtn = document.querySelector('#copyTempPass');
         const modals = document.querySelectorAll('.modal-overlay');
         const editUserForm = document.querySelector('#editUserForm');
         const editUserName = document.querySelector('#editUserName');
         const editUserDepartment = document.querySelector('#editUserDepartment');
         const editUserMeta = document.querySelector('#editUserMeta');
-        const editRolesContainer = document.querySelector('#editUserRoles');
-        const editRoleChips = editRolesContainer.querySelectorAll('.chip-option');
+        const editRoleChips = document.querySelectorAll('#editUserRoles .chip-option');
         const statusChips = document.querySelectorAll('#editUserForm [data-status]');
         const inlineResetBtn = document.querySelector('[data-inline-reset]');
         const suspendBtn = document.querySelector('[data-suspend]');
+        const inviteForm = document.querySelector('#inviteForm');
+        const inviteRoleContainer = document.querySelector('#inviteRoles');
+        const sendInviteBtn = document.querySelector('#sendInviteBtn');
+        const copyTempPassBtn = document.querySelector('#copyTempPass');
         const editRoleForm = document.querySelector('#editRoleForm');
         const departmentForm = document.querySelector('#departmentForm');
         const departmentNameInput = document.querySelector('#departmentName');
         const departmentHeadInput = document.querySelector('#departmentHead');
+        const tabs = document.querySelectorAll('.admin-tab');
+        const panels = {
+            roles: document.querySelector('#tabRoles'),
+            permissions: document.querySelector('#tabPermissions'),
+            departments: document.querySelector('#tabDepartments'),
+        };
 
         let activeRole = 'all';
         let activeStatus = 'all';
         let inviteRolesSelected = new Set();
-        let editRolesSelected = new Set();
+        let currentEditRole = null;
         let currentEditStatus = 'active';
+        let currentEditUserId = null;
 
         const swalBase = {
             background: 'rgba(0, 11, 28, 0.96)',
@@ -538,6 +520,16 @@
             cancelButtonColor: '#9F0712',
             buttonsStyling: true,
         };
+
+        const notify = ({ title = 'Success', text = '', icon = 'success', confirmText = 'Great' }) =>
+            Swal.fire({
+                ...swalBase,
+                title,
+                text,
+                icon,
+                confirmButtonText: confirmText,
+                showCancelButton: false,
+            });
 
         const confirmAction = ({ title, text, confirmText = 'Yes, continue' }) =>
             Swal.fire({
@@ -551,28 +543,71 @@
                 confirmButtonColor: '#00C950',
             });
 
-        const notify = ({ title = 'Success', text = '', icon = 'success', confirmText = 'Great' }) =>
-            Swal.fire({
-                ...swalBase,
-                title,
-                text,
-                icon,
-                confirmButtonText: confirmText,
-                showCancelButton: false,
+        const buildUrl = (template, id) => template?.replace('__USER__', id);
+        const capitalize = (value = '') => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
+
+        const apiRequest = async (url, method = 'POST', payload = null) => {
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                },
+                body: payload ? JSON.stringify(payload) : null,
             });
 
-        const openModal = id => document.getElementById(id).classList.add('active');
-        const closeModal = modal => modal.classList.remove('active');
+            const data = await response.json().catch(() => ({}));
 
-        modals.forEach(overlay => {
-            overlay.addEventListener('click', e => {
-                if (e.target === overlay) closeModal(overlay);
-            });
-        });
+            if (!response.ok) {
+                const firstError = data?.errors
+                    ? Object.values(data.errors)?.[0]?.[0]
+                    : null;
+                throw new Error(firstError || data.message || 'Something went wrong');
+            }
 
-        document.querySelectorAll('[data-modal-close]').forEach(btn => {
-            btn.addEventListener('click', e => closeModal(e.target.closest('.modal-overlay')));
-        });
+            return data;
+        };
+
+        const getRowById = id => document.querySelector(`[data-user-id="${id}"]`);
+
+        const updateRowDom = user => {
+            const row = getRowById(user.id);
+            if (!row) return;
+
+            const statusLabel = user.status_label || capitalize(user.status);
+            const roleLabel = user.role_label || capitalize(user.role);
+
+            row.dataset.role = user.role;
+            row.dataset.status = user.status;
+            row.dataset.statusLabel = statusLabel;
+            row.dataset.name = user.name;
+            row.dataset.email = user.email;
+            row.dataset.department = user.department || '—';
+            row.dataset.departmentId = user.department_id || '';
+            row.dataset.lastLogin = user.last_login_at || '';
+            row.dataset.lastLoginLabel = user.last_login_label || 'Never';
+            row.dataset.roleLabel = roleLabel;
+
+            const cells = row.querySelectorAll('td');
+            if (cells[1]) {
+                const nameSpan = cells[1].querySelector('.user-pill span');
+                if (nameSpan) nameSpan.textContent = user.name;
+            }
+            if (cells[2]) cells[2].textContent = user.email;
+            if (cells[3]) cells[3].textContent = user.department || '—';
+
+            const roleChip = row.querySelector('.role-chip');
+            if (roleChip) roleChip.textContent = roleLabel;
+
+            const statusChip = row.querySelector('.status-chip');
+            if (statusChip) {
+                statusChip.textContent = statusLabel;
+                statusChip.className = `status-chip status-${user.status}`;
+            }
+
+            if (cells[6]) cells[6].textContent = row.dataset.lastLoginLabel;
+        };
 
         const applyFilters = () => {
             const keyword = searchInput.value.trim().toLowerCase();
@@ -622,7 +657,7 @@
             })
         );
 
-        bulkActionBtn.addEventListener('click', () => {
+        bulkActionBtn?.addEventListener('click', () => {
             notify({
                 title: 'Bulk actions',
                 text: 'Select one or more members using the checkboxes, then choose Activate or Deactivate.',
@@ -632,113 +667,94 @@
         });
 
         bulkActionButtons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const count = updateSelectedCount();
-                if (!count) {
+            btn.addEventListener('click', async () => {
+                const selectedRows = [...rowCheckboxes].filter(cb => cb.checked);
+                const ids = selectedRows.map(cb => cb.closest('tr')?.dataset.userId).filter(Boolean);
+
+                if (!ids.length) {
                     notify({ title: 'No users selected', text: 'Pick at least one member first.', icon: 'info' });
                     return;
                 }
+
                 const action = btn.dataset.bulkAction;
-                confirmAction({
-                    title: `${action === 'activate' ? 'Activate' : 'Deactivate'} ${count} user(s)?`,
-                    text: `This will ${action} the selected accounts.`,
+                const status = action === 'activate' ? 'active' : 'inactive';
+
+                const confirmation = await confirmAction({
+                    title: `${capitalize(action)} ${ids.length} user(s)?`,
+                    text: `This will mark the selected accounts as ${status}.`,
                     confirmText: `Yes, ${action}`,
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        notify({
-                            title: 'Action completed',
-                            text: `Successfully ${action}d ${count} user(s).`,
-                        });
-                    }
                 });
+
+                if (!confirmation.isConfirmed) return;
+
+                try {
+                    const response = await apiRequest(urlTemplates.bulkStatus, 'POST', {
+                        user_ids: ids,
+                        status,
+                    });
+
+                    (response.users || []).forEach(updateRowDom);
+                    notify({ title: 'Action completed', text: `Updated ${ids.length} user(s).` });
+                    updateSelectedCount();
+                } catch (error) {
+                    notify({ title: 'Unable to update', text: error.message, icon: 'error' });
+                }
             });
         });
 
-        const validateInvite = () => {
-            const isValid = inviteForm.checkValidity() && inviteRolesSelected.size > 0;
-            sendInviteBtn.disabled = !isValid;
-        };
+        const openModal = id => document.getElementById(id)?.classList.add('active');
+        const closeModal = modal => modal?.classList.remove('active');
 
-        inviteRoleContainer.querySelectorAll('.chip-option').forEach(chip => {
-            chip.addEventListener('click', () => {
-                chip.classList.toggle('active');
-                inviteRolesSelected.has(chip.dataset.role)
-                    ? inviteRolesSelected.delete(chip.dataset.role)
-                    : inviteRolesSelected.add(chip.dataset.role);
-                validateInvite();
+        modals.forEach(overlay => {
+            overlay.addEventListener('click', e => {
+                if (e.target === overlay) closeModal(overlay);
             });
         });
 
-        inviteForm.addEventListener('input', validateInvite);
-
-        inviteForm.addEventListener('submit', e => {
-            e.preventDefault();
-            closeModal(document.querySelector('#inviteModal'));
-            notify({
-                title: 'Invitation sent',
-                text: `An invitation was sent to ${document.querySelector('#inviteEmail').value}.`,
-            });
-            inviteForm.reset();
-            inviteRolesSelected.clear();
-            inviteRoleContainer.querySelectorAll('.chip-option').forEach(chip => chip.classList.remove('active'));
-            validateInvite();
+        document.querySelectorAll('[data-modal-close]').forEach(btn => {
+            btn.addEventListener('click', e => closeModal(e.target.closest('.modal-overlay')));
         });
 
-        copyTempPassBtn.addEventListener('click', () => {
-            const tempInput = document.querySelector('#inviteTempPass');
-            navigator.clipboard.writeText(tempInput.value);
-            notify({ title: 'Copied', text: 'Temporary password copied to clipboard.', icon: 'success' });
-        });
-
-        const syncEditRoleChips = () => {
-            editRoleChips.forEach(chip => {
-                chip.classList.toggle('active', editRolesSelected.has(chip.dataset.role));
-            });
+        const syncRoleChips = () => {
+            editRoleChips.forEach(chip => chip.classList.toggle('active', chip.dataset.role === currentEditRole));
         };
 
         const syncStatusChips = () => {
-            statusChips.forEach(chip => {
-                chip.classList.toggle('active', chip.dataset.status === currentEditStatus);
-            });
+            statusChips.forEach(chip => chip.classList.toggle('active', chip.dataset.status === currentEditStatus));
         };
 
         editRoleChips.forEach(chip => {
             chip.addEventListener('click', () => {
-                chip.classList.toggle('active');
-                editRolesSelected.has(chip.dataset.role)
-                    ? editRolesSelected.delete(chip.dataset.role)
-                    : editRolesSelected.add(chip.dataset.role);
+                currentEditRole = chip.dataset.role;
+                syncRoleChips();
             });
         });
 
         statusChips.forEach(chip => {
             chip.addEventListener('click', () => {
-                statusChips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
                 currentEditStatus = chip.dataset.status;
+                syncStatusChips();
             });
         });
 
         document.querySelectorAll('[data-modal-open]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const target = btn.dataset.modalOpen;
+
                 if (target === 'editUserModal') {
                     const row = btn.closest('tr');
                     if (row) {
+                        currentEditUserId = row.dataset.userId;
                         editUserName.value = row.dataset.name;
-                        editUserDepartment.value = row.dataset.department;
+                        editUserDepartment.value = row.dataset.departmentId || '';
                         editUserMeta.textContent = `${row.dataset.email} • ${row.dataset.department}`;
                         currentEditStatus = row.dataset.status;
-                        editRolesSelected = new Set(JSON.parse(row.dataset.roles || '[]'));
-                        syncEditRoleChips();
+                        currentEditRole = row.dataset.role;
+                        syncRoleChips();
                         syncStatusChips();
+
                         if (inlineResetBtn) {
-                            inlineResetBtn.dataset.confirm = `Reset password for ${row.dataset.name}?`;
-                            inlineResetBtn.dataset.success = `Password reset emailed to ${row.dataset.email}.`;
-                        }
-                        if (suspendBtn) {
-                            suspendBtn.dataset.confirm = `Suspend access for ${row.dataset.name}?`;
-                            suspendBtn.dataset.success = `${row.dataset.name} access suspended.`;
+                            inlineResetBtn.dataset.userId = currentEditUserId;
                         }
                     }
                 }
@@ -750,46 +766,189 @@
                     departmentHeadInput.value = deptHead;
                 }
 
+                if (target === 'editRoleModal') {
+                    const roleField = document.querySelector('#roleName');
+                    roleField.value = btn.closest('.role-card')?.querySelector('h3')?.textContent?.trim() || 'Admin';
+                }
+
                 openModal(target);
             });
         });
 
-        editUserForm.addEventListener('submit', e => {
+        editUserForm.addEventListener('submit', async e => {
             e.preventDefault();
-            closeModal(document.querySelector('#editUserModal'));
-            notify({ title: 'User updated', text: `${editUserName.value} saved successfully.` });
+            if (!currentEditUserId || !currentEditRole) {
+                notify({ title: 'Missing details', text: 'Pick a role before saving.', icon: 'info' });
+                return;
+            }
+
+            try {
+                const response = await apiRequest(buildUrl(urlTemplates.update, currentEditUserId), 'PUT', {
+                    name: editUserName.value,
+                    department_id: editUserDepartment.value || null,
+                    role: currentEditRole,
+                    status: currentEditStatus,
+                });
+
+                updateRowDom(response.user);
+                closeModal(document.querySelector('#editUserModal'));
+                notify({ title: 'User updated', text: `${response.user.name} saved successfully.` });
+            } catch (error) {
+                notify({ title: 'Unable to save', text: error.message, icon: 'error' });
+            }
         });
 
-        editRoleForm.addEventListener('submit', e => {
-            e.preventDefault();
-            closeModal(document.querySelector('#editRoleModal'));
-            notify({ title: 'Role updated', text: `${document.querySelector('#roleName').value} permissions saved.` });
-        });
+        if (inlineResetBtn) {
+            inlineResetBtn.addEventListener('click', async () => {
+                if (!currentEditUserId) return;
+                try {
+                    const response = await apiRequest(buildUrl(urlTemplates.reset, currentEditUserId), 'POST');
+                    updateRowDom(response.user);
+                    notify({
+                        title: 'Password reset',
+                        text: `New temporary password: ${response.temporary_password}`,
+                    });
+                } catch (error) {
+                    notify({ title: 'Reset failed', text: error.message, icon: 'error' });
+                }
+            });
+        }
 
-        departmentForm.addEventListener('submit', e => {
-            e.preventDefault();
-            closeModal(document.querySelector('#departmentModal'));
-            notify({ title: 'Department saved', text: `${departmentNameInput.value} updated.` });
-        });
+        if (suspendBtn) {
+            suspendBtn.addEventListener('click', async () => {
+                if (!currentEditUserId) return;
 
-        document.querySelectorAll('[data-confirm]').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const confirmText = btn.dataset.confirm || 'Proceed with this action?';
-                const successText = btn.dataset.success || 'Action completed.';
-                confirmAction({ title: 'Please confirm', text: confirmText }).then(result => {
-                    if (result.isConfirmed) {
-                        notify({ title: 'Done', text: successText });
+                const confirmation = await confirmAction({
+                    title: 'Suspend access?',
+                    text: 'This will deactivate the account until you reactivate it.',
+                });
+
+                if (!confirmation.isConfirmed) return;
+
+                try {
+                    const response = await apiRequest(buildUrl(urlTemplates.deactivate, currentEditUserId), 'POST');
+                    updateRowDom(response.user);
+                    notify({ title: 'Suspended', text: response.message || 'User deactivated.' });
+                } catch (error) {
+                    notify({ title: 'Action failed', text: error.message, icon: 'error' });
+                }
+            });
+        }
+
+        const handleStatusAction = (selector, endpointTemplate, successLabel) => {
+            document.querySelectorAll(selector).forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const userId = btn.dataset.userId;
+                    const row = getRowById(userId);
+                    const userName = row?.dataset.name || 'this user';
+
+                    const confirmation = await confirmAction({
+                        title: successLabel,
+                        text: btn.dataset.confirm || `Apply this change to ${userName}?`,
+                    });
+
+                    if (!confirmation.isConfirmed) return;
+
+                    try {
+                        const response = await apiRequest(buildUrl(endpointTemplate, userId), 'POST');
+                        updateRowDom(response.user);
+                        notify({ title: 'Done', text: response.message || `${userName} updated.` });
+                    } catch (error) {
+                        notify({ title: 'Action failed', text: error.message, icon: 'error' });
                     }
                 });
             });
+        };
+
+        handleStatusAction('[data-action="deactivate"]', urlTemplates.deactivate, 'Deactivate user?');
+
+        document.querySelectorAll('[data-action="reset"]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const userId = btn.dataset.userId;
+                const row = getRowById(userId);
+                const userName = row?.dataset.name || 'this user';
+
+                const confirmation = await confirmAction({
+                    title: 'Reset password?',
+                    text: btn.dataset.confirm || `Generate a temporary password for ${userName}?`,
+                });
+
+                if (!confirmation.isConfirmed) return;
+
+                try {
+                    const response = await apiRequest(buildUrl(urlTemplates.reset, userId), 'POST');
+                    updateRowDom(response.user);
+                    notify({
+                        title: 'Password reset',
+                        text: `New temporary password: ${response.temporary_password}`,
+                        confirmText: 'Copied',
+                    }).then(() => navigator.clipboard.writeText(response.temporary_password));
+                } catch (error) {
+                    notify({ title: 'Reset failed', text: error.message, icon: 'error' });
+                }
+            });
         });
 
-        const tabs = document.querySelectorAll('.admin-tab');
-        const panels = {
-            roles: document.querySelector('#tabRoles'),
-            permissions: document.querySelector('#tabPermissions'),
-            departments: document.querySelector('#tabDepartments'),
+        const validateInvite = () => {
+            const isValid = inviteForm.checkValidity() && inviteRolesSelected.size > 0;
+            if (sendInviteBtn) sendInviteBtn.disabled = !isValid;
         };
+
+        inviteRoleContainer?.querySelectorAll('.chip-option').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.classList.toggle('active');
+                inviteRolesSelected.has(chip.dataset.role)
+                    ? inviteRolesSelected.delete(chip.dataset.role)
+                    : inviteRolesSelected.add(chip.dataset.role);
+                validateInvite();
+            });
+        });
+
+        inviteForm?.addEventListener('input', validateInvite);
+
+        inviteForm?.addEventListener('submit', e => {
+            e.preventDefault();
+            closeModal(document.querySelector('#inviteModal'));
+            notify({
+                title: 'Invitation staged',
+                text: `Invite drafted for ${document.querySelector('#inviteEmail').value}.`,
+            });
+            inviteForm.reset();
+            inviteRolesSelected.clear();
+            inviteRoleContainer?.querySelectorAll('.chip-option').forEach(chip => chip.classList.remove('active'));
+            validateInvite();
+        });
+
+        copyTempPassBtn?.addEventListener('click', () => {
+            const tempInput = document.querySelector('#inviteTempPass');
+            navigator.clipboard.writeText(tempInput.value);
+            notify({ title: 'Copied', text: 'Temporary password copied to clipboard.', icon: 'success' });
+        });
+
+        editRoleForm?.addEventListener('submit', e => {
+            e.preventDefault();
+            closeModal(document.querySelector('#editRoleModal'));
+            notify({ title: 'Role saved', text: `${document.querySelector('#roleName').value} permissions updated.` });
+        });
+
+        departmentForm?.addEventListener('submit', e => {
+            e.preventDefault();
+            closeModal(document.querySelector('#departmentModal'));
+            notify({ title: 'Department saved', text: `${departmentNameInput.value} captured.` });
+        });
+
+        document.querySelectorAll('[data-confirm]:not([data-action])').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const confirmation = await confirmAction({
+                    title: 'Please confirm',
+                    text: btn.dataset.confirm || 'Proceed with this action?',
+                });
+
+                if (confirmation.isConfirmed) {
+                    notify({ title: 'Done', text: btn.dataset.success || 'Action completed.' });
+                }
+            });
+        });
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
@@ -799,6 +958,8 @@
                 panels[tab.dataset.tab].hidden = false;
             });
         });
+
+        applyFilters();
     });
 </script>
 @endpush
