@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\AdminHubController;
 use App\Http\Controllers\Admin\AdminApprovalController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
+use App\Http\Controllers\Admin\AdminCalendarController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 
@@ -110,6 +111,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/analytics/export/csv', [AdminAnalyticsController::class, 'exportCsv'])->name('admin.analytics.export.csv');
     Route::get('/admin/analytics/export/charts', [AdminAnalyticsController::class, 'exportCharts'])->name('admin.analytics.export.charts');
     Route::get('/admin/analytics/export/pdf', [AdminAnalyticsController::class, 'exportPdf'])->name('admin.analytics.export.pdf');
+
+    Route::get('/admin/calendar', [AdminCalendarController::class, 'index'])->name('admin.calendar');
+    Route::post('/admin/calendar/block', [AdminCalendarController::class, 'block'])->name('admin.calendar.block');
+    Route::get('/admin/calendar/export/ics', [AdminCalendarController::class, 'exportIcs'])->name('admin.calendar.export.ics');
 });
 
 // Temporary preview route for Admin Facilities Management
@@ -117,9 +122,6 @@ Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
 
 // Temporary preview route for Admin Policies
 Route::view('/admin/policies', 'admin.policies')->name('admin.policies');
-
-// Temporary preview route for Admin Global Calendar
-Route::view('/admin/calendar', 'admin.calendar')->name('admin.calendar');
 
 // Temporary preview route for Admin Audit Log
 Route::view('/admin/audit', 'admin.audit')->name('admin.audit');

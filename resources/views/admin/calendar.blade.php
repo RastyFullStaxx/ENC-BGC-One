@@ -7,164 +7,7 @@
 @endpush
 
 @section('content')
-@php
-    $bookings = [
-        [
-            'facility' => 'Orion Boardroom',
-            'time' => '2024-08-12 09:00 AM – 11:00 AM',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'day' => 'Mon',
-            'tooltip' => "Leadership Sync\nRequester: J. Mercado\nAttendees: 14",
-            'priority' => 'Leadership',
-        ],
-        [
-            'facility' => 'Helios Lab',
-            'time' => '1:00 PM – 3:00 PM',
-            'status' => 'pending',
-            'status_label' => 'Pending',
-            'day' => 'Mon',
-            'tooltip' => "Training Session\nRequester: A. Santos\nAttendees: 24",
-            'priority' => 'Training',
-        ],
-        [
-            'facility' => 'Summit Hall',
-            'time' => '10:00 AM – 4:00 PM',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'day' => 'Tue',
-            'tooltip' => "Town Hall\nRequester: Exec Office\nAttendees: 120",
-            'priority' => 'Event',
-        ],
-        [
-            'facility' => 'Nova Hub',
-            'time' => '2:00 PM – 3:30 PM',
-            'status' => 'cancelled',
-            'status_label' => 'Cancelled',
-            'day' => 'Wed',
-            'tooltip' => "Design Sprint\nRequester: Creative Team\nAttendees: 8",
-            'priority' => 'Team',
-        ],
-        [
-            'facility' => 'Orion Boardroom',
-            'time' => '4:00 PM – 6:00 PM',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'day' => 'Wed',
-            'tooltip' => "Project Update\nRequester: Strategy\nAttendees: 12",
-            'priority' => 'Project',
-        ],
-        [
-            'facility' => 'Helios Lab',
-            'time' => '9:00 AM – 12:00 PM',
-            'status' => 'pending',
-            'status_label' => 'Pending',
-            'day' => 'Thu',
-            'tooltip' => "Systems Training\nRequester: Ops\nAttendees: 20",
-            'priority' => 'Training',
-        ],
-        [
-            'facility' => 'Summit Hall',
-            'time' => '1:00 PM – 5:00 PM',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'day' => 'Thu',
-            'tooltip' => "Ministry Event\nRequester: External Affairs\nAttendees: 150",
-            'priority' => 'Event',
-        ],
-    ];
-
-    $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-    $listBookings = [
-        [
-            'title' => 'Leadership Sync',
-            'facility' => 'Orion Boardroom',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'date' => 'Aug 12',
-            'time' => '09:00 – 11:00',
-            'duration' => '2h',
-            'requester' => 'J. Mercado',
-            'owner' => 'Ops • N. Cruz',
-            'type' => 'Leadership',
-        ],
-        [
-            'title' => 'Training Session',
-            'facility' => 'Helios Lab',
-            'status' => 'pending',
-            'status_label' => 'Pending',
-            'date' => 'Aug 12',
-            'time' => '13:00 – 15:00',
-            'duration' => '2h',
-            'requester' => 'A. Santos',
-            'owner' => 'L&D • C. Uy',
-            'type' => 'Training',
-        ],
-        [
-            'title' => 'Town Hall',
-            'facility' => 'Summit Hall',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'date' => 'Aug 13',
-            'time' => '10:00 – 16:00',
-            'duration' => '6h',
-            'requester' => 'Exec Office',
-            'owner' => 'Events • L. Garcia',
-            'type' => 'Event',
-        ],
-        [
-            'title' => 'Design Sprint',
-            'facility' => 'Nova Hub',
-            'status' => 'cancelled',
-            'status_label' => 'Cancelled',
-            'date' => 'Aug 14',
-            'time' => '14:00 – 15:30',
-            'duration' => '1.5h',
-            'requester' => 'Creative Team',
-            'owner' => 'Product • K. David',
-            'type' => 'Team',
-        ],
-        [
-            'title' => 'Project Update',
-            'facility' => 'Orion Boardroom',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'date' => 'Aug 14',
-            'time' => '16:00 – 18:00',
-            'duration' => '2h',
-            'requester' => 'Strategy',
-            'owner' => 'Ops • D. Cruz',
-            'type' => 'Project',
-        ],
-        [
-            'title' => 'Systems Training',
-            'facility' => 'Helios Lab',
-            'status' => 'pending',
-            'status_label' => 'Pending',
-            'date' => 'Aug 15',
-            'time' => '09:00 – 12:00',
-            'duration' => '3h',
-            'requester' => 'Ops',
-            'owner' => 'L&D • C. Uy',
-            'type' => 'Training',
-        ],
-        [
-            'title' => 'Ministry Event',
-            'facility' => 'Summit Hall',
-            'status' => 'approved',
-            'status_label' => 'Approved',
-            'date' => 'Aug 15',
-            'time' => '13:00 – 17:00',
-            'duration' => '4h',
-            'requester' => 'External Affairs',
-            'owner' => 'Events • L. Garcia',
-            'type' => 'Event',
-        ],
-    ];
-@endphp
-
-<section class="admin-calendar-page">
+<section class="admin-calendar-page" data-week-start="{{ $stats['week_start'] ?? now()->toDateString() }}" data-prev="{{ $stats['prev_start'] ?? '' }}" data-next="{{ $stats['next_start'] ?? '' }}">
     <div class="admin-calendar-shell">
         <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -172,11 +15,11 @@
             </svg>
             Back to admin hub
         </a>
-        <p class="cal-breadcrumb">Admin Hub · Global Calendar</p>
+        <p class="cal-breadcrumb">Admin Hub · Global Calendar · {{ $stats['week_range'] ?? '' }} ({{ $stats['timezone'] ?? 'Asia/Manila' }})</p>
         <div class="cal-header">
             <div>
                 <h1>Global Calendar</h1>
-                <p>All bookings across ENC facilities in one view.</p>
+                <p>All bookings across ENC facilities in one view. Live week view pulls from Booking records with facility + requester context.</p>
             </div>
             <div class="cal-controls">
                 <div class="cal-view-tabs" id="viewSwitch">
@@ -185,10 +28,10 @@
                     <button data-view="month">Month</button>
                 </div>
                 <button class="cal-btn" id="prevBtn">‹ Prev</button>
-                <button class="cal-btn">Today</button>
+                <button class="cal-btn" id="todayBtn">Today</button>
                 <button class="cal-btn" id="nextBtn">Next ›</button>
                 <button class="cal-btn cal-btn-primary" id="filterBtn">Filters</button>
-                <button class="cal-btn">Export ICS</button>
+                <a class="cal-btn" href="{{ route('admin.calendar.export.ics') }}">Export ICS</a>
             </div>
         </div>
 
@@ -198,38 +41,45 @@
                     <span><span class="cal-legend-dot" style="background: var(--cal-success)"></span> Approved</span>
                     <span><span class="cal-legend-dot" style="background: var(--cal-info)"></span> Pending</span>
                     <span><span class="cal-legend-dot" style="background: var(--cal-danger)"></span> Cancelled</span>
+                    <span><span class="cal-legend-dot" style="background: var(--cal-warning)"></span> Blocked</span>
                     <span><span class="cal-legend-dot" style="background: rgba(116,143,252,0.85)"></span> Recurring</span>
                 </div>
                 <div class="cal-filter-chips" id="filterChips">
-                    <span class="cal-chip">Building A</span>
-                    <span class="cal-chip">Meeting Rooms</span>
+                    @foreach ($appliedFilters as $f)
+                        <span class="cal-chip active">{{ $f }}</span>
+                    @endforeach
                 </div>
             </div>
 
             <div class="cal-grid week" id="calendarGrid">
-                @foreach ($days as $day)
-                    <div class="cal-day-column {{ in_array($day, ['Sat', 'Sun']) ? 'is-weekend' : '' }}" data-day="{{ $day }}">
+                @foreach ($calendarDays as $day)
+                    @php
+                        $dayKey = $day->format('D');
+                        $dayEvents = $eventsByDay[$dayKey] ?? collect();
+                    @endphp
+                    <div class="cal-day-column {{ $day->isWeekend() ? 'is-weekend' : '' }}" data-day="{{ $dayKey }}">
                         <div class="cal-day-header">
-                            <strong>{{ $day }}</strong>
-                            <span class="text-muted small">Today</span>
+                            <strong>{{ $day->format('D') }}</strong>
+                            <span class="text-muted small">{{ $day->isToday() ? 'Today' : $day->format('M j') }}</span>
                         </div>
                         <div class="cal-events-stack">
-                            @foreach ($bookings as $booking)
-                                @if ($booking['day'] === $day)
-                                    <div
-                                        class="cal-event {{ $booking['status'] }}"
-                                        data-tooltip="{{ $booking['tooltip'] }}"
-                                        data-booking="{{ $booking['facility'] }}"
-                                        data-time="{{ $booking['time'] }}"
-                                        data-status="{{ $booking['status_label'] }}"
-                                        data-priority="{{ $booking['priority'] }}"
-                                    >
-                                        <strong>{{ $booking['facility'] }}</strong>
-                                        <small>{{ $booking['time'] }}</small>
-                                        <small class="text-muted">{{ $booking['status_label'] }}</small>
-                                    </div>
-                                @endif
-                            @endforeach
+                            @forelse ($dayEvents as $booking)
+                                <div
+                                    class="cal-event {{ $booking['status'] }}"
+                                    data-id="{{ $booking['id'] }}"
+                                    data-tooltip="{{ $booking['tooltip'] }}"
+                                    data-booking="{{ $booking['facility'] }}"
+                                    data-time="{{ $booking['slot'] }}"
+                                    data-status="{{ $booking['status_label'] }}"
+                                    data-priority="{{ $booking['priority'] }}"
+                                >
+                                    <strong>{{ $booking['facility'] }}</strong>
+                                    <small>{{ $booking['slot'] }}</small>
+                                    <small class="text-muted">{{ $booking['status_label'] }}</small>
+                                </div>
+                            @empty
+                                <div class="cal-empty text-muted small">No bookings</div>
+                            @endforelse
                         </div>
                     </div>
                 @endforeach
@@ -239,24 +89,24 @@
                 <div class="cal-stats">
                     <div class="cal-stat-card">
                         <p class="cal-stat-label">Bookings today</p>
-                        <div class="cal-stat-value">18</div>
-                        <p class="cal-stat-foot text-muted">+4 vs yesterday</p>
+                        <div class="cal-stat-value">{{ $stats['today'] ?? 0 }}</div>
+                        <p class="cal-stat-foot text-muted">Live from booking table</p>
                     </div>
                     <div class="cal-stat-card">
                         <p class="cal-stat-label">Pending approvals</p>
-                        <div class="cal-stat-value">6</div>
-                        <p class="cal-stat-foot text-muted">2 urgent</p>
+                        <div class="cal-stat-value">{{ $stats['pending'] ?? 0 }}</div>
+                        <p class="cal-stat-foot text-muted">Awaiting decision</p>
                     </div>
                     <div class="cal-stat-card">
                         <p class="cal-stat-label">Utilization</p>
                         <div class="cal-progress">
-                            <span style="width: 72%"></span>
+                            <span style="width: {{ $stats['utilization'] ?? 0 }}%"></span>
                         </div>
-                        <p class="cal-stat-foot text-muted">72% of bookable hours</p>
+                        <p class="cal-stat-foot text-muted">{{ $stats['utilization'] ?? 0 }}% of 8h/day baseline</p>
                     </div>
                     <div class="cal-stat-card">
                         <p class="cal-stat-label">Cancellations</p>
-                        <div class="cal-stat-value text-warning">2</div>
+                        <div class="cal-stat-value text-warning">{{ $stats['cancelled'] ?? 0 }}</div>
                         <p class="cal-stat-foot text-muted">This week</p>
                     </div>
                 </div>
@@ -282,8 +132,8 @@
                         </div>
                     </div>
                     <div class="cal-actions">
-                        <button class="cal-btn">Block time</button>
-                        <button class="cal-btn cal-btn-primary">New booking</button>
+                        <button class="cal-btn" id="blockBtn">Block time</button>
+                        <a class="cal-btn cal-btn-primary" href="{{ route('booking.wizard') }}">New booking</a>
                     </div>
                 </div>
 
@@ -297,9 +147,19 @@
                             <span class="cal-chip" data-filter-type="status" data-filter-value="approved">Approved</span>
                             <span class="cal-chip" data-filter-type="status" data-filter-value="pending">Pending</span>
                             <span class="cal-chip" data-filter-type="status" data-filter-value="cancelled">Cancelled</span>
+                            <span class="cal-chip" data-filter-type="status" data-filter-value="blocked">Blocked</span>
                             <span class="cal-chip" data-filter-type="type" data-filter-value="Training">Training</span>
                             <span class="cal-chip" data-filter-type="type" data-filter-value="Event">Event</span>
                         </div>
+                    </div>
+
+                    <div class="cal-note">
+                        <strong>Quick guide</strong>
+                        <ul>
+                            <li>Click any block to open the drawer with requester + purpose. Use chips/search to focus on status or type.</li>
+                            <li>“Block time” sets a hold (no services) so teams can reserve without approvals; select room + start/end, add note, save.</li>
+                            <li>Need speed? Use “Only mine” to see your queue, hide weekends for density, and tap “Resched” for quick follow-up.</li>
+                        </ul>
                     </div>
 
                     <div class="cal-table" id="bookingTable">
@@ -315,9 +175,10 @@
                         </div>
                         @foreach ($listBookings as $list)
                             <div class="cal-table-row"
+                                data-id="{{ $list['id'] }}"
                                 data-status="{{ strtolower($list['status']) }}"
-                                data-type="{{ $list['type'] }}"
-                                data-owner="{{ $list['owner'] }}"
+                                data-type="{{ strtolower($list['type']) }}"
+                                data-owner="{{ strtolower($list['owner']) }}"
                             >
                                 <span>
                                     <div class="cal-table-title">{{ $list['title'] }}</div>
@@ -330,8 +191,8 @@
                                 <span>{{ $list['requester'] }}</span>
                                 <span>{{ $list['owner'] }}</span>
                                 <span class="text-end">
-                                    <button class="cal-link">Open</button>
-                                    <button class="cal-link cal-link-muted">Resched</button>
+                                    <a class="cal-link" href="{{ route('admin.approvals.show', $list['id']) }}">Open</a>
+                                    <a class="cal-link cal-link-muted" href="{{ route('admin.approvals.show', $list['id']) }}?reschedule=1">Resched</a>
                                 </span>
                             </div>
                         @endforeach
@@ -371,8 +232,8 @@
         </ul>
     </div>
     <div class="cal-drawer-actions">
-        <button class="cal-btn">View Details</button>
-        <button class="cal-btn cal-btn-primary">Open Approvals</button>
+        <a class="cal-btn" id="drawerView" href="#">View Details</a>
+        <a class="cal-btn cal-btn-primary" id="drawerApproval" href="#">Open Approvals</a>
     </div>
 </aside>
 
@@ -383,31 +244,33 @@
             <h3>Calendar Filters</h3>
             <button class="pol-action-btn" data-modal-close>&times;</button>
         </header>
-        <form class="pol-form">
+        <form class="pol-form" method="GET" action="{{ route('admin.calendar') }}">
             <div class="pol-field">
                 <label>Building</label>
-                <select>
-                    <option>All buildings</option>
-                    <option>Building A</option>
-                    <option>Building B</option>
+                <select name="building_id">
+                    <option value="">All buildings</option>
+                    @foreach ($buildings as $building)
+                        <option value="{{ $building->id }}" @selected($filters['building_id'] == $building->id)>{{ $building->name }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="pol-field">
                 <label>Facility type</label>
-                <select>
-                    <option>All types</option>
-                    <option>Meeting Rooms</option>
-                    <option>Training Rooms</option>
-                    <option>Event Halls</option>
+                <select name="type">
+                    <option value="">All types</option>
+                    @foreach ($facilityTypes as $type)
+                        <option value="{{ $type }}" @selected($filters['type'] === $type)>{{ $type }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="pol-field">
                 <label>Status</label>
-                <select>
-                    <option>All status</option>
-                    <option>Approved</option>
-                    <option>Pending</option>
-                    <option>Cancelled</option>
+                <select name="status">
+                    <option value="">All status</option>
+                    <option value="approved" @selected($filters['status'] === 'approved')>Approved</option>
+                    <option value="pending" @selected($filters['status'] === 'pending')>Pending</option>
+                    <option value="cancelled" @selected($filters['status'] === 'cancelled')>Cancelled</option>
+                    <option value="blocked" @selected($filters['status'] === 'blocked')>Blocked</option>
                 </select>
             </div>
             <div class="pol-field">
@@ -444,6 +307,14 @@
         const chips = Array.from(document.querySelectorAll('.cal-chip[data-filter-type]'));
         const mineToggle = document.getElementById('mineToggle');
         const weekendsToggle = document.getElementById('weekendsToggle');
+        const blockBtn = document.getElementById('blockBtn');
+        const facilities = @json($facilities ?? []);
+        const blockEndpoint = @json(route('admin.calendar.block'));
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const drawerView = document.getElementById('drawerView');
+        const drawerApproval = document.getElementById('drawerApproval');
+        const approvalRouteTemplate = @json(route('admin.approvals.show', ['booking' => '__ID__']));
+        const shell = document.querySelector('.admin-calendar-page');
 
         const openDrawer = (data) => {
             drawer.classList.add('open');
@@ -454,6 +325,12 @@
             document.getElementById('drawerWhen').textContent = data.time;
             document.getElementById('drawerWho').textContent = `Requester: ${data.requester || '—'}`;
             document.getElementById('drawerPurpose').textContent = `${data.purpose || 'Huddle'} · Attendees: ${data.attendees || '—'}`;
+            if (drawerView) {
+                drawerView.href = approvalRouteTemplate.replace('__ID__', data.id);
+            }
+            if (drawerApproval) {
+                drawerApproval.href = approvalRouteTemplate.replace('__ID__', data.id);
+            }
         };
 
         const closeDrawer = () => {
@@ -465,6 +342,7 @@
         events.forEach(event => {
             event.addEventListener('click', () => {
                 openDrawer({
+                    id: event.dataset.id,
                     facility: event.dataset.booking,
                     time: event.dataset.time,
                     status: event.dataset.status,
@@ -494,6 +372,20 @@
             });
         });
 
+        const navigateWeek = (targetDate) => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('start', targetDate);
+            window.location.href = url.toString();
+        };
+
+        const currentWeekStart = shell?.dataset.weekStart;
+        const prevStart = shell?.dataset.prev;
+        const nextStart = shell?.dataset.next;
+
+        document.getElementById('prevBtn')?.addEventListener('click', () => prevStart && navigateWeek(prevStart));
+        document.getElementById('nextBtn')?.addEventListener('click', () => nextStart && navigateWeek(nextStart));
+        document.getElementById('todayBtn')?.addEventListener('click', () => currentWeekStart && navigateWeek(currentWeekStart));
+
         const state = {
             status: null,
             type: null,
@@ -506,7 +398,7 @@
             bookingRows.forEach(row => {
                 const matchesStatus = state.status ? row.dataset.status === state.status : true;
                 const matchesType = state.type ? row.dataset.type === state.type : true;
-                const matchesMine = state.mineOnly ? row.dataset.owner.toLowerCase().includes('ops') : true;
+                const matchesMine = state.mineOnly ? /admin|ops|me/.test(row.dataset.owner || '') : true;
                 const text = row.textContent.toLowerCase();
                 const matchesSearch = state.search ? text.includes(state.search) : true;
                 const visible = matchesStatus && matchesType && matchesMine && matchesSearch;
@@ -551,6 +443,77 @@
         weekendsToggle?.addEventListener('change', (e) => {
             state.showWeekends = e.target.checked;
             handleWeekends(state.showWeekends);
+        });
+
+        blockBtn?.addEventListener('click', () => {
+            const facilityOptions = facilities.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+            const today = new Date().toISOString().split('T')[0];
+            Swal.fire({
+                title: 'Block time',
+                html: `
+                    <div class="pol-field">
+                        <label>Facility</label>
+                        <select id="blockFacility" class="swal2-select">${facilityOptions}</select>
+                    </div>
+                    <div class="pol-field" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label>Date</label>
+                            <input id="blockDate" type="date" class="swal2-input" value="${today}">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label>Start</label>
+                            <input id="blockStart" type="time" class="swal2-input">
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <label>End</label>
+                            <input id="blockEnd" type="time" class="swal2-input">
+                        </div>
+                    </div>
+                    <div class="pol-field">
+                        <label>Note</label>
+                        <input id="blockNote" class="swal2-input" placeholder="e.g., Deep clean / maintenance window">
+                    </div>
+                    <p class="small text-muted" style="text-align:left; margin-top:6px;">Blocks are holds without services or approvals. Cancel to free the slot.</p>
+                `,
+                confirmButtonText: 'Save block',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                customClass: { popup: 'block-modal' },
+                focusConfirm: false,
+                preConfirm: () => {
+                    const facility_id = document.getElementById('blockFacility').value;
+                    const date = document.getElementById('blockDate').value;
+                    const start_at = document.getElementById('blockStart').value;
+                    const end_at = document.getElementById('blockEnd').value;
+                    const note = document.getElementById('blockNote').value;
+
+                    if (!facility_id || !date || !start_at || !end_at) {
+                        Swal.showValidationMessage('Facility, date, start, and end are required.');
+                        return false;
+                    }
+
+                    return fetch(blockEndpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrf,
+                        },
+                        body: JSON.stringify({ facility_id, date, start_at, end_at, note }),
+                    }).then(async (res) => {
+                        if (!res.ok) {
+                            const error = await res.json().catch(() => ({}));
+                            throw new Error(error.message || 'Could not save block');
+                        }
+                        return res.json();
+                    }).catch(err => {
+                        Swal.showValidationMessage(err.message);
+                    });
+                },
+            }).then(result => {
+                if (result.isConfirmed) {
+                    Swal.fire('Saved', 'Blocked time was added. Refresh to see it in the grid.', 'success');
+                }
+            });
         });
 
         handleWeekends(state.showWeekends);

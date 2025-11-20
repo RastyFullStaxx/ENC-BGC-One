@@ -156,6 +156,14 @@
     grid-template-columns: repeat(7, 1fr);
 }
 
+.cal-grid.day {
+    grid-template-columns: 1fr;
+}
+
+.cal-grid.month {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
 .cal-day-column {
     border: 1px solid var(--cal-border);
     border-radius: 18px;
@@ -193,6 +201,7 @@
 .cal-event.approved { border-left-color: var(--cal-success); }
 .cal-event.pending { border-left-color: var(--cal-info); }
 .cal-event.cancelled { border-left-color: var(--cal-danger); }
+.cal-event.blocked { border-left-color: var(--cal-warning); }
 
 .cal-event strong {
     display: block;
@@ -210,6 +219,13 @@
     margin-top: 12px;
 }
 
+.cal-empty {
+    border: 1px dashed var(--cal-border);
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+}
+
 .cal-event:hover::after {
     content: attr(data-tooltip);
     position: absolute;
@@ -224,6 +240,82 @@
     transform: translateX(8px);
     width: 180px;
     z-index: 10;
+}
+
+.pol-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1600;
+    padding: 16px;
+}
+
+.pol-modal-overlay.active {
+    display: flex;
+}
+
+.pol-modal {
+    background: rgba(3, 10, 26, 0.95);
+    border: 1px solid var(--cal-border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 520px;
+    color: var(--cal-white);
+}
+
+.pol-modal header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 18px 8px;
+}
+
+.pol-modal .pol-form {
+    padding: 0 18px 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.pol-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--cal-gray-400);
+    font-size: 13px;
+}
+
+.pol-field select,
+.pol-field input {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--cal-white);
+    padding: 8px 10px;
+}
+
+.pol-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 4px;
+}
+
+.pol-btn {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--cal-border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--cal-white);
+    cursor: pointer;
+}
+
+.pol-btn-primary {
+    border: none;
+    background: linear-gradient(120deg, var(--cal-blue-light), #4C7DFF);
+    box-shadow: 0 12px 30px rgba(15, 88, 255, 0.25);
 }
 
 .cal-secondary {
@@ -362,6 +454,27 @@
     justify-content: flex-end;
 }
 
+.cal-note {
+    border: 1px solid var(--cal-border);
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    font-size: 13px;
+    color: var(--cal-gray-400);
+    margin-bottom: 10px;
+}
+
+.cal-note strong {
+    color: var(--cal-white);
+}
+
+.cal-note ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 6px;
+}
+
 .cal-chip {
     border: 1px solid var(--cal-border);
     border-radius: 999px;
@@ -426,6 +539,39 @@
 .cal-status.approved { background: rgba(0, 201, 80, 0.14); color: #6cffa2; }
 .cal-status.pending { background: rgba(76, 180, 255, 0.16); color: #add8ff; }
 .cal-status.cancelled { background: rgba(255, 107, 107, 0.16); color: #ffb3b3; }
+.cal-status.blocked { background: rgba(255, 200, 87, 0.18); color: #ffd479; }
+
+.block-modal {
+    background: rgba(3, 10, 26, 0.98) !important;
+    border: 1px solid var(--cal-border);
+    border-radius: 16px !important;
+    color: var(--cal-white);
+    width: 560px;
+    max-width: 90vw;
+}
+
+.block-modal .swal2-title {
+    color: var(--cal-white);
+}
+
+.block-modal .swal2-input,
+.block-modal .swal2-select {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--cal-border);
+    color: var(--cal-white);
+    border-radius: 10px;
+}
+
+.block-modal .swal2-actions .swal2-confirm {
+    background: linear-gradient(120deg, var(--cal-blue-light), #4C7DFF);
+    border: none;
+    border-radius: 10px;
+}
+
+.block-modal .swal2-actions .swal2-cancel {
+    border: 1px solid var(--cal-border);
+    color: var(--cal-white);
+}
 
 .cal-link {
     background: none;
