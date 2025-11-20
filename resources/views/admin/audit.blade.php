@@ -35,7 +35,7 @@
             <div class="audit-controls">
                 <a href="{{ route('admin.audit.export.csv') }}" class="audit-btn">Export CSV</a>
                 <a href="{{ route('admin.audit.export.json') }}" class="audit-btn">Export JSON</a>
-                <button class="audit-btn audit-btn-primary" type="button">Copy permalink</button>
+                <button class="audit-btn audit-btn-primary" type="button" id="copyPermalink">Copy permalink</button>
             </div>
         </div>
 
@@ -109,6 +109,18 @@
                         <button class="audit-chip" data-filter-module="Users">Users</button>
                         <button class="audit-chip" data-filter-module="Policies">Policies</button>
                         <button class="audit-chip" data-filter-module="Approvals">Approvals</button>
+                        <button class="audit-chip" data-filter-module="Auth">Auth</button>
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Actor type</label>
+                    <div class="audit-chip-row">
+                        <button class="audit-chip active" data-filter-actor="all">All</button>
+                        <button class="audit-chip" data-filter-actor="admin">Admin</button>
+                        <button class="audit-chip" data-filter-actor="user">User</button>
+                        <button class="audit-chip" data-filter-actor="system">System</button>
+                        <button class="audit-chip" data-filter-actor="api">API</button>
                     </div>
                 </div>
 
@@ -206,6 +218,9 @@
                                         data-action="{{ strtolower($entry['action']) }}"
                                         data-target="{{ strtolower($entry['target']) }}"
                                         data-day="{{ strtolower(str_replace(' ', '', $entry['day'])) }}"
+                                        data-actor-type="{{ strtolower($entry['actor_type'] ?? 'admin') }}"
+                                        data-flag-url="{{ route('admin.audit.flag', $entry['id']) }}"
+                                        data-export-url="{{ route('admin.audit.export.entry', $entry['id']) }}"
                                         data-detail='@json($entry)'
                                     >
                                         <div class="audit-card-header">
@@ -323,8 +338,11 @@
         </div>
     </div>
     <div class="audit-drawer-actions">
-        <button class="audit-btn">Flag for review</button>
-        <button class="audit-btn audit-btn-primary">Export entry</button>
+        <form method="POST" id="flagForm" style="display:inline;">
+            @csrf
+            <button class="audit-btn" type="submit">Flag for review</button>
+        </form>
+        <a class="audit-btn audit-btn-primary" id="exportEntryBtn" href="#">Export entry</a>
     </div>
 </aside>
 
@@ -337,6 +355,7 @@
         const riskChips = document.querySelectorAll('[data-filter-risk]');
         const statusChips = document.querySelectorAll('[data-filter-status]');
         const timeframeChips = document.querySelectorAll('[data-filter-timeframe]');
+        const actorChips = document.querySelectorAll('[data-filter-actor]');
         const savedViews = document.querySelectorAll('[data-saved-view]');
         const anomalyToggle = document.querySelector('#anomalyToggle');
         const liveToggle = document.querySelector('#liveToggle');
@@ -345,6 +364,9 @@
         const drawer = document.querySelector('#auditDrawer');
         const overlay = document.querySelector('#auditOverlay');
         const closeDrawerBtn = document.querySelector('#closeAuditDrawer');
+        const copyPermalink = document.querySelector('#copyPermalink');
+        const flagForm = document.querySelector('#flagForm');
+        const exportEntryBtn = document.querySelector('#exportEntryBtn');
 
         let filters = {
             module: 'all',
@@ -352,6 +374,7 @@
             status: 'all',
             timeframe: 'all',
             keyword: '',
+            actorType: 'all',
         };
 
         const savedViewsConfig = {
@@ -371,8 +394,8 @@
             document.querySelector('#drawerSource').textContent = `${detail.source} • ${detail.environment}`;
             document.querySelector('#drawerAction').textContent = detail.action;
             document.querySelector('#drawerEntity').textContent = detail.target;
-            document.querySelector('#drawerBefore').textContent = JSON.stringify(detail.before, null, 2) || '—';
-            document.querySelector('#drawerAfter').textContent = JSON.stringify(detail.after, null, 2) || '—';
+            document.querySelector('#drawerBefore').innerHTML = renderDiff(detail.before, detail.after) || '—';
+            document.querySelector('#drawerAfter').innerHTML = renderDiff(detail.after, detail.before) || '—';
             document.querySelector('#drawerModule').textContent = detail.module;
             document.querySelector('#drawerRisk').textContent = `${(detail.risk || '—')} risk`;
             document.querySelector('#drawerStatus').textContent = detail.status ? detail.status.toUpperCase() : '—';
@@ -383,6 +406,67 @@
             document.querySelector('#drawerNotes').textContent = detail.notes || '—';
             document.querySelector('#drawerSession').textContent = detail.session || '—';
             document.querySelector('#drawerCorrelation').textContent = detail.correlation || '—';
+            if (flagForm) {
+                flagForm.action = detail.flag_url || `{{ url('/admin/audit') }}/${detail.id}/flag`;
+            }
+            if (exportEntryBtn) {
+                exportEntryBtn.href = detail.export_url || `{{ url('/admin/audit') }}/${detail.id}/export`;
+            }
+        };
+
+        const renderDiff = (current, other) => {
+            if (!current && !other) return '—';
+
+            // Scalar comparison
+            if (typeof current !== 'object' || current === null || Array.isArray(current)) {
+                if (current === other || JSON.stringify(current) === JSON.stringify(other)) {
+                    return `<span class="diff-line diff-unchanged">${escapeHtml(formatValue(current))}</span>`;
+                }
+                return [
+                    `<span class="diff-line diff-removed">- ${escapeHtml(formatValue(other))}</span>`,
+                    `<span class="diff-line diff-added">+ ${escapeHtml(formatValue(current))}</span>`
+                ].join('');
+            }
+
+            const beforeObj = (typeof other === 'object' && other !== null) ? other : {};
+            const keys = Array.from(new Set([...Object.keys(current || {}), ...Object.keys(beforeObj)]));
+            const lines = [];
+
+            keys.forEach(key => {
+                const beforeVal = beforeObj[key];
+                const afterVal = current[key];
+                const beforeStr = formatValue(beforeVal);
+                const afterStr = formatValue(afterVal);
+
+                if (JSON.stringify(beforeVal) === JSON.stringify(afterVal)) {
+                    lines.push(`<span class="diff-line diff-unchanged">${escapeHtml(key)}: ${escapeHtml(afterStr)}</span>`);
+                } else {
+                    if (beforeVal !== undefined) {
+                        lines.push(`<span class="diff-line diff-removed">- ${escapeHtml(key)}: ${escapeHtml(beforeStr)}</span>`);
+                    }
+                    if (afterVal !== undefined) {
+                        lines.push(`<span class="diff-line diff-added">+ ${escapeHtml(key)}: ${escapeHtml(afterStr)}</span>`);
+                    }
+                }
+            });
+
+            return lines.join('') || '—';
+        };
+
+        const formatValue = (value) => {
+            if (value === null || value === undefined) return '—';
+            if (Array.isArray(value)) return value.join(', ');
+            if (typeof value === 'object') return JSON.stringify(value);
+            return String(value);
+        };
+
+        const escapeHtml = (unsafe) => {
+            return String(unsafe)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         };
 
         const closeDrawer = () => {
@@ -395,6 +479,8 @@
             const detailBtn = card.querySelector('[data-detail-btn]');
             detailBtn.addEventListener('click', () => {
                 const detail = JSON.parse(card.dataset.detail);
+                detail.flag_url = card.dataset.flagUrl;
+                detail.export_url = card.dataset.exportUrl;
                 openDrawer(detail);
             });
         });
@@ -417,13 +503,14 @@
                 const moduleMatch = filters.module === 'all' || card.dataset.module === filters.module;
                 const riskMatch = filters.risk === 'all' || card.dataset.risk === filters.risk;
                 const statusMatch = filters.status === 'all' || card.dataset.status === filters.status;
+                const actorTypeMatch = filters.actorType === 'all' || card.dataset.actorType === filters.actorType;
                 const keywordMatch = !keyword
                     || card.dataset.actor.includes(keyword)
                     || card.dataset.action.includes(keyword)
                     || card.dataset.target.includes(keyword);
                 const timeframeMatch = matchTimeframe(card);
                 const anomalyMatch = anomalyToggle.checked ? (card.dataset.risk === 'high' || card.dataset.status === 'failed') : true;
-                const visible = moduleMatch && riskMatch && statusMatch && keywordMatch && timeframeMatch && anomalyMatch;
+                const visible = moduleMatch && riskMatch && statusMatch && actorTypeMatch && keywordMatch && timeframeMatch && anomalyMatch;
                 card.style.display = visible ? '' : 'none';
             });
         };
@@ -434,35 +521,77 @@
             });
         };
 
+        const applyFiltersToUi = () => {
+            searchInput.value = filters.keyword;
+            setActiveChip(moduleChips, 'filterModule', filters.module);
+            setActiveChip(riskChips, 'filterRisk', filters.risk);
+            setActiveChip(statusChips, 'filterStatus', filters.status);
+            setActiveChip(timeframeChips, 'filterTimeframe', filters.timeframe);
+            setActiveChip(actorChips, 'filterActor', filters.actorType);
+            filterRows();
+        };
+
+        const readFiltersFromQuery = () => {
+            const params = new URLSearchParams(window.location.search);
+            const paramOr = (key, fallback = '') => params.get(key) ?? fallback;
+            filters.module = paramOr('module', filters.module);
+            filters.risk = paramOr('risk', filters.risk);
+            filters.status = paramOr('status', filters.status);
+            filters.timeframe = paramOr('timeframe', filters.timeframe);
+            filters.keyword = paramOr('q', '').toLowerCase();
+            filters.actorType = paramOr('actor', filters.actorType);
+            anomalyToggle.checked = params.get('anomaly') === '1';
+            applyFiltersToUi();
+        };
+
+        const buildPermalink = () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set('module', filters.module);
+            url.searchParams.set('risk', filters.risk);
+            url.searchParams.set('status', filters.status);
+            url.searchParams.set('timeframe', filters.timeframe);
+            url.searchParams.set('q', filters.keyword || '');
+            url.searchParams.set('actor', filters.actorType);
+            if (anomalyToggle.checked) {
+                url.searchParams.set('anomaly', '1');
+            } else {
+                url.searchParams.delete('anomaly');
+            }
+            return url.toString();
+        };
+
         moduleChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 filters.module = chip.dataset.filterModule;
-                setActiveChip(moduleChips, 'filterModule', filters.module);
-                filterRows();
+                applyFiltersToUi();
             });
         });
 
         riskChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 filters.risk = chip.dataset.filterRisk;
-                setActiveChip(riskChips, 'filterRisk', filters.risk);
-                filterRows();
+                applyFiltersToUi();
             });
         });
 
         statusChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 filters.status = chip.dataset.filterStatus;
-                setActiveChip(statusChips, 'filterStatus', filters.status);
-                filterRows();
+                applyFiltersToUi();
             });
         });
 
         timeframeChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 filters.timeframe = chip.dataset.filterTimeframe;
-                setActiveChip(timeframeChips, 'filterTimeframe', filters.timeframe);
-                filterRows();
+                applyFiltersToUi();
+            });
+        });
+
+        actorChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filters.actorType = chip.dataset.filterActor;
+                applyFiltersToUi();
             });
         });
 
@@ -470,12 +599,7 @@
             viewBtn.addEventListener('click', () => {
                 const config = savedViewsConfig[viewBtn.dataset.savedView] || savedViewsConfig.all;
                 filters = { ...config };
-                searchInput.value = filters.keyword;
-                setActiveChip(moduleChips, 'filterModule', filters.module);
-                setActiveChip(riskChips, 'filterRisk', filters.risk);
-                setActiveChip(statusChips, 'filterStatus', filters.status);
-                setActiveChip(timeframeChips, 'filterTimeframe', filters.timeframe);
-                filterRows();
+                applyFiltersToUi();
             });
         });
 
@@ -500,7 +624,21 @@
             liveStatus.textContent = isOn ? 'Streaming (simulated)' : 'Paused';
         });
 
-        filterRows();
+        if (copyPermalink) {
+            copyPermalink.addEventListener('click', async () => {
+                const permalink = buildPermalink();
+                try {
+                    await navigator.clipboard.writeText(permalink);
+                    copyPermalink.textContent = 'Copied!';
+                    setTimeout(() => (copyPermalink.textContent = 'Copy permalink'), 1500);
+                } catch (e) {
+                    copyPermalink.textContent = 'Copy failed';
+                    setTimeout(() => (copyPermalink.textContent = 'Copy permalink'), 1500);
+                }
+            });
+        }
+
+        readFiltersFromQuery();
     });
 </script>
 @endpush

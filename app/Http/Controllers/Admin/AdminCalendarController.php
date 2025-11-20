@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\BookingDetail;
 use App\Models\Building;
 use App\Models\Facility;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class AdminCalendarController extends Controller
 {
+    public function __construct(private AuditLogger $auditLogger)
+    {
+    }
+
     public function index(Request $request)
     {
         $tz = 'Asia/Manila';
@@ -214,6 +219,25 @@ class AdminCalendarController extends Controller
             ]);
 
             DB::commit();
+
+            $this->auditLogger->log([
+                'action' => 'Blocked facility time',
+                'module' => 'Calendar',
+                'target' => optional($booking->facility)->name ?? $booking->facility_id,
+                'action_type' => 'block',
+                'risk' => 'medium',
+                'status' => 'success',
+                'source' => 'Admin UI',
+                'before' => null,
+                'after' => [
+                    'date' => $booking->date,
+                    'start_at' => $booking->start_at,
+                    'end_at' => $booking->end_at,
+                    'status' => 'blocked',
+                ],
+                'changes' => ['Calendar block added'],
+                'notes' => $request->note,
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
             return response()->json(['message' => 'Could not save block: ' . $e->getMessage()], 500);

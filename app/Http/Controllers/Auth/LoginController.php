@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
+    public function __construct(private AuditLogger $auditLogger)
+    {
+    }
+
     /**
      * Show login form
      */
@@ -70,6 +75,17 @@ class LoginController extends Controller
             $user->forceFill([
                 'last_login_at' => now(),
             ])->save();
+
+            $this->auditLogger->log([
+                'action' => 'Successful login',
+                'module' => 'Auth',
+                'target' => $user->email,
+                'action_type' => 'login',
+                'risk' => 'low',
+                'status' => 'success',
+                'source' => 'Auth UI',
+                'notes' => 'Login accepted',
+            ]);
             
             // Determine redirect URL based on role
             if ($user->role === 'admin') {
@@ -127,6 +143,17 @@ class LoginController extends Controller
                 'message' => 'Authentication failed'
             ], 401);
         }
+
+        $this->auditLogger->log([
+            'action' => 'Failed login',
+            'module' => 'Auth',
+            'target' => $request->input('email'),
+            'action_type' => 'login',
+            'risk' => 'medium',
+            'status' => 'failed',
+            'source' => 'Auth UI',
+            'notes' => 'Invalid credentials',
+        ]);
 
         return redirect()->back()
             ->withErrors(['password' => 'The provided credentials do not match our records.'])

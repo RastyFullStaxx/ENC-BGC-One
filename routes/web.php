@@ -120,6 +120,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/audit', [AdminAuditController::class, 'index'])->name('admin.audit');
     Route::get('/admin/audit/export/csv', [AdminAuditController::class, 'exportCsv'])->name('admin.audit.export.csv');
     Route::get('/admin/audit/export/json', [AdminAuditController::class, 'exportJson'])->name('admin.audit.export.json');
+    Route::get('/admin/audit/{auditLog}/export', [AdminAuditController::class, 'exportEntry'])->name('admin.audit.export.entry');
+    Route::post('/admin/audit/{auditLog}/flag', [AdminAuditController::class, 'flag'])->name('admin.audit.flag');
 });
 
 // Temporary preview route for Admin Facilities Management

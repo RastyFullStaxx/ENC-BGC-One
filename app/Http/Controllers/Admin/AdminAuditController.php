@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Carbon;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminAuditController extends Controller
@@ -38,6 +39,22 @@ class AdminAuditController extends Controller
             'entries' => $logs,
             'metrics' => $metrics,
         ]);
+    }
+
+    public function exportEntry(AuditLog $auditLog): StreamedResponse
+    {
+        $payload = $this->transform($auditLog);
+        return response()->streamDownload(function () use ($payload) {
+            echo json_encode($payload, JSON_PRETTY_PRINT);
+        }, 'audit-entry-' . $auditLog->id . '.json');
+    }
+
+    public function flag(Request $request, AuditLog $auditLog): Response
+    {
+        $auditLog->flagged = true;
+        $auditLog->save();
+
+        return redirect()->back()->with('statusMessage', 'Entry flagged for review.');
     }
 
     public function exportJson(): StreamedResponse
@@ -117,6 +134,7 @@ class AdminAuditController extends Controller
             'risk' => $log->risk ?? 'low',
             'status' => $log->status ?? 'success',
             'source' => $log->source ?? 'System',
+            'actor_type' => $this->actorTypeFromSource($log->source ?? ''),
             'environment' => $log->environment ?? 'Production',
             'ip' => $log->ip ?? '—',
             'location' => $log->location ?? '—',
@@ -126,6 +144,21 @@ class AdminAuditController extends Controller
             'notes' => $log->notes ?? '',
             'changes' => is_array($log->changes) ? $log->changes : [],
         ];
+    }
+
+    protected function actorTypeFromSource(string $source): string
+    {
+        $source = strtolower($source);
+        if (str_contains($source, 'api')) {
+            return 'api';
+        }
+        if (str_contains($source, 'automation') || str_contains($source, 'system')) {
+            return 'system';
+        }
+        if (str_contains($source, 'auth') || str_contains($source, 'user')) {
+            return 'user';
+        }
+        return 'admin';
     }
 
     protected function dayLabel(Carbon $created): string
@@ -182,6 +215,7 @@ class AdminAuditController extends Controller
                 'risk' => 'medium',
                 'status' => 'success',
                 'source' => 'Admin UI',
+                'actor_type' => 'admin',
                 'environment' => 'Production',
                 'ip' => '10.15.34.16',
                 'location' => 'BGC, PH',
@@ -206,6 +240,7 @@ class AdminAuditController extends Controller
                 'risk' => 'low',
                 'status' => 'success',
                 'source' => 'Admin UI',
+                'actor_type' => 'admin',
                 'environment' => 'Production',
                 'ip' => '10.18.5.24',
                 'location' => 'Makati, PH',
@@ -230,6 +265,7 @@ class AdminAuditController extends Controller
                 'risk' => 'high',
                 'status' => 'success',
                 'source' => 'Admin UI',
+                'actor_type' => 'admin',
                 'environment' => 'Production',
                 'ip' => '10.20.88.12',
                 'location' => 'Pasig, PH',
@@ -254,6 +290,7 @@ class AdminAuditController extends Controller
                 'risk' => 'high',
                 'status' => 'failed',
                 'source' => 'Automation',
+                'actor_type' => 'system',
                 'environment' => 'Production',
                 'ip' => '172.16.0.5',
                 'location' => 'Quezon City, PH',
@@ -278,6 +315,7 @@ class AdminAuditController extends Controller
                 'risk' => 'medium',
                 'status' => 'success',
                 'source' => 'Admin UI',
+                'actor_type' => 'admin',
                 'environment' => 'Production',
                 'ip' => '10.6.24.88',
                 'location' => 'Remote · PH',
@@ -302,6 +340,7 @@ class AdminAuditController extends Controller
                 'risk' => 'medium',
                 'status' => 'success',
                 'source' => 'API',
+                'actor_type' => 'api',
                 'environment' => 'Staging',
                 'ip' => '35.90.120.1',
                 'location' => 'us-west-2',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,6 +13,9 @@ use Illuminate\Validation\Rule;
 
 class AdminUserController extends Controller
 {
+    public function __construct(private AuditLogger $auditLogger)
+    {
+    }
     public function index()
     {
         $users = User::with('department')->orderBy('name')->paginate(10);
@@ -87,6 +91,13 @@ class AdminUserController extends Controller
             'password' => Hash::make($temporaryPassword),
         ]);
 
+        $this->logUserAction('Created user', $user, [
+            'before' => null,
+            'after' => $user->only(['name', 'email', 'role', 'status', 'department_id']),
+            'changes' => ['Account created', 'Role set to ' . $user->role],
+            'risk' => 'medium',
+        ]);
+
         return response()->json([
             'status' => 'ok',
             'message' => 'User created successfully.',
@@ -97,6 +108,7 @@ class AdminUserController extends Controller
 
     public function update(Request $request, User $user)
     {
+        $before = $user->only(['name', 'email', 'role', 'status', 'department_id']);
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'department_id' => ['nullable', 'exists:departments,id'],
@@ -105,6 +117,13 @@ class AdminUserController extends Controller
         ]);
 
         $user->fill($data)->save();
+
+        $this->logUserAction('Updated user profile', $user, [
+            'before' => $before,
+            'after' => $user->only(['name', 'email', 'role', 'status', 'department_id']),
+            'changes' => $this->diffChanges($before, $user->only(['name', 'email', 'role', 'status', 'department_id'])),
+            'risk' => 'medium',
+        ]);
 
         return response()->json([
             'status' => 'ok',
@@ -135,6 +154,14 @@ class AdminUserController extends Controller
 
         $updated = User::whereIn('id', $data['user_ids'])->with('department')->get();
 
+        $this->logUserAction('Bulk user status update', null, [
+            'target' => implode(',', $data['user_ids']),
+            'before' => ['status' => 'mixed'],
+            'after' => ['status' => $data['status']],
+            'changes' => ['Bulk status set to ' . $data['status']],
+            'risk' => 'medium',
+        ]);
+
         return response()->json([
             'status' => 'ok',
             'message' => 'Statuses updated.',
@@ -146,10 +173,18 @@ class AdminUserController extends Controller
     {
         $temporaryPassword = Str::random(12);
 
+        $beforeStatus = $user->status;
         $user->forceFill([
             'password' => Hash::make($temporaryPassword),
             'status' => 'active',
         ])->save();
+
+        $this->logUserAction('Reset user password', $user, [
+            'before' => ['status' => $beforeStatus],
+            'after' => ['status' => 'active'],
+            'changes' => ['Password rotated', 'Status set to active'],
+            'risk' => 'high',
+        ]);
 
         return response()->json([
             'status' => 'ok',
@@ -161,7 +196,15 @@ class AdminUserController extends Controller
 
     protected function updateStatus(User $user, string $status, string $message)
     {
+        $before = $user->only(['status']);
         $user->forceFill(['status' => $status])->save();
+
+        $this->logUserAction("User {$status}", $user, [
+            'before' => $before,
+            'after' => ['status' => $status],
+            'changes' => ["Status {$before['status']} → {$status}"],
+            'risk' => 'medium',
+        ]);
 
         return response()->json([
             'status' => 'ok',
@@ -189,6 +232,35 @@ class AdminUserController extends Controller
                 : 'Never',
             'last_login_at' => $user->last_login_at?->toIso8601String(),
         ];
+    }
+
+    private function logUserAction(string $action, ?User $user, array $context = []): void
+    {
+        $this->auditLogger->log([
+            'action' => $action,
+            'module' => 'Users',
+            'target' => $context['target'] ?? $user?->email ?? 'Bulk',
+            'action_type' => $context['action_type'] ?? null,
+            'risk' => $context['risk'] ?? 'low',
+            'status' => 'success',
+            'notes' => $context['notes'] ?? null,
+            'before' => $context['before'] ?? null,
+            'after' => $context['after'] ?? null,
+            'changes' => $context['changes'] ?? null,
+        ]);
+    }
+
+    private function diffChanges(array $before, array $after): array
+    {
+        $changes = [];
+        foreach ($after as $key => $value) {
+            $prev = $before[$key] ?? null;
+            if ($prev !== $value) {
+                $changes[] = "{$key}: {$prev} → {$value}";
+            }
+        }
+
+        return $changes;
     }
 
     protected function roleMeta(): array

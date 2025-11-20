@@ -380,8 +380,9 @@
     box-shadow: 0 40px 120px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 180px);
-    overflow: auto;
+    min-height: calc(100vh - 140px);
+    height: auto;
+    overflow: visible;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.04);
 }
@@ -642,6 +643,7 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    color: #f7f9ff;
 }
 
 .audit-drawer.open {
@@ -653,6 +655,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 12px;
+    color: #f7f9ff;
 }
 
 .audit-drawer-meta {
@@ -664,12 +667,13 @@
 
 .audit-drawer-section {
     margin-bottom: 14px;
+    color: #f7f9ff;
 }
 
 .audit-drawer-section h4 {
     margin-bottom: 6px;
     font-size: 14px;
-    color: var(--audit-slate);
+    color: #f7f9ff;
 }
 
 .audit-drawer-grid {
@@ -685,8 +689,22 @@
     padding: 14px;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
-    color: var(--audit-slate);
+    color: #e9efff;
     overflow-x: auto;
+}
+
+.audit-diff .diff-line {
+    display: block;
+    white-space: pre-wrap;
+}
+
+.audit-diff .diff-unchanged { color: #cfd8f5; }
+.audit-diff .diff-added { color: var(--audit-emerald); }
+.audit-diff .diff-removed { color: var(--audit-rose); }
+.audit-diff .diff-key { font-weight: 600; color: #ffffff; }
+
+.audit-drawer .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
 }
 
 .audit-drawer-actions {

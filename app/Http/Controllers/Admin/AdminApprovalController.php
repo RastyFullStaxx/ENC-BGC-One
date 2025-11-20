@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingApproval;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class AdminApprovalController extends Controller
 {
+    public function __construct(private AuditLogger $auditLogger)
+    {
+    }
+
     public function index(Request $request)
     {
         $statusFilter = $request->get('status');
@@ -90,6 +95,9 @@ class AdminApprovalController extends Controller
         ];
 
         $newStatus = $statusMap[$data['action']];
+        $booking->skip_audit_observer = true;
+        $beforeStatus = $booking->status;
+
         $booking->status = $newStatus;
         $booking->save();
 
@@ -107,6 +115,19 @@ class AdminApprovalController extends Controller
             'reject' => 'Booking rejected.',
             default => 'Changes requested from requester.',
         };
+
+        $this->auditLogger->log([
+            'action' => 'Admin ' . $data['action'] . 'd booking',
+            'module' => 'Approvals',
+            'target' => $booking->reference ?? $booking->id,
+            'action_type' => $data['action'],
+            'risk' => $data['action'] === 'reject' ? 'medium' : 'low',
+            'status' => 'success',
+            'notes' => $data['notes'] ?? null,
+            'before' => ['status' => $beforeStatus],
+            'after' => ['status' => $newStatus],
+            'changes' => ["Status {$beforeStatus} → {$newStatus}"],
+        ]);
 
         return redirect($data['redirect'] ?? url()->previous())
             ->with('statusMessage', $message);

@@ -34,12 +34,14 @@ class AuditLog extends Model
         'before',
         'after',
         'changes',
+        'flagged',
     ];
 
     protected $casts = [
         'before' => 'array',
         'after' => 'array',
         'changes' => 'array',
+        'flagged' => 'boolean',
     ];
 
     protected static function boot()

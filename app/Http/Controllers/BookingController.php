@@ -8,6 +8,7 @@ use App\Models\BookingEquipment;
 use App\Models\Facility;
 use App\Models\Equipment;
 use App\Models\NotificationLog;
+use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,10 @@ use Carbon\Carbon;
 
 class BookingController extends Controller
 {
+    public function __construct(private AuditLogger $auditLogger)
+    {
+    }
+
     /**
      * Display the booking wizard.
      */
@@ -340,6 +345,26 @@ class BookingController extends Controller
 
             // Create notification log for the booking
             $this->createNotificationLog($booking, 'booking_created');
+
+            $this->auditLogger->log([
+                'action' => 'Created booking request',
+                'module' => 'Bookings',
+                'target' => $booking->reference_code ?? $booking->id,
+                'action_type' => 'create',
+                'risk' => 'medium',
+                'status' => 'success',
+                'source' => 'User UI',
+                'before' => null,
+                'after' => [
+                    'facility_id' => $booking->facility_id,
+                    'date' => $booking->date,
+                    'start_at' => $booking->start_at,
+                    'end_at' => $booking->end_at,
+                    'status' => $booking->status,
+                ],
+                'changes' => ['Booking created pending approval'],
+                'notes' => $request->purpose,
+            ]);
 
             DB::commit();
 
