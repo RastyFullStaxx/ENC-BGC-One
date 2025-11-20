@@ -39,8 +39,10 @@ Route::middleware(['guest'])->group(function () {
 // Loading page (accessible to all)
 Route::view('/login/loading', 'auth.login.loading')->name('login.loading');
 
-// Logout (requires authentication)
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+// Logout (requires authentication) - allow GET fallback to avoid stale CSRF
+Route::match(['GET', 'POST'], '/logout', [LoginController::class, 'logout'])
+    ->name('logout')
+    ->middleware('auth');
 
 
 // User Pages (Protected - requires authentication and staff role)

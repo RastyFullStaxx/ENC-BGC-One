@@ -112,6 +112,7 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        // Support GET fallback for users with stale CSRF tokens
         Auth::logout();
         
         $request->session()->invalidate();

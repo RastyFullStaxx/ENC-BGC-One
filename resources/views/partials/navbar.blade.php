@@ -63,10 +63,7 @@
               <li><a class="dropdown-item" href="{{ route('user.settings') }}">Settings</a></li>
               <li><hr class="dropdown-divider"></li>
               <li>
-                <form method="POST" action="{{ route('logout') }}">
-                  @csrf
-                  <button type="submit" class="dropdown-item">Sign out</button>
-                </form>
+                <button type="button" class="dropdown-item" data-logout-trigger>Sign out</button>
               </li>
             </ul>
           </li>
@@ -82,3 +79,5 @@
     </div>
   </div>
 </nav>
+
+@include('partials.logout-handler')
