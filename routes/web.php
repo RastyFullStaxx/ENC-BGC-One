@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AdminCalendarController;
 use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
+use App\Http\Controllers\AccountSettingsController;
 
 
 Route::get('/', LandingPageController::class)->name('landing');
@@ -62,11 +63,6 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
     
     Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
-    // Profile & Settings
-    Route::view('/user/profile', 'profile.profile')->name('user.profile');
-    Route::view('/user/settings', 'settings.settings')->name('user.settings');
-
-
     // Booking API endpoints
     Route::prefix('api/bookings')->group(function () {
         Route::get('/facilities', [\App\Http\Controllers\BookingController::class, 'getFacilities'])
@@ -81,6 +77,13 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
     // Return Room Capacity for Booking Wizard
     Route::get('/user/booking/wizard/capacities', [\App\Http\Controllers\BookingController::class, 'returnRoomCapacity'])->name('api.bookings.capacities');
+});
+
+// Shared Authenticated Pages (accessible to both staff and admin)
+Route::middleware(['auth'])->group(function () {
+    Route::view('/user/profile', 'profile.profile')->name('user.profile');
+    Route::view('/user/settings', 'settings.settings')->name('user.settings');
+    Route::put('/user/settings', [AccountSettingsController::class, 'update'])->name('user.settings.update');
 });
 
 // Notifications API (returns empty array when not authenticated to avoid redirects)

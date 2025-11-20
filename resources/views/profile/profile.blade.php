@@ -11,22 +11,21 @@
 
 @php
   $user = auth()->user();
-  $fullName = $user->name ?? 'Alexis Dela Cruz';
-  $role     = $user->role ?? 'Operations Lead';
-  $email    = $user->email ?? 'alexis.delacruz@enc.ph';
-  $phone    = '+63 917 555 0123';
-  $location = 'ENC Tower A · 3rd Floor';
-  $teams    = ['ENC Facilities', 'Shared Services', 'BGC Ops'];
-  $favorites = [
-    ['label' => 'Preferred Layout', 'value' => 'Boardroom · 12 pax'],
-    ['label' => 'Lead Time',        'value' => '48 hrs'],
-    ['label' => 'Support SLA',      'value' => 'Under 30 mins'],
-  ];
-  $projects = [
-    ['name' => 'Monthly All-Hands', 'date' => 'Every 2nd Thursday', 'status' => 'Recurring'],
-    ['name' => 'Client Immersion Days', 'date' => 'Next: Apr 18', 'status' => 'Preparation'],
-    ['name' => 'Ops Leadership Sync', 'date' => 'Mar 28', 'status' => 'Confirmed'],
-  ];
+  $fullName = $user->name ?? 'User';
+  $firstInitial = $fullName ? mb_substr($fullName, 0, 1) : '?';
+  $role = $user->role ?? 'staff';
+  $isAdmin = $role === 'admin';
+  $roleLabel = ucfirst($role);
+  $email = $user->email ?? 'Not provided';
+  $phone = $user->phone ?? 'Not provided';
+  $department = $user?->department?->name ?? 'Not assigned';
+  $status = ucfirst($user->status ?? 'Active');
+  $lastLogin = $user?->last_login_at
+    ? $user->last_login_at->timezone(config('app.timezone', 'UTC'))->format('M d, Y · h:i A')
+    : 'No recent login';
+  $memberSince = $user?->created_at
+    ? $user->created_at->format('M d, Y')
+    : 'N/A';
 @endphp
 
 @section('content')
@@ -49,7 +48,7 @@
         <div>
           <span class="badge rounded-pill mb-3">PROFILE CENTER</span>
           <h1 class="display-6 mb-2">Hello, {{ $fullName }}</h1>
-          <p class="mb-0 text-white-50">Review your profile, team affiliations, and booking footprint.</p>
+          <p class="mb-0 text-white-50">Review your account details and where you have access.</p>
         </div>
         <div class="account-nav-pills">
           <a href="{{ route('user.profile') }}" class="active">Profile</a>
@@ -66,15 +65,10 @@
           <div class="col-lg-4 account-sidebar pb-4 pb-lg-0">
             <div class="d-flex flex-column align-items-center text-center text-lg-start">
               <div class="account-avatar d-inline-flex align-items-center justify-content-center mb-3">
-                {{ substr($fullName, 0, 1) }}
+                {{ $firstInitial }}
               </div>
               <h4 class="mb-1">{{ $fullName }}</h4>
-              <p class="text-muted mb-3">{{ $role }}</p>
-              <div class="d-flex flex-wrap gap-2 mb-4">
-                @foreach ($teams as $team)
-                  <span class="account-chip">{{ $team }}</span>
-                @endforeach
-              </div>
+              <p class="text-muted mb-3">{{ $roleLabel }} @if($department !== 'Not assigned') · {{ $department }} @endif</p>
             </div>
 
             <div class="vstack gap-3">
@@ -87,27 +81,24 @@
                   <li class="mb-1">
                     <strong>Mobile:</strong> {{ $phone }}
                   </li>
-                  <li>
-                    <strong>Location:</strong> {{ $location }}
+                  <li class="mb-1">
+                    <strong>Department:</strong> {{ $department }}
                   </li>
                 </ul>
               </div>
 
               <div class="account-section pt-3">
-                <p class="text-uppercase small fw-semibold text-muted mb-2">Quick stats</p>
+                <p class="text-uppercase small fw-semibold text-muted mb-2">Quick links</p>
                 <div class="vstack gap-2">
-                  <div class="account-stat">
-                    <div class="small text-muted">Room bookings YTD</div>
-                    <div class="h5 mb-0">36</div>
-                  </div>
-                  <div class="account-stat">
-                    <div class="small text-muted">Avg. approval speed</div>
-                    <div class="h5 mb-0">2h 15m</div>
-                  </div>
-                  <div class="account-stat">
-                    <div class="small text-muted">Preferred facilities</div>
-                    <div class="mb-0">A-301, A-302, Lab C-401</div>
-                  </div>
+                  @if ($isAdmin)
+                    <a class="btn btn-outline-primary w-100" href="{{ route('admin.dashboard') }}">Admin dashboard</a>
+                    <a class="btn btn-outline-secondary w-100" href="{{ route('admin.users') }}">Manage users</a>
+                    <a class="btn btn-outline-secondary w-100" href="{{ route('admin.approvals.queue') }}">Review approvals</a>
+                  @else
+                    <a class="btn btn-outline-primary w-100" href="{{ route('user.dashboard') }}">User dashboard</a>
+                    <a class="btn btn-outline-secondary w-100" href="{{ route('user.booking.index') }}">View bookings</a>
+                    <a class="btn btn-outline-secondary w-100" href="{{ route('user.booking.wizard') }}">Start a booking</a>
+                  @endif
                 </div>
               </div>
             </div>
@@ -116,59 +107,91 @@
           <div class="col-lg-8">
             <div class="account-section">
               <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
-                <h5 class="mb-0">Professional details</h5>
-                <button class="btn btn-outline-primary btn-sm">Update</button>
-              </div>
-              <div class="row g-3">
-                @foreach ($favorites as $favorite)
-                  <div class="col-sm-6">
-                    <div class="account-stat h-100">
-                      <div class="text-muted small">{{ $favorite['label'] }}</div>
-                      <div class="fw-semibold">{{ $favorite['value'] }}</div>
-                    </div>
-                  </div>
-                @endforeach
-              </div>
-            </div>
-
-            <div class="account-section">
-              <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
-                <h5 class="mb-0">Recent initiatives</h5>
-                <a class="btn btn-link btn-sm" href="{{ route('user.booking.index') }}">See all bookings</a>
+                <h5 class="mb-0">Account overview</h5>
+                <a class="btn btn-outline-primary btn-sm" href="{{ route('user.settings') }}">Edit details</a>
               </div>
               <ul class="account-list">
-                @foreach ($projects as $project)
-                  <li class="d-flex justify-content-between flex-wrap gap-2">
-                    <div>
-                      <div class="fw-semibold">{{ $project['name'] }}</div>
-                      <div class="small text-muted">{{ $project['date'] }}</div>
-                    </div>
-                    <span class="badge text-bg-light text-primary">{{ $project['status'] }}</span>
-                  </li>
-                @endforeach
+                <li class="d-flex justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Role & access</div>
+                    <div class="small text-muted">What you can do in ONE Services</div>
+                  </div>
+                  <span class="badge text-bg-light text-primary">{{ $roleLabel }}</span>
+                </li>
+                <li class="d-flex justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Department</div>
+                    <div class="small text-muted">Org unit for routing approvals</div>
+                  </div>
+                  <span class="text-muted">{{ $department }}</span>
+                </li>
+                <li class="d-flex justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Status</div>
+                    <div class="small text-muted">Active / suspended accounts</div>
+                  </div>
+                  <span class="badge text-bg-light">{{ $status }}</span>
+                </li>
+                <li class="d-flex justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Member since</div>
+                    <div class="small text-muted">Date you joined the workspace</div>
+                  </div>
+                  <span class="text-muted">{{ $memberSince }}</span>
+                </li>
+                <li class="d-flex justify-content-between flex-wrap gap-2">
+                  <div>
+                    <div class="fw-semibold">Last login</div>
+                    <div class="small text-muted">Most recent access time</div>
+                  </div>
+                  <span class="text-muted">{{ $lastLogin }}</span>
+                </li>
               </ul>
             </div>
 
-            <div class="account-section">
-              <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
-                <h5 class="mb-0">Delegated approvers</h5>
-                <button class="btn btn-outline-secondary btn-sm">Manage delegates</button>
-              </div>
-              <div class="row g-3">
-                <div class="col-md-6">
-                  <div class="account-stat h-100">
-                    <div class="fw-semibold">Jamie Soriano</div>
-                    <div class="small text-muted">Approves bookings up to 15 pax</div>
+            @if ($isAdmin)
+              <div class="account-section">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                  <h5 class="mb-0">Admin tools</h5>
+                  <a class="btn btn-link btn-sm" href="{{ route('admin.hub') }}">Open admin hub</a>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="account-stat h-100">
+                      <div class="fw-semibold mb-1">User management</div>
+                      <div class="small text-muted">Invite, activate, or suspend accounts.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="account-stat h-100">
+                      <div class="fw-semibold mb-1">Approvals & audit</div>
+                      <div class="small text-muted">Review bookings and audit trails.</div>
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
-                  <div class="account-stat h-100">
-                    <div class="fw-semibold">Carlos Banzon</div>
-                    <div class="small text-muted">Approves weekend events</div>
+              </div>
+            @else
+              <div class="account-section">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                  <h5 class="mb-0">Bookings</h5>
+                  <a class="btn btn-link btn-sm" href="{{ route('user.booking.index') }}">See my bookings</a>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="account-stat h-100">
+                      <div class="fw-semibold mb-1">Upcoming reservations</div>
+                      <div class="small text-muted">Track your confirmed rooms.</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="account-stat h-100">
+                      <div class="fw-semibold mb-1">Start a booking</div>
+                      <div class="small text-muted">Use the wizard to request space.</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            @endif
 
           </div>
         </div>
