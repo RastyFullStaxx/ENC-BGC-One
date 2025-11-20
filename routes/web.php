@@ -97,6 +97,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users');
     Route::prefix('/admin/users')->name('admin.users.')->group(function () {
+        Route::post('/', [AdminUserController::class, 'store'])->name('store');
         Route::put('/{user}', [AdminUserController::class, 'update'])->name('update');
         Route::post('/{user}/deactivate', [AdminUserController::class, 'deactivate'])->name('deactivate');
         Route::post('/{user}/activate', [AdminUserController::class, 'activate'])->name('activate');

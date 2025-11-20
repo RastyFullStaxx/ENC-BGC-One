@@ -64,6 +64,35 @@ class AdminUserController extends Controller
         ]);
     }
 
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'role' => ['required', Rule::in(array_keys($this->roleMeta()))],
+            'status' => ['required', Rule::in(['active', 'inactive', 'pending'])],
+        ]);
+
+        $temporaryPassword = Str::random(12);
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'department_id' => $data['department_id'] ?? null,
+            'role' => $data['role'],
+            'status' => $data['status'],
+            'password' => Hash::make($temporaryPassword),
+        ]);
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'User created successfully.',
+            'temporary_password' => $temporaryPassword,
+            'user' => $this->transformUser($user),
+        ], 201);
+    }
+
     public function update(Request $request, User $user)
     {
         $data = $request->validate([
