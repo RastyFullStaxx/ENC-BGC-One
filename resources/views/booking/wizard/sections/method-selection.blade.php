@@ -3,6 +3,16 @@
             id="wizardMethodSection"
             class="wizard-method-section mt-4"
           >
+            <button
+              type="button"
+              class="admin-back-button wizard-method-back"
+              id="wizardMethodBack"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+              Back to previous page
+            </button>
             <div class="text-center mb-4">
               <h2 class="wizard-method-title mb-2" tabindex="-1">
                 What do you need to book today?
@@ -42,8 +52,10 @@
               {{-- SEI --}}
               <div class="col-12 col-lg-4 d-flex">
                 <button type="button"
-                        class="wizard-method-card w-100 text-start d-flex flex-column flex-grow-1"
-                        data-method="sei">
+                        class="wizard-method-card is-disabled w-100 text-start d-flex flex-column flex-grow-1"
+                        data-method="sei"
+                        disabled
+                        aria-disabled="true">
                   <div class="text-center mb-3">
                     <span class="wizard-method-icon d-inline-flex align-items-center justify-content-center rounded-3 mx-auto mb-3">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -60,7 +72,7 @@
                   </div>
                   <div class="wizard-method-footnote d-flex align-items-center gap-1">
                     <span aria-hidden="true">🛠️</span>
-                    <span>Perfect for events, exhibits, and custom layouts.</span>
+                    <span>Coming soon — special setups will reopen here.</span>
                   </div>
                 </button>
               </div>
@@ -68,8 +80,10 @@
               {{-- Transportation & Shuttle --}}
               <div class="col-12 col-lg-4 d-flex">
                 <button type="button"
-                        class="wizard-method-card w-100 text-start d-flex flex-column flex-grow-1"
-                        data-method="transport">
+                        class="wizard-method-card is-disabled w-100 text-start d-flex flex-column flex-grow-1"
+                        data-method="transport"
+                        disabled
+                        aria-disabled="true">
                   <div class="text-center mb-3">
                     <span class="wizard-method-icon d-inline-flex align-items-center justify-content-center rounded-3 mx-auto mb-3">
                       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -86,10 +100,63 @@
                     </div>
                   </div>
                   <div class="wizard-method-footnote">
-                    Need to move teams or equipment? We’ll plan the trip for you.
+                    Need to move teams or equipment? Shuttle booking is paused.
                   </div>
                 </button>
               </div>
             </div>
           </section>
-
+          <div class="wizard-draft-modal d-none" id="wizardDraftModal">
+            <div class="wizard-draft-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="wizardDraftModalTitle" aria-describedby="wizardDraftModalDesc">
+              <button type="button" class="wizard-draft-close" id="wizardDraftDismiss" aria-label="Dismiss draft prompt">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="wizard-draft-icon" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <rect x="5" y="6" width="22" height="20" rx="4" stroke="currentColor" stroke-width="1.6"/>
+                  <path d="M10 12h12M10 17h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <p class="wizard-draft-eyebrow text-uppercase small fw-semibold text-muted mb-1">
+                Draft detected
+              </p>
+              <h3 class="wizard-draft-title h4 mb-2" id="wizardDraftModalTitle">
+                Continue your booking?
+              </h3>
+              <p class="wizard-draft-desc text-muted mb-3" id="wizardDraftModalDesc">
+                We saved your last request so you can finish it later. Pick up where you left off or start a brand-new booking.
+              </p>
+              <dl class="wizard-draft-summary mb-4">
+                <div>
+                  <dt>Last step</dt>
+                  <dd id="wizardDraftStepLabel">Step 1 — Select a room</dd>
+                </div>
+                <div>
+                  <dt>Room</dt>
+                  <dd id="wizardDraftRoomLabel">No room selected</dd>
+                </div>
+                <div>
+                  <dt>Schedule</dt>
+                  <dd id="wizardDraftScheduleLabel">No date selected</dd>
+                </div>
+                <div>
+                  <dt>Details</dt>
+                  <dd id="wizardDraftDetailsLabel" class="text-muted">
+                    Agenda and support requests will appear here.
+                  </dd>
+                </div>
+                <div>
+                  <dt>Saved on</dt>
+                  <dd id="wizardDraftSavedAt">—</dd>
+                </div>
+              </dl>
+              <div class="wizard-draft-actions d-flex flex-column flex-md-row gap-2">
+                <button type="button" class="btn btn-light flex-fill" id="wizardDraftReset">
+                  Start a new booking
+                </button>
+                <button type="button" class="btn btn-primary flex-fill" id="wizardDraftContinue">
+                  Continue where I left off
+                </button>
+              </div>
+            </div>
+          </div>

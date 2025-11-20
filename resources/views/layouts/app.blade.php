@@ -34,8 +34,12 @@
 
   <main>@yield('content')</main>
 
-  {{-- Footer you already have --}}
-  @include('partials.footer')
+  {{-- Footer --}}
+  @hasSection('hideFooter')
+    {{-- Footer hidden for this view --}}
+  @else
+    @include('partials.footer')
+  @endif
 
   {{-- Page-specific scripts --}}
   @stack('scripts')

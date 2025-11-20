@@ -417,6 +417,22 @@
   border-radius: 1.5rem;
   background: rgba(253, 253, 253, 0.96);
   box-shadow: 0 18px 45px rgba(0, 24, 64, 0.18);
+  position: relative;
+  overflow: visible;
+}
+
+.wizard-method-back,
+.wizard-flow-back {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  transform: translateY(-50%);
+  background: #fff;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 24, 64, 0.12);
+  border: 1px solid rgba(0, 24, 64, 0.08);
+  z-index: 2;
 }
 
 .wizard-method-title {
@@ -506,6 +522,118 @@
   color: var(--enc-color-text-muted, #CCD1D9);
 }
 
+/* Draft modal */
+.wizard-draft-modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(0, 24, 64, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1200;
+}
+
+.wizard-draft-modal.is-visible {
+  display: flex;
+}
+
+.wizard-draft-modal__dialog {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 32px 80px rgba(0, 24, 64, 0.25);
+  border: 1px solid rgba(0, 24, 64, 0.08);
+}
+
+.wizard-draft-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: none;
+  background: rgba(0, 24, 64, 0.06);
+  color: #001840;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wizard-draft-close:hover,
+.wizard-draft-close:focus-visible {
+  background: rgba(0, 24, 64, 0.12);
+}
+
+.wizard-draft-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(21, 93, 252, 0.12);
+  color: #155DFC;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.wizard-draft-title {
+  color: #001840;
+  font-weight: 600;
+}
+
+.wizard-draft-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 0;
+  padding: 1.25rem;
+  background: rgba(0, 24, 64, 0.03);
+  border-radius: 1rem;
+}
+
+.wizard-draft-summary dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(0, 24, 64, 0.6);
+  margin-bottom: 0.2rem;
+}
+
+.wizard-draft-summary dd {
+  margin: 0;
+  font-weight: 600;
+  color: #001840;
+  font-size: 0.95rem;
+}
+
+.wizard-draft-actions .btn {
+  min-height: 48px;
+  border-radius: 999px;
+}
+
+body.wizard-modal-open {
+  overflow: hidden;
+}
+
+@media (max-width: 575.98px) {
+  .wizard-draft-modal__dialog {
+    padding: 1.5rem;
+  }
+
+  .wizard-draft-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 @keyframes wizard-border-flow {
   0% {
     background-position: 0 0, 0% 50%;
@@ -589,6 +717,147 @@
   font-weight: 600;
 }
 
+/* Flow preference cards */
+.wizard-flow-preference {
+  background: #FDFDFD;
+  border-radius: 1.25rem;
+  padding: 3rem 2rem;
+  box-shadow: 0 20px 60px rgba(0, 24, 64, 0.08);
+  position: relative;
+}
+
+.wizard-flow-pretitle {
+  letter-spacing: 0.3em;
+  color: #001840;
+}
+
+.wizard-flow-title {
+  font-weight: 700;
+  color: #001840;
+}
+
+.wizard-flow-subtitle {
+  color: #1E2939;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.wizard-flow-card {
+  border: 2px solid transparent;
+  border-radius: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  background-image: linear-gradient(#ffffff, #ffffff), linear-gradient(130deg, #155DFC, #001840);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  background-size: 100% 100%, 220% 220%;
+  background-position: 0 0, 0% 50%;
+  animation: wizard-border-flow 8s linear infinite;
+  color: #001840;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 15px 35px rgba(0, 24, 64, 0.05);
+}
+
+.wizard-flow-card:hover,
+.wizard-flow-card:focus-visible {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 60px rgba(0, 24, 64, 0.12);
+  background-position: 0 0, 85% 50%;
+  outline: none;
+}
+
+.wizard-flow-card--accent {
+  background-image:
+    linear-gradient(#ffffff, #ffffff),
+    linear-gradient(130deg, #155DFC, #001840);
+}
+
+.wizard-flow-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: linear-gradient(130deg, #155DFC, #001840);
+  color: #FDFDFD;
+  margin-bottom: 1rem;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.wizard-flow-card--accent .wizard-flow-chip {
+  background: linear-gradient(130deg, #155DFC, #001840);
+  color: #FDFDFD;
+}
+
+.wizard-flow-card-body {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.wizard-flow-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  background: #E5E7EB;
+  color: #155DFC;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+  margin-bottom: 1rem;
+}
+
+.wizard-flow-card--accent .wizard-flow-icon {
+  background: #E5E7EB;
+  color: #155DFC;
+}
+
+.wizard-flow-card-title {
+  font-weight: 700;
+  color: #000206;
+}
+
+.wizard-flow-card-desc {
+  color: #1E2939;
+}
+
+.wizard-flow-backwrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 3;
+}
+
+.wizard-abort-btn {
+  border: 1.5px solid #9F0712;
+  color: #9F0712;
+  font-weight: 600;
+  background-color: transparent;
+}
+
+.wizard-abort-btn:hover,
+.wizard-abort-btn:focus-visible {
+  background-color: rgba(159, 7, 18, 0.08);
+  color: #9F0712;
+  border-color: #9F0712;
+}
+
+@media (max-width: 767.98px) {
+  .wizard-flow-preference {
+    padding: 2rem 1.5rem;
+  }
+}
+
 /* Responsiveness */
 @media (max-width: 991.98px) {
   .wizard-stage {
@@ -610,4 +879,20 @@
     flex: 1 1 100%;
     max-width: 100%;
   }
+}
+.wizard-method-card.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-image: linear-gradient(#f4f5f7, #f4f5f7), linear-gradient(130deg, #d0d3d8, #e5e7eb);
+}
+
+.wizard-method-card.is-disabled .wizard-method-name,
+.wizard-method-card.is-disabled .wizard-method-desc,
+.wizard-method-card.is-disabled .wizard-method-footnote {
+  color: #9398a3;
+}
+
+.wizard-method-card.is-disabled .wizard-method-icon {
+  background: #e5e7eb;
+  color: #9398a3;
 }

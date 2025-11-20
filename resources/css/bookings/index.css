@@ -351,6 +351,29 @@ table.bookings-table {
   color: var(--booking-gray-500);
 }
 
+.table-attention {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #B45309;
+  margin-top: 0.4rem;
+}
+
+.table-attention::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.table-attention--muted {
+  color: #4C1D95;
+}
+
 .booking-status {
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
@@ -415,6 +438,15 @@ table.bookings-table {
 .icon-btn:hover {
   border-color: var(--booking-blue);
   color: var(--booking-blue);
+}
+
+.icon-btn--attention {
+  color: #B45309;
+  border-color: rgba(180, 83, 9, 0.3);
+}
+
+.icon-btn--attention:hover {
+  border-color: #B45309;
 }
 
 .icon-btn--danger {

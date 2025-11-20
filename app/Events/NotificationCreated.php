@@ -14,17 +14,23 @@ class NotificationCreated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $notificationId;
-    public int $userId;
+    public ?int $recipientId;
+    public string $recipientRole;
 
     public function __construct(NotificationLog $notification)
     {
         $this->notificationId = $notification->id;
-        $this->userId = $notification->booking->requester_id ?? 0;
+        $this->recipientId = $notification->recipient_id ?? $notification->booking->requester_id ?? null;
+        $this->recipientRole = $notification->recipient_role ?? 'user';
     }
 
     public function broadcastOn()
     {
-        return new PrivateChannel('users.' . $this->userId);
+        if ($this->recipientRole === 'admin') {
+            return new PrivateChannel('admins');
+        }
+
+        return new PrivateChannel('users.' . ($this->recipientId ?? 0));
     }
 
     public function broadcastAs()

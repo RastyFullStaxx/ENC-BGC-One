@@ -50,9 +50,10 @@
               </div>
               <div class="small text-muted">{{ $item['purpose'] }} @if($item['time']) • {{ $item['time'] }} @endif</div>
               <div class="d-flex justify-content-between align-items-center mt-1">
-                <span class="badge bg-primary-subtle text-primary border-primary-subtle small">{{ $item['status'] }}</span>
+                <span class="{{ $item['event_class'] ?? 'badge bg-primary-subtle text-primary border-primary-subtle small' }}">{{ $item['event_label'] ?? $item['status'] }}</span>
                 <span class="text-muted small">{{ $item['created_at'] }}</span>
               </div>
+              <div class="small text-muted">Status: {{ $item['status'] }}</div>
             </div>
           @endforeach
         </div>
@@ -64,12 +65,19 @@
 @auth
 <script>
   document.addEventListener('livewire:initialized', () => {
-    const userId = {{ auth()->id() }};
+    const userId = @json(auth()->id());
+    const userRole = @json(auth()->user()->role ?? 'staff');
 
-    if (window.Echo && userId) {
+    if (!window.Echo) return;
+
+    if (userRole === 'admin') {
+      Echo.private('admins')
+        .listen('.notification.created', () => {
+          Livewire.dispatch('refreshNotifications');
+        });
+    } else if (userId) {
       Echo.private(`users.${userId}`)
         .listen('.notification.created', () => {
-          // This triggers $refresh → updates badge + list instantly
           Livewire.dispatch('refreshNotifications');
         });
     }

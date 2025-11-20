@@ -5,10 +5,10 @@
 
   /** @var array<int,array{title:string,desc?:string}> $steps */
   $steps = $steps ?? [
-    ['title' => 'Select Room',  'desc' => 'Browse available rooms'],
-    ['title' => 'Date & Time',  'desc' => 'Choose when to book'],
-    ['title' => 'Details',      'desc' => 'Add booking information'],
-    ['title' => 'Confirm',      'desc' => 'Review and submit'],
+    ['key' => 'rooms',   'title' => 'Select Room',  'desc' => 'Browse available rooms'],
+    ['key' => 'date',    'title' => 'Date & Time',  'desc' => 'Choose when to book'],
+    ['key' => 'details', 'title' => 'Details',      'desc' => 'Add booking information'],
+    ['key' => 'review',  'title' => 'Confirm',      'desc' => 'Review and submit'],
   ];
   $showStepper = $showStepper ?? true;
 
@@ -176,10 +176,13 @@
         @php
           $n = $i + 1;
           $state = $currentStep > $n ? 'is-complete' : ($currentStep === $n ? 'is-active' : 'is-upcoming');
+          $key = $step['key'] ?? \Illuminate\Support\Str::slug($step['title']);
         @endphp
 
         <li
           class="enc-stepper-item d-flex align-items-center text-center flex-grow-1 {{ $state }}"
+          data-step-key="{{ $key }}"
+          data-default-order="{{ $n }}"
           aria-current="{{ $currentStep === $n ? 'step' : 'false' }}"
         >
           <div class="enc-stepper-node d-flex flex-column align-items-center flex-shrink-0">

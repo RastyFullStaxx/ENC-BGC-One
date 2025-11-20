@@ -85,8 +85,15 @@
                     Back to Booking Details
                   </button>
                   <div class="d-flex flex-column flex-md-row align-items-center gap-2">
-                    <button type="button" class="btn btn-outline-primary">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary wizard-save-draft"
+                      data-draft-step="review"
+                    >
                       Save as draft
+                    </button>
+                    <button type="button" class="btn wizard-abort-btn" data-action="wizard-abort-booking">
+                      Abort booking
                     </button>
                     <button type="button" class="btn btn-room-submit btn-lg" id="wizardSubmitRequest">
                       Submit booking request

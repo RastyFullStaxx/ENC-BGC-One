@@ -25,7 +25,7 @@
         'currentStep' => 0,
         'steps' => [],
         'bookingsCount' => $bookingStats['total'] ?? 0,
-        'notificationsCount' => 2,
+        'notificationsCount' => $notificationsCount ?? 0,
         'userName' => auth()->user()->name ?? 'Charles Ramos',
         'userEmail' => auth()->user()->email ?? 'user.charles@enc.gov',
         'userRole' => auth()->user()->role ?? 'staff',

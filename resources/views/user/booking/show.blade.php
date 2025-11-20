@@ -66,6 +66,66 @@
             </div>
         </header>
 
+        @if(session('statusMessage'))
+            <div class="alert alert-success mb-3" role="alert">
+                {{ session('statusMessage') }}
+            </div>
+        @endif
+
+        @if(($actions['can_edit'] ?? false) || ($actions['can_request_change'] ?? false))
+            <div class="booking-detail-actions">
+                @if($actions['can_edit'])
+                    <a href="{{ $actions['edit_url'] }}" class="btn btn-primary">
+                        Edit booking
+                    </a>
+                @endif
+                @if($actions['can_request_change'])
+                    <a href="{{ $actions['request_change_url'] }}" class="btn btn-outline-primary">
+                        Request change
+                    </a>
+                @endif
+            </div>
+        @endif
+
+        @if($changeRequest)
+            <div id="change-request" class="booking-callout booking-callout--warning flex-column flex-md-row">
+                <div>
+                    <h3>Shared Services needs an update</h3>
+                    <p class="mb-1">{{ $changeRequest['notes'] ?? 'Please review your booking details.' }}</p>
+                    @if($changeRequest['opened_at'])
+                        <p class="small text-muted mb-0">Requested {{ $changeRequest['opened_at'] }}</p>
+                    @endif
+                </div>
+                <div class="d-flex flex-column flex-md-row gap-2">
+                    <a href="{{ route('user.booking.request-change.form', $summary['id']) }}" class="btn btn-primary">
+                        Finish change
+                    </a>
+                    <form action="{{ route('user.booking.cancel', $summary['id']) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-danger">
+                            Cancel booking
+                        </button>
+                    </form>
+                    <form action="{{ route('user.booking.change-request.acknowledge', $changeRequest['id']) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-light">
+                            Mark as reviewed
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @elseif($userChangeRequest)
+            <div class="booking-callout booking-callout--info">
+                <div>
+                    <h3>Change request in review</h3>
+                    <p class="mb-1">{{ $userChangeRequest['notes'] ?? 'Awaiting admin response.' }}</p>
+                    @if($userChangeRequest['opened_at'])
+                        <p class="small text-muted mb-0">Sent {{ $userChangeRequest['opened_at'] }}</p>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         <div class="booking-detail-grid">
             <article class="detail-card">
                 <h3>Schedule</h3>

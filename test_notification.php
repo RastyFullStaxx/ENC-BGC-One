@@ -21,7 +21,10 @@ echo "Booking ID: " . $booking->id . "\n";
 try {
     $log = NotificationLog::create([
         'booking_id' => $booking->id,
+        'recipient_id' => $booking->requester_id,
+        'recipient_role' => 'user',
         'channel' => 'EMAIL',
+        'event' => 'booking_created',
     ]);
     
     echo "✓ Notification log created successfully!\n";

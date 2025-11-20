@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingApproval;
 use App\Services\AuditLogger;
+use App\Models\BookingChangeRequest;
+use App\Models\NotificationLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -57,14 +59,18 @@ class AdminApprovalController extends Controller
             'openIncidents' => Booking::where('status', 'rejected')->count(),
         ];
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.approvals.queue', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'bookings' => $bookings,
             'queueStats' => $queueStats,
             'latestPending' => $latestPending,
             'statusFilter' => $statusFilter,
             'availableStatuses' => $statuses,
             'heroStats' => $heroStats,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 
@@ -72,11 +78,15 @@ class AdminApprovalController extends Controller
     {
         $booking->load(['facility', 'requester.department', 'details', 'approval.approver']);
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.approvals.show', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'booking' => $booking,
             'detail' => $booking->details,
             'approvalRecord' => $booking->approval,
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 
@@ -115,6 +125,32 @@ class AdminApprovalController extends Controller
             'reject' => 'Booking rejected.',
             default => 'Changes requested from requester.',
         };
+
+        if ($data['action'] === 'changes') {
+            $booking->changeRequests()
+                ->where('requested_by_role', 'admin')
+                ->whereIn('status', ['open', 'acknowledged'])
+                ->update([
+                    'status' => 'resolved',
+                    'resolved_at' => now(),
+                    'resolved_by' => auth()->id(),
+                    'resolution_notes' => 'Superseded by a new admin request',
+                ]);
+
+            BookingChangeRequest::create([
+                'booking_id' => $booking->id,
+                'requested_by' => auth()->id(),
+                'requested_by_role' => 'admin',
+                'type' => 'adjustment',
+                'notes' => $data['notes'] ?? null,
+            ]);
+
+            NotificationLog::logEvent($booking, 'change_requested_admin');
+        } elseif ($data['action'] === 'approve') {
+            NotificationLog::logEvent($booking, 'booking_approved');
+        } elseif ($data['action'] === 'reject') {
+            NotificationLog::logEvent($booking, 'booking_rejected');
+        }
 
         $this->auditLogger->log([
             'action' => 'Admin ' . $data['action'] . 'd booking',

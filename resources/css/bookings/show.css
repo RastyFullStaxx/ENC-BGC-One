@@ -5,6 +5,25 @@
   padding: var(--enc-shell-padding-block, clamp(1.5rem, 3vw, 3.5rem)) var(--enc-shell-padding-inline, clamp(1rem, 5vw, 3.25rem));
 }
 
+.bookings-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(0, 24, 64, 0.7);
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 1rem;
+}
+
+.bookings-back-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bookings-back-link:hover {
+  color: #001840;
+}
+
 .booking-detail-hero {
   background: linear-gradient(135deg, rgba(0, 6, 24, 0.95), rgba(0, 24, 64, 0.92), rgba(21, 93, 252, 0.85));
   background-size: 260% 260%;
@@ -96,6 +115,33 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.5rem;
+}
+
+.booking-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.booking-callout {
+  border-radius: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.booking-callout--warning {
+  background: #FFF7E6;
+  border: 1px solid #FACC15;
+}
+
+.booking-callout--info {
+  background: #EEF2FF;
+  border: 1px solid #6366F1;
 }
 
 .detail-card {

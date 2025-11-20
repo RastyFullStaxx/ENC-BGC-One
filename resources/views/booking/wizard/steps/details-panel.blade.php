@@ -160,12 +160,26 @@
                 </div>
 
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2 mt-4 pt-2">
-                  <button type="button" class="btn btn-light wizard-back-button" id="wizardBackToDate">
-                    Back to Date &amp; Time
-                  </button>
-                  <button type="button" class="btn btn-room-available" id="wizardNextReview" disabled>
-                    Next: Review &amp; Confirm
-                  </button>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-light wizard-back-button" id="wizardBackToDate">
+                      Back to Date &amp; Time
+                    </button>
+                    <button type="button" class="btn wizard-abort-btn" data-action="wizard-abort-booking">
+                      Abort booking
+                    </button>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 align-items-center ms-md-auto">
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary wizard-save-draft"
+                      data-draft-step="details"
+                    >
+                      Save as draft
+                    </button>
+                    <button type="button" class="btn btn-room-available" id="wizardNextReview" disabled>
+                      Next: Review &amp; Confirm
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

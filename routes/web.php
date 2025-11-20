@@ -60,7 +60,12 @@ Route::middleware(['auth', 'role:staff'])->group(function () {
 
     // Booking Wizard (must come before {booking} route to avoid route conflict)
     Route::get('/user/booking/wizard', [\App\Http\Controllers\BookingController::class, 'index'])->name('user.booking.wizard');
-    
+    Route::get('/user/booking/{booking}/edit', [\App\Http\Controllers\UserBookingController::class, 'edit'])->name('user.booking.edit');
+    Route::put('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'update'])->name('user.booking.update');
+    Route::get('/user/booking/{booking}/request-change', [\App\Http\Controllers\UserBookingController::class, 'requestChangeForm'])->name('user.booking.request-change.form');
+    Route::post('/user/booking/{booking}/request-change', [\App\Http\Controllers\UserBookingController::class, 'storeChangeRequest'])->name('user.booking.request-change.store');
+    Route::post('/user/booking/{booking}/cancel', [\App\Http\Controllers\UserBookingController::class, 'cancelBooking'])->name('user.booking.cancel');
+    Route::post('/user/booking/change-requests/{changeRequest}/acknowledge', [\App\Http\Controllers\UserBookingController::class, 'acknowledgeChangeRequest'])->name('user.booking.change-request.acknowledge');
     Route::get('/user/booking/{booking}', [\App\Http\Controllers\UserBookingController::class, 'show'])->name('user.booking.show');
 
     // Booking API endpoints

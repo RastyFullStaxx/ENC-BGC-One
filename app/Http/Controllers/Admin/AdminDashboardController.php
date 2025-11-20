@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingApproval;
 use App\Models\Facility;
+use App\Models\NotificationLog;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 
@@ -102,8 +103,11 @@ class AdminDashboardController extends Controller
             'resolvedToday' => $resolvedToday,
         ];
 
+        $adminUser = auth()->user();
+        $notificationsCount = NotificationLog::forRecipient($adminUser)->count();
+
         return view('admin.dashboard', [
-            'user' => auth()->user(),
+            'user' => $adminUser,
             'rooms' => $rooms,
             'approvalsQueue' => $approvalsQueue,
             'heroStats' => $heroStats,
@@ -111,6 +115,7 @@ class AdminDashboardController extends Controller
             'pendingApprovals' => $pendingApprovals,
             'todaysRequests' => $approvalsToday,
             'heroChart' => $heroStats['chart'],
+            'notificationsCount' => $notificationsCount,
         ]);
     }
 

@@ -23,7 +23,7 @@
         'currentStep' => 0,
         'steps' => [],
         'bookingsCount' => 0,
-        'notificationsCount' => 4,
+        'notificationsCount' => $notificationsCount ?? 0,
         'userName' => $user?->name ?? 'Administrator',
         'userEmail' => $user?->email ?? 'admin@enc.gov',
         'userRole' => 'ADMIN',
