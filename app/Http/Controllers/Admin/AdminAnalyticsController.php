@@ -107,9 +107,16 @@ class AdminAnalyticsController extends Controller
     {
         $startDate = Carbon::parse($request->input('start_date', Carbon::now()->subDays(30)->toDateString()))->startOfDay();
         $endDate = Carbon::parse($request->input('end_date', Carbon::now()->toDateString()))->endOfDay();
+        $rangeDays = $startDate->diffInDays($endDate) + 1;
+        $previousEnd = (clone $startDate)->subDay()->endOfDay();
+        $previousStart = (clone $previousEnd)->subDays($rangeDays - 1)->startOfDay();
 
         $bookings = Booking::with(['facility.building', 'requester.department'])
             ->whereBetween('date', [$startDate->toDateString(), $endDate->toDateString()])
+            ->get();
+
+        $previousBookings = Booking::with(['facility.building', 'requester.department'])
+            ->whereBetween('date', [$previousStart->toDateString(), $previousEnd->toDateString()])
             ->get();
 
         $kpis = $this->buildKpis($bookings, $startDate, $endDate);
@@ -122,6 +129,13 @@ class AdminAnalyticsController extends Controller
         $recurrenceStats = $this->buildRecurrenceStats($bookings, $startDate, $endDate);
         $demandRanking = $this->buildDemandRanking($bookings);
 
+        $previousUtilizationStats = $this->buildUtilizationStats($previousBookings);
+        $previousPeakHoursStats = $this->buildPeakHours($previousBookings);
+        $previousDepartmentShare = $this->buildDepartmentShare($previousBookings);
+        $previousStatusBreakdown = $this->buildStatusBreakdown($previousBookings);
+        $previousNoShowReasons = $this->buildNoShowReasons($previousBookings);
+        $previousRecurrenceStats = $this->buildRecurrenceStats($previousBookings, $previousStart, $previousEnd);
+
         return compact(
             'kpis',
             'demandRanking',
@@ -131,8 +145,16 @@ class AdminAnalyticsController extends Controller
             'statusBreakdown',
             'noShowReasons',
             'recurrenceStats',
+            'previousUtilizationStats',
+            'previousPeakHoursStats',
+            'previousDepartmentShare',
+            'previousStatusBreakdown',
+            'previousNoShowReasons',
+            'previousRecurrenceStats',
             'startDate',
-            'endDate'
+            'endDate',
+            'previousStart',
+            'previousEnd'
         );
     }
 

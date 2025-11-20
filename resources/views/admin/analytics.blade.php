@@ -52,22 +52,47 @@
         'values' => [22, 28, 31, 36],
     ];
 
+    $previousUtilizationStats = $previousUtilizationStats ?? $utilizationStats;
+    $previousPeakHoursStats = $previousPeakHoursStats ?? $peakHoursStats;
+    $previousDepartmentShare = $previousDepartmentShare ?? $departmentShare;
+    $previousStatusBreakdown = $previousStatusBreakdown ?? $statusBreakdown;
+    $previousNoShowReasons = $previousNoShowReasons ?? $noShowReasons;
+    $previousRecurrenceStats = $previousRecurrenceStats ?? $recurrenceStats;
+
+    $valueForLabel = function ($labels, $values, $label) {
+        $labels = collect($labels);
+        $values = collect($values);
+        $index = $labels->search($label);
+        return $index === false ? 0 : ($values[$index] ?? 0);
+    };
+
     $pairs = fn($labels, $values) => collect($labels)->zip($values)->map(fn($set) => ['name' => $set[0], 'value' => $set[1]]);
 
     $utilPairs = $pairs($utilizationStats['labels'], $utilizationStats['values']);
+    $prevUtilPairs = $pairs($previousUtilizationStats['labels'], $previousUtilizationStats['values']);
     $utilTop = $utilPairs->sortByDesc('value')->first() ?? ['name' => 'N/A', 'value' => 0];
     $utilBottom = $utilPairs->sortBy('value')->take(2)->pluck('name')->filter()->implode(' and ');
     $utilBottomText = $utilBottom ?: 'Lower-performing rooms';
+    $utilAvg = round(collect($utilizationStats['values'])->avg() ?? 0, 1);
+    $prevUtilAvg = round(collect($previousUtilizationStats['values'])->avg() ?? 0, 1);
+    $utilAvgDelta = round($utilAvg - $prevUtilAvg, 1);
 
     $peakPairs = $pairs($peakHoursStats['labels'], $peakHoursStats['values'])->sortByDesc('value')->values();
+    $prevPeakPairs = $pairs($previousPeakHoursStats['labels'], $previousPeakHoursStats['values'])->sortByDesc('value')->values();
     $peakTop = $peakPairs->get(0) ?? ['name' => 'N/A', 'value' => 0];
     $peakSecond = $peakPairs->get(1) ?? ['name' => 'N/A', 'value' => 0];
     $peakLow = $peakPairs->sortBy('value')->first() ?? ['name' => 'N/A', 'value' => 0];
+    $prevPeakTop = $prevPeakPairs->get(0) ?? ['name' => 'N/A', 'value' => 0];
+    $peakTopDelta = $peakTop['value'] - $prevPeakTop['value'];
 
     $deptValues = collect($departmentShare['values']);
     $deptPairs = $pairs($departmentShare['labels'], $deptValues)->sortByDesc('value')->values();
     $deptTop = $deptPairs->first() ?? ['name' => 'N/A', 'value' => 0];
     $deptLow = $deptPairs->last() ?? ['name' => 'N/A', 'value' => 0];
+    $prevDeptValues = collect($previousDepartmentShare['values']);
+    $prevDeptTotal = max($prevDeptValues->sum() ?? 0, 1);
+    $prevDeptTopVal = $valueForLabel($previousDepartmentShare['labels'], $previousDepartmentShare['values'], $deptTop['name']);
+    $prevDeptTopPct = round(($prevDeptTopVal / $prevDeptTotal) * 100);
 
     $statusValues = collect($statusBreakdown['values']);
     $statusPairs = $pairs($statusBreakdown['labels'], $statusValues);
@@ -75,14 +100,25 @@
     $statusCancelled = data_get($statusPairs->firstWhere('name', 'Cancelled'), 'value', 0);
     $statusNoShow = data_get($statusPairs->firstWhere('name', 'No-show'), 'value', 0);
     $statusCancelledPct = round((($statusCancelled + $statusNoShow) / $statusTotal) * 100);
+    $prevStatusPairs = $pairs($previousStatusBreakdown['labels'], $previousStatusBreakdown['values']);
+    $prevStatusTotal = max($prevStatusPairs->sum('value'), 1);
+    $prevCancelled = data_get($prevStatusPairs->firstWhere('name', 'Cancelled'), 'value', 0);
+    $prevNoShow = data_get($prevStatusPairs->firstWhere('name', 'No-show'), 'value', 0);
+    $prevCancelledPct = round((($prevCancelled + $prevNoShow) / $prevStatusTotal) * 100);
 
     $noShowPairs = $pairs($noShowReasons['labels'], $noShowReasons['values'])->sortByDesc('value')->values();
     $noShowTop = $noShowPairs->first() ?? ['name' => 'N/A', 'value' => 0];
+    $prevNoShowPairs = $pairs($previousNoShowReasons['labels'], $previousNoShowReasons['values'])->sortByDesc('value')->values();
+    $prevNoShowTop = $prevNoShowPairs->first() ?? ['name' => 'N/A', 'value' => 0];
 
     $recurrenceValues = collect($recurrenceStats['values']);
     $recurrenceFirst = $recurrenceValues->first() ?? 0;
     $recurrenceLast = $recurrenceValues->last() ?? 0;
     $recurrenceDeltaPct = $recurrenceFirst ? round((($recurrenceLast - $recurrenceFirst) / $recurrenceFirst) * 100) : 0;
+    $prevRecurrenceValues = collect($previousRecurrenceStats['values']);
+    $prevRecurrenceSum = $prevRecurrenceValues->sum() ?? 0;
+    $currRecurrenceSum = $recurrenceValues->sum() ?? 0;
+    $recurrenceWindowDelta = $prevRecurrenceSum ? round((($currRecurrenceSum - $prevRecurrenceSum) / $prevRecurrenceSum) * 100) : 0;
 
     $tone = function ($value, $warn, $crit) {
         if ($value >= $crit) return 'critical';
@@ -98,7 +134,8 @@
     $underUtilCount = $utilPairs->where('value', '<', 70)->count();
     $utilTone = $tone($utilLow['value'] < 60 ? 2 : ($utilSpread > 25 ? 1 : 0), 1, 2);
     $utilLabel = ucfirst($utilTone);
-    $insights['utilization'][] = "<strong>{$utilLabel}:</strong> {$utilTop['name']} leads at {$utilTop['value']}% utilization — keep current scheduling.";
+    $utilAvgDeltaText = $utilAvgDelta === 0 ? 'flat vs prior range' : (($utilAvgDelta > 0 ? '+' : '') . "{$utilAvgDelta} pts vs prior");
+    $insights['utilization'][] = "<strong>{$utilLabel}:</strong> {$utilTop['name']} leads at {$utilTop['value']}% utilization ({$utilAvg}% avg, {$utilAvgDeltaText}).";
     $insights['utilization'][] = $underUtilCount > 0
         ? "{$underUtilCount} room(s) below 70% (e.g., <strong>{$utilLow['name']}</strong>) — reroute recurring bookings here."
         : "All tracked rooms are above 70% — maintain current allocation.";
@@ -108,7 +145,8 @@
 
     // Peak hours insights
     $peakSpread = $peakTop['value'] - $peakLow['value'];
-    $insights['peakHours'][] = "Heaviest load at <strong>{$peakTop['name']}:00</strong> ({$peakTop['value']} bookings); collisions likely.";
+    $peakDeltaText = $peakTopDelta === 0 ? 'flat vs prior' : (($peakTopDelta > 0 ? '+' : '') . $peakTopDelta . ' vs prior peak hour');
+    $insights['peakHours'][] = "Heaviest load at <strong>{$peakTop['name']}:00</strong> ({$peakTop['value']} bookings, {$peakDeltaText}); collisions likely.";
     $insights['peakHours'][] = "Next spike at <strong>{$peakSecond['name']}:00</strong>; batch approvals or suggest alternatives here.";
     $insights['peakHours'][] = $peakSpread > 30
         ? "Off-peak near <strong>{$peakLow['name']}:00</strong> — best for maintenance or rebooked slots."
@@ -118,7 +156,9 @@
     $deptTotal = max($deptValues->sum() ?? 0, 1);
     $deptTopPct = round(($deptTop['value'] / $deptTotal) * 100);
     $deptLowPct = round(($deptLow['value'] / $deptTotal) * 100);
-    $insights['department'][] = "<strong>{$deptTop['name']}</strong> owns {$deptTopPct}% of bookings — balance them with Building B/A overflow.";
+    $deptTopDelta = $deptTopPct - $prevDeptTopPct;
+    $deptTopDeltaText = $deptTopDelta === 0 ? 'flat vs prior' : (($deptTopDelta > 0 ? '+' : '') . "{$deptTopDelta} pts vs prior");
+    $insights['department'][] = "<strong>{$deptTop['name']}</strong> owns {$deptTopPct}% of bookings ({$deptTopDeltaText}) — balance them with Building B/A overflow.";
     $insights['department'][] = "<strong>{$deptLow['name']}</strong> sits at {$deptLowPct}% — consider freeing their recurring slots for others.";
     $insights['department'][] = "<strong>Action:</strong> send weekly slot inventory to heavy users to lower ad-hoc conflicts.";
 
@@ -127,17 +167,21 @@
     $approvedCount = data_get($statusPairs->firstWhere('name', 'Approved'), 'value', 0);
     $pendingPct = $statusTotal ? round(($pendingCount / $statusTotal) * 100) : 0;
     $approvedPct = $statusTotal ? round(($approvedCount / $statusTotal) * 100) : 0;
+    $cancelDelta = $statusCancelledPct - $prevCancelledPct;
+    $cancelDeltaText = $cancelDelta === 0 ? 'flat vs prior' : (($cancelDelta > 0 ? '+' : '') . "{$cancelDelta} pts vs prior");
     $statusTone = $tone($statusCancelledPct, 10, 18);
     $statusLabel = ucfirst($statusTone);
     $insights['status'][] = "<strong>{$statusLabel}:</strong> approvals at {$approvedPct}%; pending sits at {$pendingPct}%.";
-    $insights['status'][] = "Cancelled + no-show at <strong>{$statusCancelledPct}%</strong> — aim to drive this under 10%.";
+    $insights['status'][] = "Cancelled + no-show at <strong>{$statusCancelledPct}%</strong> ({$cancelDeltaText}) — aim to drive this under 10%.";
     $insights['status'][] = $pendingPct > 15
         ? "<strong>Action:</strong> clear the pending queue (>$pendingPct%) before peak hours."
         : "<strong>Action:</strong> auto-notify teams with multiple declines to rebook off-peak times.";
 
     // No-show insights
     $noShowSecond = $noShowPairs->get(1) ?? ['name' => 'Next cause', 'value' => 0];
-    $insights['noShow'][] = "<strong>{$noShowTop['name']}</strong> leads no-show/cancel drivers ({$noShowTop['value']} cases).";
+    $topReasonChanged = $noShowTop['name'] !== ($prevNoShowTop['name'] ?? '');
+    $reasonChangeText = $topReasonChanged ? " (changed from {$prevNoShowTop['name']})" : '';
+    $insights['noShow'][] = "<strong>{$noShowTop['name']}</strong> leads no-show/cancel drivers ({$noShowTop['value']} cases){$reasonChangeText}.";
     $insights['noShow'][] = "Next driver: <strong>{$noShowSecond['name']}</strong> ({$noShowSecond['value']}); target both with nudges.";
     $insights['noShow'][] = "<strong>Action:</strong> auto-release slots 15 minutes post start and require reason codes for same-day changes.";
 
@@ -145,7 +189,8 @@
     $trend = $recurrenceDeltaPct > 0 ? 'up' : ($recurrenceDeltaPct < 0 ? 'down' : 'flat');
     $trendTone = $tone(abs($recurrenceDeltaPct), 10, 25);
     $trendLabel = ucfirst($trendTone);
-    $insights['recurrence'][] = "<strong>{$trendLabel}:</strong> recurring bookings are <strong>{$trend}</strong> {$recurrenceDeltaPct}% vs. week 1.";
+    $windowDeltaText = $recurrenceWindowDelta ? (($recurrenceWindowDelta > 0 ? '+' : '') . "{$recurrenceWindowDelta}% vs prior window") : 'flat vs prior window';
+    $insights['recurrence'][] = "<strong>{$trendLabel}:</strong> recurring bookings are <strong>{$trend}</strong> {$recurrenceDeltaPct}% vs. week 1 ({$windowDeltaText}).";
     $insights['recurrence'][] = "<strong>Action:</strong> lock recurring series into underutilized rooms first.";
     $insights['recurrence'][] = "<strong>Action:</strong> flag weeks with >20% jump so facilities can pre-stage equipment.";
 @endphp
