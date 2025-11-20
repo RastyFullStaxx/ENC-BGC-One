@@ -8,63 +8,9 @@
 
 @section('content')
 @php
-    $entries = [
-        [
-            'timestamp' => 'Aug 15, 2024 · 2:41 PM',
-            'actor' => 'Ava Santos',
-            'email' => 'ava.santos@enc.gov',
-            'action' => 'Updated facility capacity',
-            'module' => 'Facilities',
-            'target' => 'Orion Boardroom',
-            'before' => ['capacity' => 12],
-            'after' => ['capacity' => 16],
-            'icon' => '',
-        ],
-        [
-            'timestamp' => 'Aug 15, 2024 · 1:10 PM',
-            'actor' => 'Brian Lopez',
-            'email' => 'brian.lopez@enc.gov',
-            'action' => 'Approved booking BKG-8742',
-            'module' => 'Bookings',
-            'target' => 'BKG-8742',
-            'before' => ['status' => 'Pending'],
-            'after' => ['status' => 'Approved'],
-            'icon' => '',
-        ],
-        [
-            'timestamp' => 'Aug 14, 2024 · 6:02 PM',
-            'actor' => 'Cheska Lim',
-            'email' => 'cheska.lim@enc.gov',
-            'action' => 'Created new rule “No Food · Labs”',
-            'module' => 'Policies',
-            'target' => 'Rule #452',
-            'before' => ['rule' => null],
-            'after' => ['rule' => 'No food allowed'],
-            'icon' => '',
-        ],
-        [
-            'timestamp' => 'Aug 14, 2024 · 5:10 PM',
-            'actor' => 'Diego Ramos',
-            'email' => 'diego.ramos@enc.gov',
-            'action' => 'Deactivated user guest.torres@enc.gov',
-            'module' => 'Users',
-            'target' => 'guest.torres@enc.gov',
-            'before' => ['active' => true],
-            'after' => ['active' => false],
-            'icon' => '',
-        ],
-        [
-            'timestamp' => 'Aug 13, 2024 · 10:45 AM',
-            'actor' => 'System Automation',
-            'email' => 'system@enc.gov',
-            'action' => 'Logged policy violation alert',
-            'module' => 'Approvals',
-            'target' => 'BKG-8670',
-            'before' => ['status' => 'Pending'],
-            'after' => ['status' => 'Flagged'],
-            'icon' => '',
-        ],
-    ];
+    $entries = collect($entries ?? []);
+    $groupedEntries = $entries->groupBy('day');
+    $metrics = $metrics ?? ['today' => 0, 'highRisk' => 0, 'failed' => 0, 'topModule' => '—'];
 @endphp
 
 <section class="admin-audit-page">
@@ -75,70 +21,241 @@
             </svg>
             Back to admin hub
         </a>
-        <p class="audit-breadcrumb">Admin Hub · Audit Log</p>
+        <p class="audit-breadcrumb">Observability • Audit Log</p>
         <div class="audit-header">
             <div>
                 <h1>Audit Log</h1>
-                <p>A record of actions performed across the system.</p>
+                <p>Track every change, anomaly, and approval across ENC.</p>
+                <div class="audit-pills">
+                    <span class="audit-pill">Live view</span>
+                    <span class="audit-pill">Diff-ready</span>
+                    <span class="audit-pill">Security-aware</span>
+                </div>
             </div>
             <div class="audit-controls">
-                <button class="audit-btn">Download CSV</button>
-                <button class="audit-btn">Download PDF</button>
+                <a href="{{ route('admin.audit.export.csv') }}" class="audit-btn">Export CSV</a>
+                <a href="{{ route('admin.audit.export.json') }}" class="audit-btn">Export JSON</a>
+                <button class="audit-btn audit-btn-primary" type="button">Copy permalink</button>
             </div>
         </div>
 
-        <div class="audit-surface">
-            <div class="audit-filters">
-                <input type="search" class="audit-btn" id="auditSearch" placeholder="Search actor, action, module">
-                <button class="audit-chip active" data-filter-module="all">All modules</button>
-                <button class="audit-chip" data-filter-module="Bookings">Bookings</button>
-                <button class="audit-chip" data-filter-module="Facilities">Facilities</button>
-                <button class="audit-chip" data-filter-module="Users">Users</button>
-                <button class="audit-chip" data-filter-module="Policies">Policies</button>
-                <button class="audit-chip" data-filter-module="Approvals">Approvals</button>
-                <button class="audit-btn" id="dateRangeBtn">Date Range</button>
-            </div>
+        <div class="audit-metrics">
+            <article class="audit-metric">
+                <div>
+                    <p class="text-muted small mb-1">Events today</p>
+                    <h3>{{ $metrics['today'] }}</h3>
+                    <p class="audit-trend up">Freshest events first</p>
+                </div>
+                <div class="audit-mini-bars">
+                    <span style="height: 46%"></span>
+                    <span style="height: 62%"></span>
+                    <span style="height: 58%"></span>
+                    <span style="height: 82%"></span>
+                    <span style="height: 75%"></span>
+                </div>
+            </article>
+            <article class="audit-metric">
+                <div>
+                    <p class="text-muted small mb-1">High-risk events</p>
+                    <h3>6</h3>
+                    <p class="audit-trend">3 require review</p>
+                </div>
+                <span class="audit-badge risk-high">High-signal</span>
+            </article>
+            <article class="audit-metric">
+                <div>
+                    <p class="text-muted small mb-1">Failed actions</p>
+                    <h3>{{ $metrics['failed'] }}</h3>
+                    <p class="audit-trend down">Action needed</p>
+                </div>
+                <span class="audit-badge risk-medium">Watchlist</span>
+            </article>
+            <article class="audit-metric">
+                <div>
+                    <p class="text-muted small mb-1">Top module</p>
+                    <h3>{{ $metrics['topModule'] }}</h3>
+                    <p class="audit-trend">Most active</p>
+                </div>
+                <span class="audit-badge">Live</span>
+            </article>
+        </div>
 
-            <div class="audit-table-wrapper">
-                <table class="audit-table" id="auditTable">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Actor</th>
-                            <th>Action</th>
-                            <th>Module</th>
-                            <th>Target</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($entries as $entry)
-                            <tr
-                                data-module="{{ $entry['module'] }}"
-                                data-actor="{{ strtolower($entry['actor']) }}"
-                                data-action="{{ strtolower($entry['action']) }}"
-                                data-detail='@json($entry)'
-                            >
-                                <td>{{ $entry['timestamp'] }}</td>
-                                <td>
-                                    <div class="audit-actor">
-                                        <span class="audit-avatar">{{ strtoupper(substr($entry['actor'], 0, 1)) }}</span>
-                                        <div>
-                                            <strong>{{ $entry['actor'] }}</strong>
-                                            <p class="text-muted small mb-0">{{ $entry['email'] }}</p>
+        <div class="audit-layout">
+            <aside class="audit-panel">
+                <div class="panel-row">
+                    <label for="auditSearch">Search</label>
+                    <div class="audit-search">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 014.8 9.6l3.3 3.3a1 1 0 01-1.4 1.4l-3.3-3.3A6 6 0 1110 4zm0 2a4 4 0 100 8 4 4 0 000-8z" fill="currentColor"/></svg>
+                        <input type="search" id="auditSearch" placeholder="Actor, action, target, IP">
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Timeframe</label>
+                    <div class="audit-chip-row">
+                        <button class="audit-chip active" data-filter-timeframe="all">All</button>
+                        <button class="audit-chip" data-filter-timeframe="today">Today</button>
+                        <button class="audit-chip" data-filter-timeframe="week">This week</button>
+                        <button class="audit-chip" data-filter-timeframe="30d">Last 30d</button>
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Module</label>
+                    <div class="audit-chip-row">
+                        <button class="audit-chip active" data-filter-module="all">All</button>
+                        <button class="audit-chip" data-filter-module="Bookings">Bookings</button>
+                        <button class="audit-chip" data-filter-module="Facilities">Facilities</button>
+                        <button class="audit-chip" data-filter-module="Users">Users</button>
+                        <button class="audit-chip" data-filter-module="Policies">Policies</button>
+                        <button class="audit-chip" data-filter-module="Approvals">Approvals</button>
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Risk</label>
+                    <div class="audit-chip-row">
+                        <button class="audit-chip active" data-filter-risk="all">Any</button>
+                        <button class="audit-chip" data-filter-risk="high">High</button>
+                        <button class="audit-chip" data-filter-risk="medium">Medium</button>
+                        <button class="audit-chip" data-filter-risk="low">Low</button>
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Status</label>
+                    <div class="audit-chip-row">
+                        <button class="audit-chip active" data-filter-status="all">Any</button>
+                        <button class="audit-chip" data-filter-status="success">Success</button>
+                        <button class="audit-chip" data-filter-status="failed">Failed</button>
+                    </div>
+                </div>
+
+                <div class="panel-row">
+                    <label>Saved views</label>
+                    <div class="audit-saved-views">
+                        <button class="audit-saved" data-saved-view="all">All events</button>
+                        <button class="audit-saved" data-saved-view="security">Security-sensitive</button>
+                        <button class="audit-saved" data-saved-view="myteam">My team changes</button>
+                        <button class="audit-saved" data-saved-view="failures">Failures only</button>
+                    </div>
+                </div>
+
+                <div class="panel-row panel-row--inline">
+                    <div>
+                        <p class="text-muted small mb-1">Live mode</p>
+                        <p id="liveStatus" class="audit-live-copy">Streaming (simulated)</p>
+                    </div>
+                    <button class="audit-toggle" id="liveToggle" aria-pressed="true"><span></span></button>
+                </div>
+
+                <div class="panel-row panel-row--inline">
+                    <div>
+                        <p class="text-muted small mb-1">Anomaly filter</p>
+                        <p class="audit-live-copy">Surface unusual IPs, failures, high risk.</p>
+                    </div>
+                    <label class="audit-switch">
+                        <input type="checkbox" id="anomalyToggle">
+                        <span></span>
+                    </label>
+                </div>
+
+                <div class="panel-footer">
+                    <p class="text-muted small mb-1">Last updated</p>
+                    <p id="lastUpdated">Just now</p>
+                </div>
+            </aside>
+
+            <div class="audit-main">
+                <div class="audit-toolbar">
+                    <div class="audit-toolbar-left">
+                        <div class="audit-label">View</div>
+                        <div class="audit-view-pills">
+                            <span class="audit-pill neutral">Timeline</span>
+                            <span class="audit-pill neutral">Diff-on-open</span>
+                            <span class="audit-pill neutral">Group by day</span>
+                        </div>
+                    </div>
+                    <div class="audit-toolbar-right">
+                        <button class="audit-btn">Share view</button>
+                        <button class="audit-btn audit-btn-primary">Create alert</button>
+                    </div>
+                </div>
+
+                <div class="audit-timeline" id="auditTimeline">
+                    @foreach ($groupedEntries as $day => $items)
+                        @php $dayKey = strtolower(str_replace(' ', '-', $day)); @endphp
+                        <div class="audit-day" data-day-label="{{ $dayKey }}">
+                            <div class="audit-day-header">
+                                <div>
+                                    <p class="text-muted small mb-1">{{ $day }}</p>
+                                    <strong>{{ count($items) }} events</strong>
+                                </div>
+                                <div class="audit-day-chip">Grouped by {{ $day }}</div>
+                            </div>
+                            <div class="audit-day-line"></div>
+                            <div class="audit-day-body">
+                                @foreach ($items as $entry)
+                                    <article
+                                        class="audit-card"
+                                        data-audit-card
+                                        data-module="{{ $entry['module'] }}"
+                                        data-risk="{{ $entry['risk'] }}"
+                                        data-status="{{ $entry['status'] }}"
+                                        data-actor="{{ strtolower($entry['actor']) }}"
+                                        data-action="{{ strtolower($entry['action']) }}"
+                                        data-target="{{ strtolower($entry['target']) }}"
+                                        data-day="{{ strtolower(str_replace(' ', '', $entry['day'])) }}"
+                                        data-detail='@json($entry)'
+                                    >
+                                        <div class="audit-card-header">
+                                            <div class="audit-card-meta">
+                                                <span class="audit-badge">{{ $entry['module'] }}</span>
+                                                <span class="audit-dot {{ $entry['risk'] }}"></span>
+                                                <span class="audit-label risk-{{ $entry['risk'] }}">{{ ucfirst($entry['risk']) }} risk</span>
+                                                <span class="audit-label status-{{ $entry['status'] }}">{{ ucfirst($entry['status']) }}</span>
+                                            </div>
+                                            <div class="audit-card-time">
+                                                <span>{{ $entry['timestamp'] }}</span>
+                                                <button class="audit-btn audit-ghost" data-detail-btn>Open</button>
+                                            </div>
                                         </div>
-                                    </div>
-                                </td>
-                                <td>{{ $entry['icon'] }} {{ $entry['action'] }}</td>
-                                <td><span class="audit-module-chip">{{ $entry['module'] }}</span></td>
-                                <td class="text-muted">{{ $entry['target'] }}</td>
-                                <td>
-                                    <button class="audit-btn" data-detail-btn>View details</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                        <div class="audit-card-body">
+                                            <div class="audit-actor">
+                                                <span class="audit-avatar">{{ strtoupper(substr($entry['actor'], 0, 1)) }}</span>
+                                                <div>
+                                                    <strong>{{ $entry['actor'] }}</strong>
+                                                    <p class="text-muted small mb-0">{{ $entry['email'] }} • {{ $entry['source'] }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="audit-action">
+                                                <h4>{{ $entry['action'] }}</h4>
+                                                <p class="text-muted small mb-0">Target: {{ $entry['target'] }}</p>
+                                            </div>
+                                            <div class="audit-card-grid">
+                                                <div>
+                                                    <p class="text-muted small mb-1">Context</p>
+                                                    <p class="audit-context">{{ $entry['notes'] }}</p>
+                                                </div>
+                                                <div class="audit-meta-grid">
+                                                    <span class="audit-subpill">Env: {{ $entry['environment'] }}</span>
+                                                    <span class="audit-subpill">IP: {{ $entry['ip'] }}</span>
+                                                    <span class="audit-subpill">Loc: {{ $entry['location'] }}</span>
+                                                    <span class="audit-subpill">Device: {{ $entry['device'] }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="audit-changes">
+                                                @foreach ($entry['changes'] as $change)
+                                                    <span class="audit-change-chip">{{ $change }}</span>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </article>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
@@ -153,9 +270,15 @@
         </div>
         <button class="audit-btn" id="closeAuditDrawer">×</button>
     </header>
+    <div class="audit-drawer-meta">
+        <span class="audit-label" id="drawerModule">—</span>
+        <span class="audit-label" id="drawerRisk">—</span>
+        <span class="audit-label" id="drawerStatus">—</span>
+    </div>
     <div class="audit-drawer-section">
         <h4>Actor</h4>
         <p id="drawerActor">—</p>
+        <p class="text-muted small mb-0" id="drawerSource">—</p>
     </div>
     <div class="audit-drawer-section">
         <h4>Action</h4>
@@ -165,6 +288,18 @@
         <h4>Entity</h4>
         <p id="drawerEntity">—</p>
     </div>
+    <div class="audit-drawer-section audit-drawer-grid">
+        <div>
+            <h4>IP / Location</h4>
+            <p id="drawerIp">—</p>
+            <p class="text-muted small mb-0" id="drawerLocation">—</p>
+        </div>
+        <div>
+            <h4>Device</h4>
+            <p id="drawerDevice">—</p>
+            <p class="text-muted small mb-0" id="drawerEnv">—</p>
+        </div>
+    </div>
     <div class="audit-drawer-section">
         <h4>Before</h4>
         <pre class="audit-diff" id="drawerBefore"><code>—</code></pre>
@@ -173,36 +308,81 @@
         <h4>After</h4>
         <pre class="audit-diff" id="drawerAfter"><code>—</code></pre>
     </div>
+    <div class="audit-drawer-section">
+        <h4>Notes</h4>
+        <p id="drawerNotes">—</p>
+    </div>
+    <div class="audit-drawer-section audit-drawer-grid">
+        <div>
+            <h4>Session</h4>
+            <p id="drawerSession">—</p>
+        </div>
+        <div>
+            <h4>Correlation</h4>
+            <p id="drawerCorrelation">—</p>
+        </div>
+    </div>
     <div class="audit-drawer-actions">
-        <button class="audit-btn">Open Entity</button>
-        <button class="audit-btn audit-btn-primary">Export Entry</button>
+        <button class="audit-btn">Flag for review</button>
+        <button class="audit-btn audit-btn-primary">Export entry</button>
     </div>
 </aside>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const rows = document.querySelectorAll('#auditTable tbody tr');
+        const cards = document.querySelectorAll('[data-audit-card]');
         const searchInput = document.querySelector('#auditSearch');
         const moduleChips = document.querySelectorAll('[data-filter-module]');
+        const riskChips = document.querySelectorAll('[data-filter-risk]');
+        const statusChips = document.querySelectorAll('[data-filter-status]');
+        const timeframeChips = document.querySelectorAll('[data-filter-timeframe]');
+        const savedViews = document.querySelectorAll('[data-saved-view]');
+        const anomalyToggle = document.querySelector('#anomalyToggle');
+        const liveToggle = document.querySelector('#liveToggle');
+        const liveStatus = document.querySelector('#liveStatus');
+        const lastUpdated = document.querySelector('#lastUpdated');
         const drawer = document.querySelector('#auditDrawer');
         const overlay = document.querySelector('#auditOverlay');
         const closeDrawerBtn = document.querySelector('#closeAuditDrawer');
 
-        let activeModule = 'all';
+        let filters = {
+            module: 'all',
+            risk: 'all',
+            status: 'all',
+            timeframe: 'all',
+            keyword: '',
+        };
+
+        const savedViewsConfig = {
+            all: { module: 'all', risk: 'all', status: 'all', timeframe: 'all', keyword: '' },
+            security: { module: 'Policies', risk: 'high', status: 'all', timeframe: '30d', keyword: '' },
+            myteam: { module: 'Facilities', risk: 'all', status: 'all', timeframe: 'week', keyword: '' },
+            failures: { module: 'all', risk: 'all', status: 'failed', timeframe: 'all', keyword: '' },
+        };
 
         const openDrawer = (detail) => {
             drawer.classList.add('open');
             overlay.classList.add('open');
             drawer.setAttribute('aria-hidden', 'false');
-            document.querySelector('#drawerTitle').textContent = detail.action;
-            document.querySelector('#drawerSubtitle').textContent = detail.module + ' • ' + detail.timestamp;
-            document.querySelector('#drawerActor').textContent = detail.actor + ' (' + detail.email + ')';
+            document.querySelector('#drawerTitle').textContent = detail.action || 'Action';
+            document.querySelector('#drawerSubtitle').textContent = `${detail.module} • ${detail.timestamp}`;
+            document.querySelector('#drawerActor').textContent = `${detail.actor} (${detail.email})`;
+            document.querySelector('#drawerSource').textContent = `${detail.source} • ${detail.environment}`;
             document.querySelector('#drawerAction').textContent = detail.action;
             document.querySelector('#drawerEntity').textContent = detail.target;
             document.querySelector('#drawerBefore').textContent = JSON.stringify(detail.before, null, 2) || '—';
             document.querySelector('#drawerAfter').textContent = JSON.stringify(detail.after, null, 2) || '—';
+            document.querySelector('#drawerModule').textContent = detail.module;
+            document.querySelector('#drawerRisk').textContent = `${(detail.risk || '—')} risk`;
+            document.querySelector('#drawerStatus').textContent = detail.status ? detail.status.toUpperCase() : '—';
+            document.querySelector('#drawerIp').textContent = detail.ip || '—';
+            document.querySelector('#drawerLocation').textContent = detail.location || '—';
+            document.querySelector('#drawerDevice').textContent = detail.device || '—';
+            document.querySelector('#drawerEnv').textContent = detail.environment || '—';
+            document.querySelector('#drawerNotes').textContent = detail.notes || '—';
+            document.querySelector('#drawerSession').textContent = detail.session || '—';
+            document.querySelector('#drawerCorrelation').textContent = detail.correlation || '—';
         };
 
         const closeDrawer = () => {
@@ -211,10 +391,10 @@
             drawer.setAttribute('aria-hidden', 'true');
         };
 
-        rows.forEach(row => {
-            const detailBtn = row.querySelector('[data-detail-btn]');
+        cards.forEach(card => {
+            const detailBtn = card.querySelector('[data-detail-btn]');
             detailBtn.addEventListener('click', () => {
-                const detail = JSON.parse(row.dataset.detail);
+                const detail = JSON.parse(card.dataset.detail);
                 openDrawer(detail);
             });
         });
@@ -222,25 +402,105 @@
         overlay.addEventListener('click', closeDrawer);
         closeDrawerBtn.addEventListener('click', closeDrawer);
 
+        const matchTimeframe = (card) => {
+            if (filters.timeframe === 'all') return true;
+            const day = card.dataset.day;
+            if (filters.timeframe === 'today') return day === 'today';
+            if (filters.timeframe === 'week') return day === 'thisweek' || day === 'today' || day === 'yesterday';
+            if (filters.timeframe === '30d') return true; // placeholder until backend dates arrive
+            return true;
+        };
+
         const filterRows = () => {
-            const keyword = searchInput.value.trim().toLowerCase();
-            rows.forEach(row => {
-                const matchModule = activeModule === 'all' || row.dataset.module === activeModule;
-                const matchKeyword = !keyword || row.dataset.actor.includes(keyword) || row.dataset.action.includes(keyword);
-                row.style.display = matchModule && matchKeyword ? '' : 'none';
+            const keyword = filters.keyword;
+            cards.forEach(card => {
+                const moduleMatch = filters.module === 'all' || card.dataset.module === filters.module;
+                const riskMatch = filters.risk === 'all' || card.dataset.risk === filters.risk;
+                const statusMatch = filters.status === 'all' || card.dataset.status === filters.status;
+                const keywordMatch = !keyword
+                    || card.dataset.actor.includes(keyword)
+                    || card.dataset.action.includes(keyword)
+                    || card.dataset.target.includes(keyword);
+                const timeframeMatch = matchTimeframe(card);
+                const anomalyMatch = anomalyToggle.checked ? (card.dataset.risk === 'high' || card.dataset.status === 'failed') : true;
+                const visible = moduleMatch && riskMatch && statusMatch && keywordMatch && timeframeMatch && anomalyMatch;
+                card.style.display = visible ? '' : 'none';
+            });
+        };
+
+        const setActiveChip = (list, valueKey, value) => {
+            list.forEach(chip => {
+                chip.classList.toggle('active', chip.dataset[valueKey] === value);
             });
         };
 
         moduleChips.forEach(chip => {
             chip.addEventListener('click', () => {
-                activeModule = chip.dataset.filterModule;
-                moduleChips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
+                filters.module = chip.dataset.filterModule;
+                setActiveChip(moduleChips, 'filterModule', filters.module);
                 filterRows();
             });
         });
 
-        searchInput.addEventListener('input', filterRows);
+        riskChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filters.risk = chip.dataset.filterRisk;
+                setActiveChip(riskChips, 'filterRisk', filters.risk);
+                filterRows();
+            });
+        });
+
+        statusChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filters.status = chip.dataset.filterStatus;
+                setActiveChip(statusChips, 'filterStatus', filters.status);
+                filterRows();
+            });
+        });
+
+        timeframeChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                filters.timeframe = chip.dataset.filterTimeframe;
+                setActiveChip(timeframeChips, 'filterTimeframe', filters.timeframe);
+                filterRows();
+            });
+        });
+
+        savedViews.forEach(viewBtn => {
+            viewBtn.addEventListener('click', () => {
+                const config = savedViewsConfig[viewBtn.dataset.savedView] || savedViewsConfig.all;
+                filters = { ...config };
+                searchInput.value = filters.keyword;
+                setActiveChip(moduleChips, 'filterModule', filters.module);
+                setActiveChip(riskChips, 'filterRisk', filters.risk);
+                setActiveChip(statusChips, 'filterStatus', filters.status);
+                setActiveChip(timeframeChips, 'filterTimeframe', filters.timeframe);
+                filterRows();
+            });
+        });
+
+        anomalyToggle.addEventListener('change', filterRows);
+
+        searchInput.addEventListener('input', (e) => {
+            filters.keyword = e.target.value.trim().toLowerCase();
+            filterRows();
+        });
+
+        const refreshUpdatedTime = () => {
+            const now = new Date();
+            lastUpdated.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
+
+        refreshUpdatedTime();
+        setInterval(refreshUpdatedTime, 45000);
+
+        liveToggle.addEventListener('click', () => {
+            const isOn = liveToggle.classList.toggle('active');
+            liveToggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+            liveStatus.textContent = isOn ? 'Streaming (simulated)' : 'Paused';
+        });
+
+        filterRows();
     });
 </script>
 @endpush

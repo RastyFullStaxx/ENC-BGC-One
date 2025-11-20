@@ -451,34 +451,32 @@
             Swal.fire({
                 title: 'Block time',
                 html: `
-                    <div class="pol-field">
+                    <div class="block-modal-form">
                         <label>Facility</label>
-                        <select id="blockFacility" class="swal2-select">${facilityOptions}</select>
-                    </div>
-                    <div class="pol-field" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label>Date</label>
-                            <input id="blockDate" type="date" class="swal2-input" value="${today}">
+                        <select id="blockFacility" class="swal2-select block-field">${facilityOptions}</select>
+                        <div class="block-row">
+                            <div class="block-field-group">
+                                <label>Date</label>
+                                <input id="blockDate" type="date" class="swal2-input block-field" value="${today}">
+                            </div>
+                            <div class="block-field-group">
+                                <label>Start</label>
+                                <input id="blockStart" type="time" class="swal2-input block-field">
+                            </div>
+                            <div class="block-field-group">
+                                <label>End</label>
+                                <input id="blockEnd" type="time" class="swal2-input block-field">
+                            </div>
                         </div>
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label>Start</label>
-                            <input id="blockStart" type="time" class="swal2-input">
-                        </div>
-                        <div style="display:flex;flex-direction:column;gap:4px;">
-                            <label>End</label>
-                            <input id="blockEnd" type="time" class="swal2-input">
-                        </div>
-                    </div>
-                    <div class="pol-field">
                         <label>Note</label>
-                        <input id="blockNote" class="swal2-input" placeholder="e.g., Deep clean / maintenance window">
+                        <input id="blockNote" class="swal2-input block-field" placeholder="e.g., Deep clean / maintenance window">
+                        <p class="small block-helper">Blocks are holds without services or approvals. Cancel to free the slot.</p>
                     </div>
-                    <p class="small text-muted" style="text-align:left; margin-top:6px;">Blocks are holds without services or approvals. Cancel to free the slot.</p>
                 `,
                 confirmButtonText: 'Save block',
                 cancelButtonText: 'Cancel',
                 showCancelButton: true,
-                customClass: { popup: 'block-modal' },
+                customClass: { popup: 'block-modal', container: 'block-modal-container' },
                 focusConfirm: false,
                 preConfirm: () => {
                     const facility_id = document.getElementById('blockFacility').value;

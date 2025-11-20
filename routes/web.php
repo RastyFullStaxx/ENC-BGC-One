@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\AdminApprovalController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminAnalyticsController;
 use App\Http\Controllers\Admin\AdminCalendarController;
+use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 
@@ -115,6 +116,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/calendar', [AdminCalendarController::class, 'index'])->name('admin.calendar');
     Route::post('/admin/calendar/block', [AdminCalendarController::class, 'block'])->name('admin.calendar.block');
     Route::get('/admin/calendar/export/ics', [AdminCalendarController::class, 'exportIcs'])->name('admin.calendar.export.ics');
+
+    Route::get('/admin/audit', [AdminAuditController::class, 'index'])->name('admin.audit');
+    Route::get('/admin/audit/export/csv', [AdminAuditController::class, 'exportCsv'])->name('admin.audit.export.csv');
+    Route::get('/admin/audit/export/json', [AdminAuditController::class, 'exportJson'])->name('admin.audit.export.json');
 });
 
 // Temporary preview route for Admin Facilities Management
@@ -122,9 +127,6 @@ Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
 
 // Temporary preview route for Admin Policies
 Route::view('/admin/policies', 'admin.policies')->name('admin.policies');
-
-// Temporary preview route for Admin Audit Log
-Route::view('/admin/audit', 'admin.audit')->name('admin.audit');
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {

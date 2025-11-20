@@ -541,25 +541,113 @@
 .cal-status.cancelled { background: rgba(255, 107, 107, 0.16); color: #ffb3b3; }
 .cal-status.blocked { background: rgba(255, 200, 87, 0.18); color: #ffd479; }
 
+.swal2-popup.block-modal,
 .block-modal {
     background: rgba(3, 10, 26, 0.98) !important;
     border: 1px solid var(--cal-border);
     border-radius: 16px !important;
-    color: var(--cal-white);
-    width: 560px;
-    max-width: 90vw;
+    color: var(--cal-white) !important;
+    width: clamp(540px, 70vw, 720px) !important;
+    max-height: 90vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin: 0 auto;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    padding: 16px !important;
+    text-align: center;
+}
+
+.block-modal-container {
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 24px !important;
+    pointer-events: none;
+}
+
+.block-modal-container > * {
+    pointer-events: auto;
+}
+
+.block-modal-form {
+    display: grid;
+    gap: 10px;
+    text-align: left;
+    width: 100%;
+    justify-items: stretch;
+}
+
+.block-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.block-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
 .block-modal .swal2-title {
     color: var(--cal-white);
 }
 
+.block-modal .swal2-html-container {
+    color: var(--cal-white) !important;
+    overflow: visible !important;
+}
+
+.block-modal label {
+    text-align: left;
+}
+
+.block-modal label,
+.block-modal .small,
+.block-modal p,
+.block-modal .swal2-html-container p,
+.block-modal .swal2-html-container .small {
+    color: var(--cal-white) !important;
+}
+
 .block-modal .swal2-input,
 .block-modal .swal2-select {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--cal-border);
-    color: var(--cal-white);
+    color: var(--cal-white) !important;
     border-radius: 10px;
+    width: 100%;
+    appearance: none;
+    padding: 10px 12px;
+    box-sizing: border-box;
+}
+
+.block-modal .swal2-input::placeholder {
+    color: var(--cal-white);
+    opacity: 0.82;
+}
+
+.block-modal input[type="date"]::-webkit-calendar-picker-indicator,
+.block-modal input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+.block-modal option {
+    background: #0b1a3a;
+    color: #fff;
+}
+
+.block-modal .swal2-actions {
+    margin-top: 8px !important;
+    width: 100%;
+    display: flex !important;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .block-modal .swal2-actions .swal2-confirm {
@@ -571,6 +659,41 @@
 .block-modal .swal2-actions .swal2-cancel {
     border: 1px solid var(--cal-border);
     color: var(--cal-white);
+}
+
+.block-modal-container {
+    background: rgba(0, 0, 0, 0.6);
+}
+.block-modal .block-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 8px;
+}
+
+.block-modal .block-grid input {
+    width: 100%;
+}
+
+@media (max-width: 560px) {
+    .block-modal {
+        width: 100%;
+    }
+
+    .block-modal-container {
+        padding: 16px !important;
+    }
+
+    .block-modal .block-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .block-row {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .block-modal .swal2-actions {
+        justify-content: center;
+    }
 }
 
 .cal-link {
