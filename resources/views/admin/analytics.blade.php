@@ -8,18 +8,110 @@
 
 @section('content')
 @php
-    $kpis = [
+    $kpis = $kpis ?? [
         ['label' => 'Total Bookings', 'value' => '482', 'note' => 'Last 30 days'],
         ['label' => 'Approved vs Cancelled', 'value' => '89% / 11%', 'note' => 'Green = approved'],
         ['label' => 'Most Booked Room', 'value' => 'Orion Boardroom', 'note' => '62 bookings'],
         ['label' => 'Peak Day', 'value' => 'Wednesday', 'note' => 'Most check-ins'],
     ];
 
-    $demandRanking = [
+    $demandRanking = $demandRanking ?? [
         ['name' => 'Orion Boardroom', 'bookings' => 62, 'hours' => 188, 'conflicts' => 4, 'maintenance' => 'Aug 02', 'score' => '4.8'],
         ['name' => 'Helios Lab', 'bookings' => 54, 'hours' => 160, 'conflicts' => 6, 'maintenance' => 'Jul 26', 'score' => '4.6'],
         ['name' => 'Summit Hall', 'bookings' => 42, 'hours' => 220, 'conflicts' => 2, 'maintenance' => 'Jul 15', 'score' => '4.9'],
         ['name' => 'Nova Hub', 'bookings' => 33, 'hours' => 110, 'conflicts' => 1, 'maintenance' => 'Aug 05', 'score' => '4.4'],
+    ];
+
+    $utilizationStats = $utilizationStats ?? [
+        'labels' => ['Orion', 'Helios', 'Summit', 'Nova', 'Atlas', 'Forum'],
+        'values' => [89, 78, 92, 70, 64, 58],
+    ];
+
+    $peakHoursStats = $peakHoursStats ?? [
+        'labels' => ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+        'values' => [12, 24, 45, 72, 68, 50, 40, 55, 70, 80, 54, 30, 15, 5],
+    ];
+
+    $departmentShare = $departmentShare ?? [
+        'labels' => ['Creative', 'Operations', 'Admin Office', 'Mobility', 'Finance'],
+        'values' => [23, 31, 18, 16, 12],
+    ];
+
+    $statusBreakdown = $statusBreakdown ?? [
+        'labels' => ['Requested', 'Approved', 'Pending', 'Rejected', 'Cancelled', 'No-show'],
+        'values' => [60, 320, 40, 15, 35, 12],
+    ];
+
+    $noShowReasons = $noShowReasons ?? [
+        'labels' => ['Team conflict', 'Weather', 'Unapproved', 'No response'],
+        'values' => [45, 18, 22, 15],
+    ];
+
+    $recurrenceStats = $recurrenceStats ?? [
+        'labels' => ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        'values' => [22, 28, 31, 36],
+    ];
+
+    $pairs = fn($labels, $values) => collect($labels)->zip($values)->map(fn($set) => ['name' => $set[0], 'value' => $set[1]]);
+
+    $utilPairs = $pairs($utilizationStats['labels'], $utilizationStats['values']);
+    $utilTop = $utilPairs->sortByDesc('value')->first() ?? ['name' => 'N/A', 'value' => 0];
+    $utilBottom = $utilPairs->sortBy('value')->take(2)->pluck('name')->filter()->implode(' and ');
+    $utilBottomText = $utilBottom ?: 'Lower-performing rooms';
+
+    $peakPairs = $pairs($peakHoursStats['labels'], $peakHoursStats['values'])->sortByDesc('value')->values();
+    $peakTop = $peakPairs->get(0) ?? ['name' => 'N/A', 'value' => 0];
+    $peakSecond = $peakPairs->get(1) ?? ['name' => 'N/A', 'value' => 0];
+    $peakLow = $peakPairs->sortBy('value')->first() ?? ['name' => 'N/A', 'value' => 0];
+
+    $deptPairs = $pairs($departmentShare['labels'], $departmentShare['values'])->sortByDesc('value')->values();
+    $deptTop = $deptPairs->first() ?? ['name' => 'N/A', 'value' => 0];
+    $deptLow = $deptPairs->last() ?? ['name' => 'N/A', 'value' => 0];
+
+    $statusPairs = $pairs($statusBreakdown['labels'], $statusBreakdown['values']);
+    $statusTotal = max($statusPairs->sum('value'), 1);
+    $statusCancelled = data_get($statusPairs->firstWhere('name', 'Cancelled'), 'value', 0);
+    $statusNoShow = data_get($statusPairs->firstWhere('name', 'No-show'), 'value', 0);
+    $statusCancelledPct = round((($statusCancelled + $statusNoShow) / $statusTotal) * 100);
+
+    $noShowPairs = $pairs($noShowReasons['labels'], $noShowReasons['values'])->sortByDesc('value')->values();
+    $noShowTop = $noShowPairs->first() ?? ['name' => 'N/A', 'value' => 0];
+
+    $recurrenceFirst = $recurrenceStats['values'][0] ?? 0;
+    $recurrenceLast = last($recurrenceStats['values']) ?? 0;
+    $recurrenceDeltaPct = $recurrenceFirst ? round((($recurrenceLast - $recurrenceFirst) / $recurrenceFirst) * 100) : 0;
+
+    $insights = [
+        'utilization' => [
+            "<strong>{$utilTop['name']}</strong> leads at {$utilTop['value']}% utilization — keep current scheduling.",
+            "<strong>{$utilBottomText}</strong> trail utilization; reroute recurring bookings here to balance load.",
+            "<strong>Action:</strong> apply soft holds to underused rooms during mid-week peaks.",
+        ],
+        'peakHours' => [
+            "Highest load at <strong>{$peakTop['name']}:00</strong> ({$peakTop['value']} bookings); watch for collisions.",
+            "Secondary peak at <strong>{$peakSecond['name']}:00</strong>; batch approvals to avoid stacking.",
+            "Off-peak near <strong>{$peakLow['name']}:00</strong> — best window for maintenance or rebooked slots.",
+        ],
+        'department' => [
+            "<strong>{$deptTop['name']}</strong> drives the most bookings — consider nudging them to alternate buildings.",
+            "<strong>{$deptLow['name']}</strong> holds the smallest share; opportunities to free inventory there.",
+            "<strong>Action:</strong> share weekly slot inventory with heavy users to reduce ad-hoc conflicts.",
+        ],
+        'status' => [
+            "Combined <strong>cancelled + no-show</strong> at {$statusCancelledPct}% of requests — track reductions weekly.",
+            "<strong>Pending</strong> volume stays low; approvals are flowing as expected.",
+            "<strong>Action:</strong> auto-email teams with multiple declines to rebook off-peak times.",
+        ],
+        'noShow' => [
+            "<strong>{$noShowTop['name']}</strong> is the top no-show driver — target coaching with approvers.",
+            "<strong>Action:</strong> auto-release slots 15 minutes post start if no check-in is recorded.",
+            "<strong>Action:</strong> require reason codes for same-day cancellations to capture patterns.",
+        ],
+        'recurrence' => [
+            "Recurring bookings are up <strong>{$recurrenceDeltaPct}%</strong> vs. week 1; growth looks healthy.",
+            "<strong>Action:</strong> lock recurring series into underutilized rooms first.",
+            "<strong>Action:</strong> flag weeks with >20% jump so facilities can pre-stage equipment.",
+        ],
     ];
 @endphp
 
@@ -56,6 +148,28 @@
             </div>
         </div>
 
+        <div class="analytics-surface analytics-guide">
+            <div>
+                <p class="analytics-overline">How to read this page</p>
+                <h3 class="mb-2">Start with filters, then scan charts + notes together.</h3>
+                <p class="text-muted mb-0">Pick a date range, skim the KPI cards, then read each chart beside its interpretation. Look for the green or yellow callouts to spot risks or wins fast.</p>
+            </div>
+            <div class="guide-steps">
+                <div class="guide-step">
+                    <span>1</span>
+                    <p class="mb-0">Set timelines and scope using the chips and date inputs.</p>
+                </div>
+                <div class="guide-step">
+                    <span>2</span>
+                    <p class="mb-0">Compare chart + interpretation box together; they’re paired on purpose.</p>
+                </div>
+                <div class="guide-step">
+                    <span>3</span>
+                    <p class="mb-0">Use the quick actions on each note to jump to remediation.</p>
+                </div>
+            </div>
+        </div>
+
         <div class="analytics-surface">
             <div class="analytics-filters">
                 <div class="analytics-chip-group">
@@ -87,33 +201,119 @@
                     <div class="analytics-kpi-card">
                         <span>{{ $kpi['label'] }}</span>
                         <strong>{{ $kpi['value'] }}</strong>
-                        <p class="text-muted small mb-0">{{ $kpi['note'] }}</p>
+                        <p class="text-muted small mb-0 kpi-note">{{ $kpi['note'] }}</p>
                     </div>
                 @endforeach
             </div>
         </div>
 
-        <div class="analytics-grid">
-            <div class="analytics-card">
-                <h3>Facility Utilization</h3>
-                <canvas id="utilizationChart" aria-label="Facility utilization chart" role="img"></canvas>
+        <div class="analytics-visual-grid">
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Capacity vs usage</p>
+                        <h3>Facility Utilization</h3>
+                        <p class="text-muted small mb-3">Top 6 rooms by percent of available hours consumed.</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--success">Target ≥ 75%</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="utilizationChart" aria-label="Facility utilization chart" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['utilization'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="analytics-card">
-                <h3>Peak Hours</h3>
-                <canvas id="peakHoursChart" aria-label="Peak hour distribution" role="img"></canvas>
+
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Time-of-day load</p>
+                        <h3>Peak Hours</h3>
+                        <p class="text-muted small mb-3">Bookings per hour, weekdays only.</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--warning">Watch 10–16H band</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="peakHoursChart" aria-label="Peak hour distribution" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['peakHours'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="analytics-card">
-                <h3>Bookings by Department</h3>
-                <canvas id="departmentChart" aria-label="Bookings by department" role="img"></canvas>
+
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Demand by function</p>
+                        <h3>Bookings by Department</h3>
+                        <p class="text-muted small mb-3">Share of all bookings by department.</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--info">Pulse check</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="departmentChart" aria-label="Bookings by department" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['department'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="analytics-card">
-                <h3>Booking Status</h3>
-                <canvas id="statusChart" aria-label="Booking statuses" role="img"></canvas>
+
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Health of requests</p>
+                        <h3>Booking Status</h3>
+                        <p class="text-muted small mb-3">Volume by approval status for the selected window.</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--neutral">Monitor declines</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="statusChart" aria-label="Booking statuses" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['status'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="analytics-surface">
-            <h3>Room Demand Ranking</h3>
+            <div class="analytics-card-header mb-2">
+                <div>
+                    <p class="analytics-overline">Prioritize attention</p>
+                    <h3 class="mb-0">Room Demand Ranking</h3>
+                </div>
+                <span class="analytics-pill analytics-pill--info">Sort by conflicts to triage</span>
+            </div>
+            <p class="text-muted small mb-3">Use this list to decide which rooms need schedule smoothing, additional capacity, or maintenance windows.</p>
             <div class="analytics-table-wrapper">
                 <table class="analytics-table" id="demandTable">
                     <thead>
@@ -142,32 +342,91 @@
             </div>
         </div>
 
-        <div class="analytics-grid">
-            <div class="analytics-card">
-                <h3>No-show & Cancellations</h3>
-                <p class="mb-1"><strong>10%</strong> cancellation rate</p>
-                <p class="text-muted small mb-3">12 no-shows flagged • 7 reasons logged</p>
-                <canvas id="noShowChart" aria-label="No show reasons" role="img"></canvas>
+        <div class="analytics-visual-grid">
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Attendance risk</p>
+                        <h3>No-show & Cancellations</h3>
+                        <p class="mb-1"><strong>10%</strong> cancellation rate</p>
+                        <p class="text-muted small mb-0">12 no-shows flagged • 7 reasons logged</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--warning">Mitigate now</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="noShowChart" aria-label="No show reasons" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['noShow'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="analytics-card">
-                <h3>Recurrence Patterns</h3>
-                <p class="text-muted small mb-3">Weekly + monthly bookings currently tracked</p>
-                <canvas id="recurrenceChart" aria-label="Recurrence patterns" role="img"></canvas>
+
+            <div class="analytics-card analytics-split-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Patterns worth keeping</p>
+                        <h3>Recurrence Patterns</h3>
+                        <p class="text-muted small mb-0">Weekly + monthly bookings currently tracked.</p>
+                    </div>
+                    <span class="analytics-pill analytics-pill--success">Healthy climb</span>
+                </div>
+                <div class="analytics-visual-body">
+                    <div class="chart-area">
+                        <canvas id="recurrenceChart" aria-label="Recurrence patterns" role="img"></canvas>
+                    </div>
+                    <div class="analytics-interpretation">
+                        <p class="analytics-overline mb-1">Interpretation</p>
+                        <ul class="analytics-note-list">
+                            @foreach ($insights['recurrence'] as $line)
+                                <li>{!! $line !!}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="analytics-card">
-                <h3>Policy Alerts</h3>
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-3">
-                        <span class="analytics-status-pill cancelled">No-show spike</span>
-                        <p class="mb-0">Creative Dept had 3 no-shows this week.</p>
-                    </li>
-                    <li class="mb-3">
-                        <span class="analytics-status-pill pending">Maintenance reminder</span>
-                        <p class="mb-0">Summit Hall policy expiring in 4 days.</p>
+
+            <div class="analytics-card analytics-stack-card">
+                <div class="analytics-card-header">
+                    <div>
+                        <p class="analytics-overline">Things to address</p>
+                        <h3>Policy Alerts</h3>
+                        <p class="text-muted small mb-0">Pins the key interpretations you should respond to.</p>
+                    </div>
+                </div>
+                <ul class="list-unstyled mb-0 analytics-alert-list">
+                    <li>
+                        <div class="analytics-alert">
+                            <span class="analytics-status-pill cancelled">No-show spike</span>
+                            <div>
+                                <p class="mb-0">Creative Dept had 3 no-shows this week.</p>
+                                <p class="text-muted small mb-0">Pair with “No-show & Cancellations” chart to see root causes.</p>
+                            </div>
+                        </div>
                     </li>
                     <li>
-                        <span class="analytics-status-pill approved">Balanced usage</span>
-                        <p class="mb-0">Building B halls trending up by 12%.</p>
+                        <div class="analytics-alert">
+                            <span class="analytics-status-pill pending">Maintenance reminder</span>
+                            <div>
+                                <p class="mb-0">Summit Hall policy expiring in 4 days.</p>
+                                <p class="text-muted small mb-0">Schedule after 18:00 (off-peak window above).</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="analytics-alert">
+                            <span class="analytics-status-pill approved">Balanced usage</span>
+                            <div>
+                                <p class="mb-0">Building B halls trending up by 12%.</p>
+                                <p class="text-muted small mb-0">Keep pushing Operations to book there (see dept share chart).</p>
+                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -188,6 +447,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        const datasets = {
+            utilization: @json($utilizationStats),
+            peakHours: @json($peakHoursStats),
+            department: @json($departmentShare),
+            status: @json($statusBreakdown),
+            noShow: @json($noShowReasons),
+            recurrence: @json($recurrenceStats),
+        };
+
         const createChart = (id, config) => {
             const ctx = document.getElementById(id);
             if (!ctx) return null;
@@ -204,10 +472,10 @@
         createChart('utilizationChart', {
             type: 'bar',
             data: {
-                labels: ['Orion', 'Helios', 'Summit', 'Nova', 'Atlas', 'Forum'],
+                labels: datasets.utilization.labels,
                 datasets: [{
                     label: 'Utilization %',
-                    data: [89, 78, 92, 70, 64, 58],
+                    data: datasets.utilization.values,
                     backgroundColor: (ctx) => gradientBar(ctx.chart.ctx, 'rgba(21,93,252,0.8)'),
                     borderRadius: 12
                 }]
@@ -224,10 +492,10 @@
         createChart('peakHoursChart', {
             type: 'line',
             data: {
-                labels: ['7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+                labels: datasets.peakHours.labels,
                 datasets: [{
                     label: 'Bookings',
-                    data: [12, 24, 45, 72, 68, 50, 40, 55, 70, 80, 54, 30, 15, 5],
+                    data: datasets.peakHours.values,
                     borderColor: '#FFD66B',
                     backgroundColor: 'rgba(255,214,107,0.2)',
                     tension: 0.4,
@@ -246,9 +514,9 @@
         createChart('departmentChart', {
             type: 'doughnut',
             data: {
-                labels: ['Creative', 'Operations', 'Admin Office', 'Mobility', 'Finance'],
+                labels: datasets.department.labels,
                 datasets: [{
-                    data: [23, 31, 18, 16, 12],
+                    data: datasets.department.values,
                     backgroundColor: ['#4CB4FF', '#00C950', '#FFC857', '#FF6B6B', '#748FFC'],
                     borderWidth: 0
                 }]
@@ -263,9 +531,9 @@
         createChart('statusChart', {
             type: 'bar',
             data: {
-                labels: ['Requested', 'Approved', 'Pending', 'Rejected', 'Cancelled', 'No-show'],
+                labels: datasets.status.labels,
                 datasets: [{
-                    data: [60, 320, 40, 15, 35, 12],
+                    data: datasets.status.values,
                     backgroundColor: ['#748FFC', '#00C950', '#4CB4FF', '#FF6B6B', '#FFC857', '#A78BFA'],
                     borderRadius: 10
                 }]
@@ -282,9 +550,9 @@
         createChart('noShowChart', {
             type: 'pie',
             data: {
-                labels: ['Team conflict', 'Weather', 'Unapproved', 'No response'],
+                labels: datasets.noShow.labels,
                 datasets: [{
-                    data: [45, 18, 22, 15],
+                    data: datasets.noShow.values,
                     backgroundColor: ['#FF6B6B', '#FFC857', '#748FFC', '#4CB4FF'],
                 }]
             },
@@ -296,10 +564,10 @@
         createChart('recurrenceChart', {
             type: 'line',
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                labels: datasets.recurrence.labels,
                 datasets: [{
                     label: 'Recurring bookings',
-                    data: [22, 28, 31, 36],
+                    data: datasets.recurrence.values,
                     borderColor: '#748FFC',
                     backgroundColor: 'rgba(116,143,252,0.2)',
                     fill: true,

@@ -14,35 +14,37 @@ class AdminUserController extends Controller
 {
     public function index()
     {
-        $users = User::with('department')->orderBy('name')->get();
-        $departments = Department::orderBy('name')->get();
+        $users = User::with('department')->orderBy('name')->paginate(10);
+        $allUsers = User::with('department')->orderBy('name')->get();
+        $departments = Department::orderBy('name')->paginate(10);
+        $totalDepartments = Department::count();
         $departmentCounts = User::selectRaw('department_id, COUNT(*) as total')
             ->groupBy('department_id')
             ->pluck('total', 'department_id');
 
         $roleMeta = $this->roleMeta();
-        $roleSummaries = collect($roleMeta)->map(function (array $meta, string $key) use ($users) {
+        $roleSummaries = collect($roleMeta)->map(function (array $meta, string $key) use ($allUsers) {
             return [
                 'key' => $key,
                 'title' => $meta['title'],
                 'description' => $meta['description'],
-                'count' => $users->where('role', $key)->count(),
+                'count' => $allUsers->where('role', $key)->count(),
             ];
         })->values();
 
-        $activeRecent = User::whereNotNull('last_login_at')
+        $activeRecent = $allUsers->whereNotNull('last_login_at')
             ->where('last_login_at', '>=', now()->subDays(7))
             ->count();
 
         $overview = [
-            'total' => $users->count(),
+            'total' => $allUsers->count(),
             'activeRecent' => $activeRecent,
-            'activeRate' => $users->count()
-                ? round(($activeRecent / max(1, $users->count())) * 100)
+            'activeRate' => $allUsers->count()
+                ? round(($activeRecent / max(1, $allUsers->count())) * 100)
                 : 0,
             'pending' => User::where('status', 'pending')->count(),
             'inactive' => User::where('status', 'inactive')->count(),
-            'departments' => $departments->count(),
+            'departments' => $totalDepartments,
         ];
 
         $departmentSummaries = $departments->map(function (Department $department) use ($departmentCounts) {

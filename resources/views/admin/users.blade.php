@@ -193,6 +193,9 @@
                         @endforelse
                     </tbody>
                 </table>
+                <div class="mt-3">
+                    {{ $users->withQueryString()->links() }}
+                </div>
             </div>
 
             <div class="admin-bulk-bar">
@@ -301,6 +304,9 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <div class="mt-3">
+                        {{ $departments->withQueryString()->links() }}
+                    </div>
                 </div>
             </div>
         </div>
