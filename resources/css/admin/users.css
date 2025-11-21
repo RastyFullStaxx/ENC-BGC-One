@@ -321,9 +321,11 @@
 }
 
 .admin-quick-btn {
-    border: none;
-    background: transparent;
+    border: 1px solid var(--admin-gray-200);
+    background: rgba(255, 255, 255, 0.06);
     color: #eaf1ff;
+    padding: 8px 12px;
+    border-radius: 12px;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -332,21 +334,13 @@
 
 .admin-quick-btn-warning {
     color: #ffd66b;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-}
-
-.admin-quick-btn-warning[data-action="activate"],
-[data-status-toggle="true"][data-action="activate"] {
-    color: #29d67b;
-}
-
-.admin-quick-btn-warning[data-action="deactivate"],
-[data-status-toggle="true"][data-action="deactivate"] {
-    color: #ff6b6b;
+    border-color: rgba(255, 200, 87, 0.5);
+    background: rgba(255, 200, 87, 0.12);
 }
 
 .admin-quick-btn-warning:hover {
-    color: var(--admin-success);
+    color: #ffe28f;
+    background: rgba(255, 200, 87, 0.18);
 }
 
 .admin-quick-btn-muted {
@@ -355,6 +349,38 @@
 
 .admin-quick-btn-muted:hover {
     color: #fff;
+}
+
+.admin-quick-btn-edit {
+    color: #ffc857;
+    border-color: rgba(255, 200, 87, 0.5);
+    background: rgba(255, 200, 87, 0.12);
+}
+
+.admin-quick-btn-edit:hover {
+    color: #ffd66b;
+}
+
+.admin-quick-btn-activate {
+    color: #29d67b;
+    border-color: rgba(41, 214, 123, 0.5);
+    background: rgba(41, 214, 123, 0.14);
+}
+
+.admin-quick-btn-activate:hover {
+    color: #5dff9e;
+    background: rgba(41, 214, 123, 0.22);
+}
+
+.admin-quick-btn-deactivate {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.5);
+    background: rgba(255, 107, 107, 0.14);
+}
+
+.admin-quick-btn-deactivate:hover {
+    color: #ff8b8b;
+    background: rgba(255, 120, 120, 0.2);
 }
 
 .admin-bulk-bar {

@@ -117,9 +117,9 @@
                                         <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
                                         <td>
                                             <div class="pol-actions-table inline">
-                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
                                                 <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
-                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                                <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -179,9 +179,9 @@
                                         <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
                                         <td>
                                             <div class="pol-actions-table inline">
-                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
                                                 <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
-                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                                <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -241,9 +241,9 @@
                                         <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
                                         <td>
                                             <div class="pol-actions-table inline">
-                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
                                                 <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
-                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                                <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -576,8 +576,8 @@
                     <h4>Rule #${idx + 1} · ${rule.title || 'Custom'}</h4>
                     <p>${rule.summary || ''}</p>
                     <div class="pol-actions-table" style="opacity:1;">
-                        <button class="pol-action-btn" type="button" data-rule-edit>Edit</button>
-                        <button class="pol-action-btn" type="button" data-rule-delete>Delete</button>
+                        <button class="pol-action-btn pol-action-edit" type="button" data-rule-edit>Edit</button>
+                        <button class="pol-action-btn pol-action-deactivate" type="button" data-rule-delete>Delete</button>
                     </div>
                 `;
                 ruleList.appendChild(card);

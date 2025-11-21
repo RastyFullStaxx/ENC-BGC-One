@@ -158,14 +158,14 @@
                                 <td>
                                     <div class="admin-table-actions">
                                         <button
-                                            class="admin-quick-btn admin-quick-btn-warning"
+                                            class="admin-quick-btn admin-quick-btn-warning admin-quick-btn-edit"
                                             data-modal-open="editUserModal"
                                             data-user-id="{{ $user->id }}"
                                         >
                                             Edit
                                         </button>
                                         <button
-                                            class="admin-quick-btn admin-quick-btn-warning"
+                                            class="admin-quick-btn admin-quick-btn-warning {{ $statusAction === 'deactivate' ? 'admin-quick-btn-deactivate' : 'admin-quick-btn-activate' }}"
                                             data-user-id="{{ $user->id }}"
                                             data-action="{{ $statusAction }}"
                                             data-status-toggle="true"
@@ -659,8 +659,8 @@
                     <td>${lastLoginLabel}</td>
                     <td>
                         <div class="admin-table-actions">
-                            <button class="admin-quick-btn admin-quick-btn-warning" data-modal-open="editUserModal" data-user-id="${user.id}">Edit</button>
-                            <button class="admin-quick-btn admin-quick-btn-warning" data-user-id="${user.id}" data-action="${statusAction}" data-status-toggle="true">
+                            <button class="admin-quick-btn admin-quick-btn-warning admin-quick-btn-edit" data-modal-open="editUserModal" data-user-id="${user.id}">Edit</button>
+                            <button class="admin-quick-btn admin-quick-btn-warning ${statusAction === 'activate' ? 'admin-quick-btn-activate' : 'admin-quick-btn-deactivate'}" data-user-id="${user.id}" data-action="${statusAction}" data-status-toggle="true">
                                 ${statusActionLabel(user.status)}
                             </button>
                             <button class="admin-quick-btn admin-quick-btn-muted" data-user-id="${user.id}" data-action="reset">Reset</button>

@@ -216,11 +216,14 @@
 }
 
 .pol-action-btn {
-    border: none;
-    background: transparent;
+    border: 1px solid var(--pol-gray-100);
+    background: rgba(255, 255, 255, 0.08);
     color: #FFD66B;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
+    border-radius: 12px;
+    padding: 8px 12px;
+    transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .pol-card-layout {
@@ -828,15 +831,46 @@
 }
 
 .pol-action-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--pol-gray-100);
     color: #ffd66b;
     font-weight: 700;
     cursor: pointer;
+    border-radius: 12px;
+    padding: 8px 12px;
 }
 
-.pol-action-btn.pol-danger {
-    color: #ff9b9b;
+.pol-action-edit {
+    color: #ffc857;
+    border-color: rgba(255, 200, 87, 0.5);
+    background: rgba(255, 200, 87, 0.12);
+}
+
+.pol-action-edit:hover {
+    color: #ffd66b;
+    background: rgba(255, 214, 107, 0.22);
+}
+
+.pol-action-deactivate {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.5);
+    background: rgba(255, 107, 107, 0.14);
+}
+
+.pol-action-deactivate:hover {
+    color: #ff8b8b;
+    background: rgba(255, 120, 120, 0.2);
+}
+
+.pol-action-status {
+    color: #29d67b;
+    border-color: rgba(41, 214, 123, 0.5);
+    background: rgba(41, 214, 123, 0.14);
+}
+
+.pol-action-status:hover {
+    color: #5dff9e;
+    background: rgba(41, 214, 123, 0.22);
 }
 
 .pol-positive {

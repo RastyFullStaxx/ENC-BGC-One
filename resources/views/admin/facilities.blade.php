@@ -212,13 +212,14 @@
                                 </td>
                                 <td>
                                     <div class="fac-actions">
-                                        <button class="fac-action-btn" data-modal-open="facilityModal" data-facility="{{ $facility['name'] }}">Edit</button>
+                                        <button class="fac-action-btn fac-action-edit" data-modal-open="facilityModal" data-facility="{{ $facility['name'] }}">Edit</button>
+                                        @php $isInactive = ($facility['status_key'] ?? 'active') !== 'active'; @endphp
                                         <button
-                                            class="fac-action-btn"
-                                            data-confirm="Deactivate {{ $facility['name'] }}?"
-                                            data-success="{{ $facility['name'] }} is now hidden from catalog."
+                                            class="fac-action-btn {{ $isInactive ? 'fac-action-reactivate' : 'fac-action-deactivate' }}"
+                                            data-confirm="{{ $isInactive ? 'Reactivate ' . $facility['name'] . '?' : 'Deactivate ' . $facility['name'] . '?' }}"
+                                            data-success="{{ $facility['name'] }} {{ $isInactive ? 'is now visible in catalog.' : 'is now hidden from catalog.' }}"
                                         >
-                                            Deactivate
+                                            {{ $isInactive ? 'Reactivate' : 'Deactivate' }}
                                         </button>
                                     </div>
                                 </td>
@@ -247,7 +248,7 @@
             <div>
                 <p class="fac-breadcrumb mb-1">New entry</p>
                 <h3>Add facility</h3>
-                <p class="text-muted small mb-0">Capture core room details so bookings stay accurate.</p>
+                <p class="fac-modal-subtitle small mb-0">Capture core room details so bookings stay accurate.</p>
             </div>
             <button class="fac-action-btn" data-modal-close>&times;</button>
         </header>

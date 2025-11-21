@@ -70,7 +70,7 @@
 }
 
 .fac-btn {
-    border: none;
+    border: 1px solid var(--fac-gray-100);
     border-radius: 14px;
     padding: 12px 20px;
     font-weight: 600;
@@ -78,7 +78,9 @@
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    color: var(--fac-white);
+    background: rgba(255, 255, 255, 0.06);
 }
 
 .fac-btn-primary {
@@ -251,18 +253,16 @@
 .fac-actions {
     display: flex;
     gap: 10px;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.2s ease;
 }
 
-.fac-table tbody tr:hover .fac-actions {
-    opacity: 1;
-}
-
 .fac-action-btn {
-    border: none;
-    background: transparent;
-    color: #FFD66B;
+    border: 1px solid var(--fac-gray-100);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 8px 12px;
+    border-radius: 12px;
+    color: var(--fac-white);
     font-weight: 600;
     cursor: pointer;
     transition: color 0.2s ease;
@@ -270,6 +270,41 @@
 
 .fac-action-btn:hover {
     color: var(--fac-success);
+    background: rgba(0, 201, 80, 0.12);
+    border-color: rgba(0, 201, 80, 0.4);
+}
+
+.fac-action-edit {
+    color: #FFC857;
+    border-color: rgba(255, 200, 87, 0.5);
+    background: rgba(255, 200, 87, 0.12);
+}
+
+.fac-action-edit:hover {
+    color: #FFD66B;
+    background: rgba(255, 214, 107, 0.2);
+}
+
+.fac-action-deactivate {
+    color: #FF6B6B;
+    border-color: rgba(255, 107, 107, 0.5);
+    background: rgba(255, 107, 107, 0.12);
+}
+
+.fac-action-deactivate:hover {
+    color: #ff8b8b;
+    background: rgba(255, 120, 120, 0.18);
+}
+
+.fac-action-reactivate {
+    color: var(--fac-success);
+    border-color: rgba(0, 201, 80, 0.5);
+    background: rgba(0, 201, 80, 0.14);
+}
+
+.fac-action-reactivate:hover {
+    color: #5DFF9E;
+    background: rgba(0, 201, 80, 0.22);
 }
 
 .fac-grid {
@@ -313,7 +348,7 @@
     inset: 0;
     background: rgba(0, 2, 10, 0.75);
     display: none;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     padding: 24px;
     z-index: 1200;
@@ -339,6 +374,29 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 18px;
+}
+
+.fac-modal::-webkit-scrollbar {
+    width: 10px;
+}
+
+.fac-modal::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+}
+
+.fac-modal::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4C7DFF, #155DFC);
+    border-radius: 12px;
+    border: 2px solid rgba(2, 8, 24, 0.98);
+}
+
+.fac-modal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #6f99ff, #256bff);
+}
+
+.fac-modal-subtitle {
+    color: var(--fac-white) !important;
 }
 
 .fac-modal h3 {
