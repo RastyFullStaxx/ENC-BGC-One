@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Facility;
 use App\Models\OperatingHours;
+use App\Models\Policy;
+use App\Models\PolicyRule;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
@@ -49,6 +51,8 @@ class LandingPageController extends Controller
             $facilityHero = $this->fallbackHero();
         }
 
+        $policyContent = $this->loadPolicyContent();
+
         return view('marketing.landing', [
             'lastSync' => $now,
             'scheduleStart' => $scheduleStart,
@@ -57,6 +61,9 @@ class LandingPageController extends Controller
             'facilityHero' => $facilityHero,
             'facilityTiles' => collect($facilityTiles)->filter()->values()->all(),
             'featuredServices' => $this->featuredServices(),
+            'policyHighlights' => $policyContent['highlights'],
+            'policyRules' => $policyContent['rules'],
+            'policySnapshot' => $policyContent,
         ]);
     }
 
@@ -393,5 +400,154 @@ class LandingPageController extends Controller
             'under-maintenance' => 'maintenance',
             default => 'available',
         };
+    }
+
+    private function loadPolicyContent(): array
+    {
+        $fallbackPolicies = [
+            [
+                'id' => null,
+                'name' => 'Room booking basics',
+                'domain' => 'bookings',
+                'status' => 'active',
+                'owner' => 'Facilities',
+                'reminder' => 'Lead times: 24h for rooms, 48h for special venues.',
+                'impact' => 'Keeps rotations clean and concierge prepared.',
+                'tags' => ['bookings', 'rooms'],
+                'updated_label' => 'This week',
+                'updated_detailed' => null,
+                'expiring' => false,
+                'needs_review' => false,
+                'rules' => [
+                    'Submit requests at least 24 hours before start for standard rooms.',
+                    'Requests beyond 4 hours need manager approval.',
+                    'Cancel or update 12 hours before start to avoid cooldowns.',
+                ],
+            ],
+            [
+                'id' => null,
+                'name' => 'Suites, studios, & labs',
+                'domain' => 'sfi',
+                'status' => 'active',
+                'owner' => 'SFI Concierge',
+                'reminder' => 'Premium spaces require published lead times.',
+                'impact' => 'Ensures specialists can prep equipment and staffing.',
+                'tags' => ['sfi', 'premium'],
+                'updated_label' => 'This week',
+                'updated_detailed' => null,
+                'expiring' => false,
+                'needs_review' => false,
+                'rules' => [
+                    'Follow the posted lead times for labs and studios.',
+                    'List equipment needs so specialists can prep before you arrive.',
+                ],
+            ],
+        ];
+
+        $fallbackHighlights = [
+            ['label' => 'Lead times', 'value' => '24h rooms · 48h special'],
+            ['label' => 'Cancellations', 'value' => '12h before start'],
+            ['label' => 'Support hours', 'value' => '7AM – 7PM concierge'],
+        ];
+
+        $fallbackRules = [
+            'Food & drinks only in approved spaces. Light refreshments welcome in Executive Boardroom.',
+            'Standard room bookings max at 4 hours. Longer holds need manager approval.',
+            'Special facilities (lab, shuttle, studio) require the published lead times.',
+            'Cancel or update at least 12 hours before the slot to avoid cooldowns.',
+            'Leave rooms tidy, return keycards, and log any equipment issues with Facilities.',
+        ];
+
+        try {
+            $policies = Policy::query()
+                ->with(['rules' => function ($query) {
+                    $query->orderBy('position');
+                }])
+                ->where('status', 'active')
+                ->orderBy('updated_at', 'desc')
+                ->take(3)
+                ->get();
+        } catch (\Throwable $e) {
+            return [
+                'highlights' => $fallbackHighlights,
+                'rules' => $fallbackRules,
+                'stats' => [
+                    ['label' => 'Live policies', 'value' => '3 defaults'],
+                    ['label' => 'Owners', 'value' => 'Facilities & Admin'],
+                    ['label' => 'Last updated', 'value' => 'This week'],
+                ],
+                'policies' => $fallbackPolicies,
+            ];
+        }
+
+        if ($policies->isEmpty()) {
+            return [
+                'highlights' => $fallbackHighlights,
+                'rules' => $fallbackRules,
+                'stats' => [
+                    ['label' => 'Live policies', 'value' => '0 live'],
+                    ['label' => 'Owners', 'value' => 'Facilities & Admin'],
+                    ['label' => 'Last updated', 'value' => '—'],
+                ],
+                'policies' => $fallbackPolicies,
+            ];
+        }
+
+        $policyData = $policies->map(function (Policy $policy) {
+            $rules = $policy->rules
+                ->pluck('summary')
+                ->filter()
+                ->values()
+                ->take(4)
+                ->all();
+
+            if (empty($rules) && $policy->desc) {
+                $rules[] = $policy->desc;
+            }
+
+            return [
+                'id' => $policy->id,
+                'name' => $policy->name ?? ($policy->domain_key ?? 'Policy'),
+                'domain' => $policy->domain_key ?? 'bookings',
+                'status' => $policy->status ?? 'active',
+                'owner' => $policy->owner ?: 'Admin',
+                'reminder' => $policy->reminder ?: 'Live policy',
+                'impact' => $policy->impact,
+                'tags' => array_values($policy->tags ?? []),
+                'updated_label' => optional($policy->updated_at)->format('M j') ?? 'Recently',
+                'updated_detailed' => optional($policy->updated_at)->format('M j, Y g:i A'),
+                'expiring' => (bool) $policy->expiring,
+                'needs_review' => (bool) $policy->needs_review,
+                'rules' => $rules,
+            ];
+        });
+
+        $liveCount = $policyData->count();
+        $needsReview = $policyData->filter(fn ($policy) => $policy['needs_review'])->count();
+        $lastUpdated = optional($policies->first()?->updated_at)?->diffForHumans(null, false, false, 2) ?? 'Recently';
+
+        $highlights = [
+            ['label' => 'Live policies', 'value' => $liveCount . ' active'],
+            ['label' => 'Needs review', 'value' => $needsReview ? $needsReview . ' flagged' : 'All clear'],
+            ['label' => 'Last update', 'value' => $lastUpdated],
+        ];
+
+        $rules = $policyData
+            ->flatMap(fn (array $policy) => $policy['rules'])
+            ->filter()
+            ->take(6)
+            ->values()
+            ->all();
+
+        if (empty($rules)) {
+            $rules = $fallbackRules;
+        }
+
+        return [
+            'highlights' => $highlights ?: $fallbackHighlights,
+            'rules' => $rules ?: $fallbackRules,
+            'stats' => $highlights ?: $fallbackHighlights,
+            'policies' => $policyData->toArray() ?: $fallbackPolicies,
+        ];
     }
 }

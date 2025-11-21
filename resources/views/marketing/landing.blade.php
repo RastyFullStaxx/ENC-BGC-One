@@ -411,50 +411,101 @@
 
   {{-- SECTION: Booking Policies (Teaser) --}}
   @php
-    $policyHighlights = [
-      ['label' => 'Lead times', 'value' => '24h rooms · 48h special'],
-      ['label' => 'Cancellations', 'value' => '12h before start'],
-      ['label' => 'Support hours', 'value' => '7AM – 7PM concierge'],
-    ];
-
-    $policyRules = [
-      'Food & drinks only in approved spaces. Light refreshments welcome in Executive Boardroom.',
-      'Standard room bookings max at 4 hours. Longer holds need manager approval.',
-      'Special facilities (lab, shuttle, studio) require the published lead times.',
-      'Cancel or update at least 12 hours before the slot to avoid cooldowns.',
-      'Leave rooms tidy, return keycards, and log any equipment issues with Facilities.'
-    ];
+    $policySnapshot = $policySnapshot ?? ['policies' => [], 'stats' => [], 'highlights' => [], 'rules' => []];
+    $policyCards = $policySnapshot['policies'] ?? [];
+    $policyStats = $policySnapshot['stats'] ?? ($policySnapshot['highlights'] ?? []);
   @endphp
   <section id="policies" class="py-5 policy-teaser">
     <div class="container">
-      <div class="policy-card">
-        <div class="policy-card-info">
-          <span class="policy-eyebrow">Booking policies</span>
-          <h2>Quick reminders to know before you request</h2>
-          <p>Nothing complicated—just the essentials so every space stays ready for the next team.</p>
-          <div class="policy-highlights">
-            @foreach ($policyHighlights as $highlight)
+      <div class="policy-shell">
+        <div class="policy-lede">
+          <span class="policy-eyebrow">Rules &amp; Policies</span>
+          <h2>Live booking policies pulled from the admin tool</h2>
+          <p>Everything here updates the moment you publish changes in the Rules &amp; Policies admin experience—so requestors always see what’s current.</p>
+          <div class="policy-highlights policy-stats">
+            @forelse ($policyStats as $highlight)
               <div class="policy-highlight">
                 <span class="policy-highlight-label">{{ $highlight['label'] }}</span>
                 <span class="policy-highlight-value">{{ $highlight['value'] }}</span>
               </div>
-            @endforeach
+            @empty
+              <div class="policy-highlight">
+                <span class="policy-highlight-label">Status</span>
+                <span class="policy-highlight-value">Live &amp; synced</span>
+              </div>
+            @endforelse
           </div>
-          <a href="{{ route('faq') }}" class="btn btn-primary mt-3">View FAQ &amp; full policy guide</a>
+          <div class="policy-actions">
+            <a href="{{ route('booking.wizard') }}" class="btn btn-dark">Start a booking</a>
+            <a href="{{ route('faq') }}" class="btn btn-ghost">View FAQ &amp; full policy guide</a>
+          </div>
         </div>
-        <div class="policy-card-list">
-          <ul>
-            @foreach ($policyRules as $rule)
-              <li>
-                <span class="policy-check" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <span>{{ $rule }}</span>
-              </li>
-            @endforeach
-          </ul>
+        <div class="policy-grid">
+          @forelse ($policyCards as $policy)
+            <article class="policy-tile {{ !empty($policy['needs_review']) ? 'policy-tile-review' : '' }}">
+              <div class="policy-tile-head">
+                <div class="policy-pills">
+                  <span class="policy-pill">{{ strtoupper($policy['domain'] ?? 'BOOKINGS') }}</span>
+                  <span class="policy-status policy-status-{{ $policy['status'] ?? 'active' }}">{{ ucfirst($policy['status'] ?? 'active') }}</span>
+                </div>
+                <div class="policy-flags">
+                  @if (!empty($policy['expiring']))
+                    <span class="policy-flag policy-flag-warn">Expiring</span>
+                  @endif
+                  @if (!empty($policy['needs_review']))
+                    <span class="policy-flag policy-flag-review">Needs review</span>
+                  @endif
+                </div>
+              </div>
+              <h3 class="policy-title">{{ $policy['name'] }}</h3>
+              <p class="policy-reminder">{{ $policy['reminder'] ?? 'Live policy' }}</p>
+              <div class="policy-meta">
+                <span>Owner: {{ $policy['owner'] ?? 'Admin' }}</span>
+                <span>Updated {{ $policy['updated_label'] ?? 'Recently' }}</span>
+              </div>
+              @if (!empty($policy['impact']))
+                <p class="policy-impact">{{ $policy['impact'] }}</p>
+              @endif
+              @if (!empty($policy['tags']))
+                <div class="policy-tags">
+                  @foreach ($policy['tags'] as $tag)
+                    <span>{{ $tag }}</span>
+                  @endforeach
+                </div>
+              @endif
+              <ul class="policy-rule-list">
+                @forelse ($policy['rules'] ?? [] as $rule)
+                  <li>
+                    <span class="policy-check" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    <span>{{ $rule }}</span>
+                  </li>
+                @empty
+                  <li class="policy-rule-empty">No rules published yet.</li>
+                @endforelse
+              </ul>
+            </article>
+          @empty
+            <article class="policy-tile policy-tile-empty">
+              <h3 class="policy-title">Policies sync from your admin tool</h3>
+              <p class="policy-reminder">Publish a rule set to replace this fallback content.</p>
+              <ul class="policy-rule-list">
+                @foreach ($policyRules as $rule)
+                  <li>
+                    <span class="policy-check" aria-hidden="true">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                    <span>{{ $rule }}</span>
+                  </li>
+                @endforeach
+              </ul>
+            </article>
+          @endforelse
         </div>
       </div>
     </div>

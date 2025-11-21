@@ -69,7 +69,7 @@
 }
 
 .pol-btn {
-    border-radius: 14px;
+    border-radius: 10px;
     border: 1px solid var(--pol-gray-200);
     padding: 10px 18px;
     color: var(--pol-white);
@@ -90,8 +90,8 @@
 .pol-surface {
     background: rgba(2, 9, 28, 0.9);
     border: 1px solid var(--pol-gray-100);
-    border-radius: 28px;
-    padding: 32px;
+    border-radius: 18px;
+    padding: 22px;
     margin-bottom: 32px;
     box-shadow: 0 40px 120px rgba(0, 0, 0, 0.55);
 }
@@ -104,7 +104,7 @@
 }
 
 .pol-chip {
-    border-radius: 999px;
+    border-radius: 10px;
     border: 1px solid var(--pol-gray-200);
     background: transparent;
     padding: 8px 16px;
@@ -134,6 +134,7 @@
 .pol-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     background: rgba(3, 12, 30, 0.65);
 }
 
@@ -143,6 +144,7 @@
     border-bottom: 1px solid var(--pol-gray-100);
     color: var(--pol-white);
     text-align: left;
+    vertical-align: middle;
 }
 
 .pol-table thead {
@@ -156,8 +158,8 @@
 }
 
 .pol-scope-chip {
-    padding: 4px 10px;
-    border-radius: 999px;
+    padding: 6px 10px;
+    border-radius: 10px;
     font-size: 12px;
     font-weight: 600;
 }
@@ -279,6 +281,24 @@
     overflow-y: auto;
 }
 
+.pol-modal::-webkit-scrollbar {
+    width: 10px;
+}
+
+.pol-modal::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
+}
+
+.pol-modal::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #155DFC, #00C950);
+    border-radius: 10px;
+}
+
+.pol-modal::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #1f6cff, #25e17a);
+}
+
 .pol-modal header {
     display: flex;
     justify-content: space-between;
@@ -313,6 +333,27 @@
     color: var(--pol-white);
 }
 
+.pol-field select {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--pol-white);
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #fff 50%), linear-gradient(135deg, #fff 50%, transparent 50%);
+    background-position: calc(100% - 18px) calc(50% - 4px), calc(100% - 12px) calc(50% - 4px);
+    background-repeat: no-repeat;
+    background-size: 6px 6px;
+}
+
+.pol-field select option {
+    background: rgba(4, 12, 30, 0.96);
+    color: var(--pol-white);
+}
+
+.pol-field .pol-toggle {
+    width: 52px;
+    display: inline-flex;
+    margin-top: 4px;
+}
+
 .pol-rule-builder {
     border: 1px solid var(--pol-gray-100);
     border-radius: 24px;
@@ -339,6 +380,11 @@
     background: rgba(255, 255, 255, 0.02);
 }
 
+.pol-preview-panel .text-muted {
+    color: var(--pol-white) !important;
+    opacity: 0.85;
+}
+
 .pol-test-card {
     border: 1px dashed var(--pol-gray-200);
     border-radius: 16px;
@@ -354,12 +400,455 @@
 }
 
 .pol-json {
-    font-family: 'IBM Plex Mono', monospace;
-    background: rgba(0, 0, 0, 0.35);
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(0, 201, 80, 0.08));
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--pol-white);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.pol-note {
+    border: 1px solid var(--pol-gray-100);
+    border-radius: 14px;
+    padding: 16px 18px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 18px;
+}
+
+.pol-note.small {
+    padding: 12px 14px;
+}
+
+.pol-guide-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pol-label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 11px;
     color: var(--pol-gray-400);
+    margin: 0 0 8px;
+}
+
+.pol-note-list {
+    margin: 12px 0;
+    padding-left: 18px;
+    color: var(--pol-gray-400);
+    line-height: 1.5;
+}
+
+.pol-status-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 14px;
+}
+
+.pol-kpi {
+    border: 1px solid var(--pol-gray-100);
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.pol-kpi-rail-inline {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.pol-kpi-outline {
+    border-style: dashed;
+}
+
+.pol-kpi p {
+    margin: 0 0 6px;
+    color: var(--pol-gray-400);
+    font-size: 12px;
+}
+
+.pol-kpi strong {
+    font-size: 24px;
+    display: block;
+}
+
+.pol-filter-shell {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pol-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.pol-chip-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pol-search {
+    margin-left: auto;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--pol-gray-100);
+}
+
+.pol-chip-ghost {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--pol-gray-100);
+    color: var(--pol-white);
+}
+
+.pol-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.pol-main-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pol-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 14px;
+}
+
+.pol-card {
+    border: 1px solid var(--pol-gray-100);
+    border-radius: 20px;
+    padding: 18px;
+    background: rgba(0, 14, 40, 0.7);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.pol-card.active {
+    border-color: var(--pol-blue-light);
+    transform: translateY(-2px);
+}
+
+.pol-card-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.pol-card h3 {
+    margin: 2px 0 6px;
+    font-size: 18px;
+}
+
+.pol-card-desc {
+    margin: 0;
+    color: var(--pol-gray-400);
+    font-size: 14px;
+}
+
+.pol-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.pol-pill {
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--pol-gray-200);
+}
+
+.pol-pill-active {
+    background: rgba(0, 201, 80, 0.16);
+    border-color: var(--pol-success);
+    color: var(--pol-white);
+}
+
+.pol-pill-active,
+.pol-pill-active strong {
+    color: var(--pol-white);
+}
+
+.pol-pill-draft {
+    background: rgba(255, 200, 87, 0.16);
+    border-color: var(--pol-warning);
+}
+
+.pol-pill-archived {
+    background: rgba(255, 107, 107, 0.16);
+    border-color: var(--pol-danger);
+}
+
+.pol-pill-warning {
+    background: rgba(255, 200, 87, 0.2);
+    border-color: var(--pol-warning);
+}
+
+.pol-pill-outline {
+    border-style: dashed;
+}
+
+.pol-scope-chip.bookings {
+    background: rgba(21, 93, 252, 0.25);
+    color: var(--pol-white);
+}
+
+.pol-scope-chip.sfi {
+    background: rgba(167, 139, 250, 0.25);
+    color: var(--pol-white);
+}
+
+.pol-scope-chip.shuttle {
+    background: rgba(0, 201, 80, 0.25);
+    color: var(--pol-white);
+}
+
+.pol-card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.pol-meta-strong {
+    margin: 2px 0;
+    font-weight: 700;
+}
+
+.pol-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.pol-link {
+    background: transparent;
+    border: none;
+    color: #76a5ff;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.pol-link-quiet {
+    color: var(--pol-gray-400);
+}
+
+.pol-card-footer {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pol-drawer {
+    border: 1px solid var(--pol-gray-100);
+    border-radius: 20px;
+    padding: 18px;
+    background: rgba(255, 255, 255, 0.04);
+    position: sticky;
+    top: 80px;
+}
+
+.pol-drawer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.pol-drawer-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.pol-drawer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+}
+
+.pol-tag-collection {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.pol-note-box {
+    margin-top: 12px;
+    background: rgba(0, 201, 80, 0.06);
+    border-color: rgba(0, 201, 80, 0.25);
+}
+
+.pol-secondary-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.pol-checklist {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--pol-gray-400);
+    line-height: 1.5;
+}
+
+.pol-select,
+.pol-input {
+    border-radius: 12px;
+    border: 1px solid var(--pol-gray-100);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--pol-white);
+    padding: 10px 12px;
+    min-width: 160px;
+}
+
+.pol-input {
+    min-width: 220px;
+}
+
+.pol-layout-simple {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
+    gap: 18px;
+    margin-top: 12px;
+}
+
+.pol-table-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pol-table-head-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pol-table-shell .pol-table {
+    margin-top: 10px;
+}
+
+.pol-table-simple tbody tr {
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.pol-table-simple tbody tr.active {
+    background: rgba(21, 93, 252, 0.08);
+    border-left: 2px solid var(--pol-blue-light);
+}
+
+.pol-table-simple th.text-right,
+.pol-table-simple td.text-right {
+    text-align: right;
+}
+
+.pol-table-simple th:last-child,
+.pol-table-simple td:last-child {
+    width: 240px;
+}
+
+.pol-preview-shell {
+    position: sticky;
+    top: 90px;
+    height: fit-content;
+}
+
+.pol-grid-balanced {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+    align-items: stretch;
+}
+
+.pol-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pol-table-shell {
+    padding: 18px;
+}
+
+.pol-preview-panel + .pol-preview-panel {
+    margin-top: 10px;
+}
+
+.pol-tag-collection {
+    margin-top: 10px;
+}
+
+.pol-actions-table.inline {
+    display: flex;
+    gap: 12px;
+    opacity: 1;
+    justify-content: flex-start;
+    align-items: center;
+    white-space: nowrap;
+    min-width: 220px;
+    width: 100%;
+    height: 100%;
+}
+
+.pol-action-btn {
+    background: none;
+    border: none;
+    color: #ffd66b;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.pol-action-btn.pol-danger {
+    color: #ff9b9b;
+}
+
+.pol-positive {
+    color: #4ee28a;
+}
+
+.pol-negative {
+    color: #ff9b9b;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.pol-mini-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
 }
 
 @keyframes adminGradientFlow {
@@ -384,19 +873,35 @@
         padding: 24px;
     }
 
-    .pol-table thead {
-        display: none;
+    .pol-layout-grid {
+        grid-template-columns: 1fr;
     }
 
-    .pol-table tr {
-        display: flex;
+    .pol-layout-simple {
+        grid-template-columns: 1fr;
+    }
+
+    .pol-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pol-filter-row {
         flex-direction: column;
-        border-bottom: 1px solid var(--pol-gray-100);
+        align-items: flex-start;
     }
 
-    .pol-table td {
-        display: flex;
-        justify-content: space-between;
-        border: none;
+    .pol-search {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .pol-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pol-toolbar-right {
+        width: 100%;
+        justify-content: flex-start;
     }
 }

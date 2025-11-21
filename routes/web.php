@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\AdminAuditController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 use App\Http\Controllers\AccountSettingsController;
+use App\Http\Controllers\Admin\AdminPolicyController;
 
 
 Route::get('/', LandingPageController::class)->name('landing');
@@ -130,13 +131,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/audit/export/json', [AdminAuditController::class, 'exportJson'])->name('admin.audit.export.json');
     Route::get('/admin/audit/{auditLog}/export', [AdminAuditController::class, 'exportEntry'])->name('admin.audit.export.entry');
     Route::post('/admin/audit/{auditLog}/flag', [AdminAuditController::class, 'flag'])->name('admin.audit.flag');
+
+    // Policies
+    Route::get('/admin/policies', [AdminPolicyController::class, 'index'])->name('admin.policies');
+    Route::post('/admin/policies', [AdminPolicyController::class, 'store'])->name('admin.policies.store');
+    Route::put('/admin/policies/{policy}', [AdminPolicyController::class, 'update'])->name('admin.policies.update');
+    Route::delete('/admin/policies/{policy}', [AdminPolicyController::class, 'destroy'])->name('admin.policies.destroy');
+    Route::post('/admin/policies/{policy}/status', [AdminPolicyController::class, 'setStatus'])->name('admin.policies.status');
+    Route::post('/admin/policies/{policy}/rules', [AdminPolicyController::class, 'storeRule'])->name('admin.policies.rules.store');
+    Route::put('/admin/policies/rules/{rule}', [AdminPolicyController::class, 'updateRule'])->name('admin.policies.rules.update');
+    Route::delete('/admin/policies/rules/{rule}', [AdminPolicyController::class, 'destroyRule'])->name('admin.policies.rules.destroy');
 });
 
 // Temporary preview route for Admin Facilities Management
 Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
-
-// Temporary preview route for Admin Policies
-Route::view('/admin/policies', 'admin.policies')->name('admin.policies');
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {

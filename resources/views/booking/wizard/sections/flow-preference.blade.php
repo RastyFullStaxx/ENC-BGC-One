@@ -52,7 +52,7 @@
                       </svg>
                     </div>
                     <h3 class="wizard-flow-card-title mb-2">
-                      Lock the room first
+                      Secure a room first
                     </h3>
                     <p class="wizard-flow-card-desc mb-0">
                       Jump straight to the rooms you already prefer, then we’ll check the open slots for that space.

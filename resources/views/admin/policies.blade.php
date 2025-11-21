@@ -7,50 +7,6 @@
 @endpush
 
 @section('content')
-@php
-    $policies = [
-        [
-            'name' => 'Lead Time · 24h',
-            'scope' => 'Global',
-            'scope_key' => 'global',
-            'desc' => 'All bookings must be made ≥ 24 hours before start',
-            'active' => true,
-            'updated' => 'Aug 12 · 09:42 AM',
-        ],
-        [
-            'name' => 'Executive Floors · Access',
-            'scope' => 'Facility-specific',
-            'scope_key' => 'facility',
-            'desc' => 'Only directors can book Building A 15F rooms',
-            'active' => true,
-            'updated' => 'Aug 10 · 04:15 PM',
-        ],
-        [
-            'name' => 'No Food · Labs',
-            'scope' => 'Facility-specific',
-            'scope_key' => 'facility',
-            'desc' => 'Food not allowed inside Helios Training Lab',
-            'active' => false,
-            'updated' => 'Aug 08 · 11:02 AM',
-        ],
-        [
-            'name' => 'Recurring Booking Guard',
-            'scope' => 'Global',
-            'scope_key' => 'global',
-            'desc' => 'Limit recurring bookings to 6 weeks at a time',
-            'active' => true,
-            'updated' => 'Aug 05 · 02:33 PM',
-        ],
-    ];
-
-    $ruleTemplates = [
-        ['kind' => 'Lead Time', 'operator' => 'GTE', 'value' => '24 hours'],
-        ['kind' => 'Eligibility', 'operator' => 'IN', 'value' => 'Staff Only'],
-        ['kind' => 'Food', 'operator' => 'BOOL', 'value' => 'False'],
-        ['kind' => 'Duration Limit', 'operator' => 'LTE', 'value' => '4 hours'],
-    ];
-@endphp
-
 <section class="admin-policies-page">
     <div class="admin-policies-shell">
         <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
@@ -63,15 +19,9 @@
         <div class="pol-header">
             <div>
                 <h1>Rules & Policies</h1>
-                <p>Define, edit, and apply booking policies.</p>
+                <p>Define, edit, and apply booking policies across Booking, SFI, and Shuttle services.</p>
             </div>
             <div class="pol-actions">
-                <button class="pol-btn" data-modal-open="testRuleModal">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                    Test Rule
-                </button>
                 <button class="pol-btn pol-btn-primary" data-modal-open="policyModal">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                         <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -81,97 +31,227 @@
             </div>
         </div>
 
-        <div class="pol-surface">
-            <div class="pol-filters">
-                <button class="pol-chip active" data-filter-scope="all">All scopes</button>
-                <button class="pol-chip" data-filter-scope="global">Global</button>
-                <button class="pol-chip" data-filter-scope="facility">Facility-specific</button>
-
-                <div class="pol-chip-divider">
-                    <button class="pol-chip active" data-filter-status="all">All status</button>
-                    <button class="pol-chip" data-filter-status="active">Active</button>
-                    <button class="pol-chip" data-filter-status="inactive">Inactive</button>
+        <div class="pol-grid-balanced pol-guide-bar">
+            <div class="pol-note small pol-guide">
+                <div class="pol-guide-top">
+                    <div>
+                        <p class="pol-label">Quick guide</p>
+                        <h3>See what is live, edit fast, keep copy simple</h3>
+                    </div>
+                    <div class="pol-kpi-rail-inline">
+                        <div class="pol-kpi">
+                            <p>Active</p>
+                            <strong>{{ $activeCount }}</strong>
+                        </div>
+                        <div class="pol-kpi pol-kpi-outline">
+                            <p>Drafts</p>
+                            <strong>{{ $draftCount }}</strong>
+                        </div>
+                    </div>
                 </div>
-
-                <input type="search" class="pol-btn" id="policySearch" placeholder="Search policies">
-            </div>
-
-            <div class="pol-table-wrapper">
-                <table class="pol-table" id="policyTable">
-                    <thead>
-                        <tr>
-                            <th>Policy Name</th>
-                            <th>Scope</th>
-                            <th>Description</th>
-                            <th>Active?</th>
-                            <th>Last Updated</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($policies as $policy)
-                            <tr
-                                data-scope="{{ $policy['scope_key'] }}"
-                                data-status="{{ $policy['active'] ? 'active' : 'inactive' }}"
-                                data-name="{{ strtolower($policy['name']) }}"
-                                data-description="{{ strtolower($policy['desc']) }}"
-                            >
-                                <td>
-                                    <strong>{{ $policy['name'] }}</strong>
-                                </td>
-                                <td>
-                                    <span class="pol-scope-chip {{ $policy['scope_key'] === 'global' ? 'global' : 'facility' }}">
-                                        {{ $policy['scope'] }}
-                                    </span>
-                                </td>
-                                <td class="text-muted">{{ $policy['desc'] }}</td>
-                                <td>
-                                    <input type="checkbox" class="pol-toggle" {{ $policy['active'] ? 'checked' : '' }}>
-                                </td>
-                                <td class="text-muted small">{{ $policy['updated'] }}</td>
-                                <td>
-                                    <div class="pol-actions-table">
-                                        <button class="pol-action-btn" data-modal-open="policyModal">Edit</button>
-                                        <button class="pol-action-btn">Clone</button>
-                                        <button class="pol-action-btn" data-confirm="Delete {{ $policy['name'] }}?" data-success="Policy deleted.">Delete</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <ul class="pol-note-list">
+                    <li>Use tabs for Bookings, SFI, and Shuttle to view current rules.</li>
+                    <li>Click a row to read the summary; use Edit to update.</li>
+                    <li>Keep titles short and reminders up to date.</li>
+                </ul>
             </div>
         </div>
 
-        <div class="pol-card-layout">
-            <div class="pol-preview">
-                <h3>Policy Preview</h3>
-                <p class="text-muted small mb-3">Updates as you edit or select a policy.</p>
-                <div class="pol-preview-panel" id="policyPreview">
-                    <p class="mb-2"><strong>Lead Time · 24h</strong></p>
-                    <p class="text-muted small mb-3">All bookings must be made ≥ 24 hours before start</p>
-                    <p class="text-muted small mb-1">Applies to: <strong>All Facilities</strong></p>
-                    <div class="pol-rule-card">
-                        <h4>Rule #1 · Lead Time</h4>
-                        <p>Bookings must be created at least 24 hours before start time.</p>
+        <div class="pol-stack">
+                <div class="pol-surface pol-table-shell">
+                    <div class="pol-table-head">
+                        <div>
+                            <p class="pol-label">Bookings</p>
+                            <p class="text-muted small">All active and draft booking policies</p>
+                        </div>
+                        <div class="pol-table-head-actions">
+                            <select id="filterStatus" class="pol-select">
+                                <option value="all">All status</option>
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                            <input type="search" id="policySearch" class="pol-input" placeholder="Search by name, owner, tag">
+                            <button class="pol-btn pol-btn-primary" data-modal-open="policyModal">Create policy</button>
+                        </div>
                     </div>
-                    <div class="pol-rule-card">
-                        <h4>Rule #2 · Duration</h4>
-                        <p>Max session length is 4 hours per booking.</p>
+                    <div class="pol-table-wrapper">
+                        <table class="pol-table pol-table-simple" data-table="bookings">
+                            <thead>
+                                <tr>
+                                    <th>Policy</th>
+                                    <th>Status</th>
+                                    <th>Owner</th>
+                                    <th>Reminder</th>
+                                    <th>Last updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bookings as $policy)
+                                    <tr
+                                        data-policy-row
+                                        data-table-type="bookings"
+                                        data-id="{{ $policy->id }}"
+                                        data-name="{{ $policy->name }}"
+                                        data-desc="{{ $policy->desc }}"
+                                        data-scope="{{ $policy->domain_key }}"
+                                        data-status="{{ $policy->status }}"
+                                        data-owner="{{ $policy->owner }}"
+                                        data-reminder="{{ $policy->reminder }}"
+                                        data-updated="{{ optional($policy->updated_at)->format('M d · h:i A') }}"
+                                        data-impact="{{ $policy->impact }}"
+                                        data-tags="{{ implode(',', $policy->tags ?? []) }}"
+                                        data-expiring="{{ $policy->expiring ? 'true' : 'false' }}"
+                                        data-needs-review="{{ $policy->needs_review ? 'true' : 'false' }}"
+                                        data-policy='@json($policy->toArray())'
+                                    >
+                                        <td>
+                                            <strong>{{ $policy->name }}</strong>
+                                            <div class="text-muted small">Tags: {{ implode(', ', $policy->tags ?? []) }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="pol-pill pol-pill-{{ $policy->status }}">{{ ucfirst($policy->status) }}</span>
+                                        </td>
+                                        <td class="text-muted small">{{ $policy->owner }}</td>
+                                        <td class="text-muted small">{{ $policy->reminder }}</td>
+                                        <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
+                                        <td>
+                                            <div class="pol-actions-table inline">
+                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-            <div class="pol-preview">
-                <h3>Rule Templates</h3>
-                <p class="text-muted small mb-3">Frequently used rule cards.</p>
-                @foreach ($ruleTemplates as $index => $rule)
-                    <div class="pol-rule-card">
-                        <h4>Rule Template {{ $index + 1 }}</h4>
-                        <p>{{ $rule['kind'] }} · {{ $rule['operator'] }} · {{ $rule['value'] }}</p>
+
+                <div class="pol-surface pol-table-shell">
+                    <div class="pol-table-head">
+                        <div>
+                            <p class="pol-label">SFI</p>
+                            <p class="text-muted small">Suites and premium rooms policies</p>
+                        </div>
                     </div>
-                @endforeach
-                <button class="pol-btn pol-btn-primary mt-2" data-modal-open="policyModal">Use template</button>
-            </div>
+                    <div class="pol-table-wrapper">
+                        <table class="pol-table pol-table-simple" data-table="sfi">
+                            <thead>
+                                <tr>
+                                    <th>Policy</th>
+                                    <th>Status</th>
+                                    <th>Owner</th>
+                                    <th>Reminder</th>
+                                    <th>Last updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($sfi as $policy)
+                                    <tr
+                                        data-policy-row
+                                        data-table-type="sfi"
+                                        data-id="{{ $policy->id }}"
+                                        data-name="{{ $policy->name }}"
+                                        data-desc="{{ $policy->desc }}"
+                                        data-scope="{{ $policy->domain_key }}"
+                                        data-status="{{ $policy->status }}"
+                                        data-owner="{{ $policy->owner }}"
+                                        data-reminder="{{ $policy->reminder }}"
+                                        data-updated="{{ optional($policy->updated_at)->format('M d · h:i A') }}"
+                                        data-impact="{{ $policy->impact }}"
+                                        data-tags="{{ implode(',', $policy->tags ?? []) }}"
+                                        data-expiring="{{ $policy->expiring ? 'true' : 'false' }}"
+                                        data-needs-review="{{ $policy->needs_review ? 'true' : 'false' }}"
+                                        data-policy='@json($policy->toArray())'
+                                    >
+                                        <td>
+                                            <strong>{{ $policy->name }}</strong>
+                                            <div class="text-muted small">Tags: {{ implode(', ', $policy->tags ?? []) }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="pol-pill pol-pill-{{ $policy->status }}">{{ ucfirst($policy->status) }}</span>
+                                        </td>
+                                        <td class="text-muted small">{{ $policy->owner }}</td>
+                                        <td class="text-muted small">{{ $policy->reminder }}</td>
+                                        <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
+                                        <td>
+                                            <div class="pol-actions-table inline">
+                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="pol-surface pol-table-shell">
+                    <div class="pol-table-head">
+                        <div>
+                            <p class="pol-label">Shuttle</p>
+                            <p class="text-muted small">Rider-facing rules</p>
+                        </div>
+                    </div>
+                    <div class="pol-table-wrapper">
+                        <table class="pol-table pol-table-simple" data-table="shuttle">
+                            <thead>
+                                <tr>
+                                    <th>Policy</th>
+                                    <th>Status</th>
+                                    <th>Owner</th>
+                                    <th>Reminder</th>
+                                    <th>Last updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($shuttle as $policy)
+                                    <tr
+                                        data-policy-row
+                                        data-table-type="shuttle"
+                                        data-id="{{ $policy->id }}"
+                                        data-name="{{ $policy->name }}"
+                                        data-desc="{{ $policy->desc }}"
+                                        data-scope="{{ $policy->domain_key }}"
+                                        data-status="{{ $policy->status }}"
+                                        data-owner="{{ $policy->owner }}"
+                                        data-reminder="{{ $policy->reminder }}"
+                                        data-updated="{{ optional($policy->updated_at)->format('M d · h:i A') }}"
+                                        data-impact="{{ $policy->impact }}"
+                                        data-tags="{{ implode(',', $policy->tags ?? []) }}"
+                                        data-expiring="{{ $policy->expiring ? 'true' : 'false' }}"
+                                        data-needs-review="{{ $policy->needs_review ? 'true' : 'false' }}"
+                                        data-policy='@json($policy->toArray())'
+                                    >
+                                        <td>
+                                            <strong>{{ $policy->name }}</strong>
+                                            <div class="text-muted small">Tags: {{ implode(', ', $policy->tags ?? []) }}</div>
+                                        </td>
+                                        <td>
+                                            <span class="pol-pill pol-pill-{{ $policy->status }}">{{ ucfirst($policy->status) }}</span>
+                                        </td>
+                                        <td class="text-muted small">{{ $policy->owner }}</td>
+                                        <td class="text-muted small">{{ $policy->reminder }}</td>
+                                        <td class="text-muted small">{{ optional($policy->updated_at)->format('M d · h:i A') }}</td>
+                                        <td>
+                                            <div class="pol-actions-table inline">
+                                                <button class="pol-action-btn" data-modal-open="policyModal" data-action="edit">Edit</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-danger" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
         </div>
     </div>
 </section>
@@ -184,24 +264,42 @@
             <button class="pol-action-btn" data-modal-close>&times;</button>
         </header>
         <form class="pol-form" id="policyForm">
+            <input type="hidden" id="policyId">
             <div class="pol-field">
                 <label>Policy name *</label>
                 <input type="text" id="policyName" placeholder="e.g., Lead Time · 24h" required>
             </div>
             <div class="pol-field">
-                <label>Scope *</label>
+                <label>Policy type *</label>
                 <select id="policyScope">
-                    <option value="global">Global · applies to all facilities</option>
-                    <option value="facility">Facility-specific</option>
+                    <option value="bookings">Bookings</option>
+                    <option value="sfi">SFI</option>
+                    <option value="shuttle">Shuttle</option>
                 </select>
+            </div>
+            <div class="pol-field">
+                <label>Owner</label>
+                <input type="text" id="policyOwner" placeholder="e.g., Legal Ops">
+            </div>
+            <div class="pol-field">
+                <label>Reminder</label>
+                <input type="text" id="policyReminder" placeholder="e.g., Review quarterly">
             </div>
             <div class="pol-field">
                 <label>Description</label>
                 <textarea rows="2" id="policyDesc" placeholder="Explain what this policy enforces..."></textarea>
             </div>
             <div class="pol-field">
+                <label>Tags (comma separated)</label>
+                <input type="text" id="policyTags" placeholder="Lead Time, Cutoff">
+            </div>
+            <div class="pol-field">
+                <label>Impact / display note</label>
+                <textarea rows="2" id="policyImpact" placeholder="Where this shows up or what it blocks (optional)"></textarea>
+            </div>
+            <div class="pol-field">
                 <label>Active</label>
-                <input type="checkbox" class="pol-toggle" checked>
+                <input type="checkbox" class="pol-toggle" id="policyActive" checked>
             </div>
 
             <div class="pol-rule-builder">
@@ -209,26 +307,7 @@
                     <h4>Rules</h4>
                     <button type="button" class="pol-btn pol-btn-primary" id="addRuleBtn">Add Rule</button>
                 </header>
-                <div class="pol-rule-list" id="ruleList">
-                    <div class="pol-rule-card" data-rule="1">
-                        <h4>Rule #1 · Lead Time</h4>
-                        <p>Bookings must be created at least 24 hours before the start time.</p>
-                        <div class="pol-actions-table" style="opacity:1;">
-                            <button class="pol-action-btn" type="button">Edit</button>
-                            <button class="pol-action-btn" type="button">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pol-field" id="facilityPicker">
-                <label>Apply to facilities</label>
-                <select multiple>
-                    <option>Orion Boardroom</option>
-                    <option>Helios Lab</option>
-                    <option>Summit Hall</option>
-                    <option>Nova Hub</option>
-                </select>
+                <div class="pol-rule-list" id="ruleList"></div>
             </div>
 
             <div class="pol-preview-panel">
@@ -303,19 +382,36 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const searchInput = document.querySelector('#policySearch');
-        const rows = document.querySelectorAll('#policyTable tbody tr');
-        const scopeChips = document.querySelectorAll('[data-filter-scope]');
-        const statusChips = document.querySelectorAll('[data-filter-status]');
+        const filterStatus = document.querySelector('#filterStatus');
+        const rows = Array.from(document.querySelectorAll('[data-policy-row]'));
+        const policyIdInput = document.querySelector('#policyId');
+        const policyNameInput = document.querySelector('#policyName');
+        const policyScopeInput = document.querySelector('#policyScope');
+        const policyOwnerInput = document.querySelector('#policyOwner');
+        const policyReminderInput = document.querySelector('#policyReminder');
+        const policyDescInput = document.querySelector('#policyDesc');
+        const policyTagsInput = document.querySelector('#policyTags');
+        const policyImpactInput = document.querySelector('#policyImpact');
+        const policyActiveInput = document.querySelector('#policyActive');
+        const preview = {
+            title: document.querySelector('#previewTitle'),
+            desc: document.querySelector('#previewDesc'),
+            impact: document.querySelector('#previewImpact'),
+            reminder: document.querySelector('#previewReminder'),
+            tags: document.querySelector('#detailTags'),
+        };
         const modals = document.querySelectorAll('.pol-modal-overlay');
         const modalTriggers = document.querySelectorAll('[data-modal-open]');
         const policyForm = document.querySelector('#policyForm');
         const ruleTestForm = document.querySelector('#ruleTestForm');
         const addRuleBtn = document.querySelector('#addRuleBtn');
         const ruleList = document.querySelector('#ruleList');
-        const facilityPicker = document.querySelector('#facilityPicker');
         const rulePreviewText = document.querySelector('#rulePreviewText');
-        let scopeFilter = 'all';
-        let statusFilter = 'all';
+        const filters = { status: 'all', keyword: '' };
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const policyCache = {};
+        let activePolicy = null;
+
 
         const closeModal = overlay => overlay.classList.remove('active');
         const openModal = id => document.getElementById(id).classList.add('active');
@@ -331,50 +427,234 @@
         });
 
         modalTriggers.forEach(trigger => {
-            trigger.addEventListener('click', () => openModal(trigger.dataset.modalOpen));
+            trigger.addEventListener('click', () => {
+                resetForm();
+                setActivePolicy(null);
+                openModal(trigger.dataset.modalOpen);
+            });
         });
 
-        const filterRows = () => {
-            const keyword = searchInput.value.trim().toLowerCase();
+        const applyFilters = () => {
+            const keyword = filters.keyword.trim().toLowerCase();
             rows.forEach(row => {
-                const matchesScope = scopeFilter === 'all' || row.dataset.scope === scopeFilter;
-                const matchesStatus = statusFilter === 'all' || row.dataset.status === statusFilter;
-                const matchesKeyword = !keyword || row.dataset.name.includes(keyword) || row.dataset.description.includes(keyword);
-                row.style.display = matchesScope && matchesStatus && matchesKeyword ? '' : 'none';
+                const matchesStatus = filters.status === 'all' || row.dataset.status === filters.status;
+                const name = (row.dataset.name || '').toLowerCase();
+                const desc = (row.dataset.desc || '').toLowerCase();
+                const tags = (row.dataset.tags || '').toLowerCase();
+                const owner = (row.dataset.owner || '').toLowerCase();
+                const matchesKeyword =
+                    !keyword || name.includes(keyword) || desc.includes(keyword) || tags.includes(keyword) || owner.includes(keyword);
+                row.style.display = matchesStatus && matchesKeyword ? '' : 'none';
             });
         };
 
-        scopeChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                scopeFilter = chip.dataset.filterScope;
-                scopeChips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                filterRows();
+        const renderTags = tagsString => {
+            if (!preview.tags) return;
+            preview.tags.innerHTML = '';
+            (tagsString || '')
+                .split(',')
+                .map(tag => tag.trim())
+                .filter(Boolean)
+                .forEach(tag => {
+                    const chip = document.createElement('span');
+                    chip.className = 'pol-chip pol-chip-ghost';
+                    chip.textContent = tag;
+                    preview.tags.appendChild(chip);
+                });
+        };
+
+        const parsePolicyFromRow = row => {
+            if (row.dataset.policy) {
+                try {
+                    return JSON.parse(row.dataset.policy);
+                } catch (e) {
+                    // fall through
+                }
+            }
+            return {
+                id: row.dataset.id,
+                name: row.dataset.name,
+                desc: row.dataset.desc,
+                domain_key: row.dataset.scope,
+                status: row.dataset.status,
+                owner: row.dataset.owner,
+                reminder: row.dataset.reminder,
+                impact: row.dataset.impact,
+                tags: (row.dataset.tags || '')
+                    .split(',')
+                    .map(t => t.trim())
+                    .filter(Boolean),
+                rules: [],
+            };
+        };
+
+        rows.forEach(row => {
+            const policy = parsePolicyFromRow(row);
+            if (policy.id) {
+                policyCache[policy.id] = policy;
+            }
+        });
+
+        const setPreview = policy => {
+            if (!policy || !preview.title) return;
+            preview.title.textContent = policy.name || 'Select a policy';
+            preview.desc.textContent = policy.desc || '';
+            if (preview.impact) preview.impact.textContent = policy.impact || '—';
+            if (preview.reminder) preview.reminder.textContent = policy.reminder || '—';
+            renderTags((policy.tags || []).join(','));
+        };
+
+        const renderRules = policy => {
+            ruleList.innerHTML = '';
+            const rules = policy?.rules || [];
+            if (!rules.length) {
+                ruleList.innerHTML = '<div class="text-muted small">No rules yet.</div>';
+                rulePreviewText.textContent = 'Add rules to see the natural language preview.';
+                return;
+            }
+
+            rules.forEach((rule, idx) => {
+                const card = document.createElement('div');
+                card.className = 'pol-rule-card';
+                card.dataset.ruleId = rule.id;
+                card.innerHTML = `
+                    <h4>Rule #${idx + 1} · ${rule.title || 'Custom'}</h4>
+                    <p>${rule.summary || ''}</p>
+                    <div class="pol-actions-table" style="opacity:1;">
+                        <button class="pol-action-btn" type="button" data-rule-edit>Edit</button>
+                        <button class="pol-action-btn" type="button" data-rule-delete>Delete</button>
+                    </div>
+                `;
+                ruleList.appendChild(card);
+            });
+
+            rulePreviewText.textContent = rules.map(r => r.summary || r.title).filter(Boolean).join(' ');
+        };
+
+        const setActivePolicy = policy => {
+            activePolicy = policy;
+            setPreview(policy);
+            renderRules(policy);
+
+            if (!policy) {
+                resetForm();
+                return;
+            }
+
+            policyIdInput.value = policy.id || '';
+            policyNameInput.value = policy.name || '';
+            policyScopeInput.value = policy.domain_key || 'bookings';
+            policyOwnerInput.value = policy.owner || '';
+            policyReminderInput.value = policy.reminder || '';
+            policyDescInput.value = policy.desc || '';
+            policyTagsInput.value = (policy.tags || []).join(', ');
+            policyImpactInput.value = policy.impact || '';
+            policyActiveInput.checked = policy.status === 'active';
+        };
+
+        const setPreviewFromRow = row => {
+            const policy = policyCache[row.dataset.id] || parsePolicyFromRow(row);
+            setActivePolicy(policy);
+            rows.forEach(r => r.classList.remove('active'));
+            row.classList.add('active');
+        };
+
+        const updateActionButtons = () => {
+            document.querySelectorAll('.pol-action-status').forEach(btn => {
+                const status = (btn.dataset.status || '').toLowerCase();
+                btn.classList.remove('pol-positive', 'pol-negative');
+                if (status === 'draft') {
+                    btn.textContent = 'Confirm';
+                    btn.classList.add('pol-positive');
+                } else if (status === 'active') {
+                    btn.textContent = 'Deactivate';
+                    btn.classList.add('pol-negative');
+                } else {
+                    btn.textContent = 'Reactivate';
+                    btn.classList.add('pol-positive');
+                }
+            });
+        };
+
+        rows.forEach(row => {
+            row.addEventListener('click', () => setPreviewFromRow(row));
+
+            row.querySelectorAll('.pol-action-btn').forEach(btn => {
+                btn.addEventListener('click', async e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+                    const action = btn.dataset.action;
+                    const policy = policyCache[row.dataset.id] || parsePolicyFromRow(row);
+
+                    if (action === 'edit') {
+                        setActivePolicy(policy);
+                        openModal('policyModal');
+                        return;
+                    }
+
+                    if (action === 'status') {
+                        const nextStatus = (policy.status || '').toLowerCase() === 'active' ? 'draft' : 'active';
+                        await mutate(`/admin/policies/${policy.id}/status`, 'POST', { status: nextStatus });
+                        window.location.reload();
+                        return;
+                    }
+
+                    if (action === 'delete') {
+                        const confirmed = await confirmDialog(btn.dataset.confirm || 'Delete policy?');
+                        if (!confirmed) return;
+                        await mutate(`/admin/policies/${policy.id}`, 'DELETE');
+                        window.location.reload();
+                    }
+                });
             });
         });
 
-        statusChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                statusFilter = chip.dataset.filterStatus;
-                statusChips.forEach(c => c.classList.remove('active'));
-                chip.classList.add('active');
-                filterRows();
+        if (filterStatus) {
+            filterStatus.addEventListener('change', () => {
+                filters.status = filterStatus.value;
+                applyFilters();
             });
-        });
+        }
 
-        searchInput.addEventListener('input', filterRows);
+        if (searchInput) {
+            searchInput.addEventListener('input', () => {
+                filters.keyword = searchInput.value;
+                applyFilters();
+            });
+        }
 
-        policyForm.addEventListener('submit', e => {
+        if (rows.length) {
+            rows[0].classList.add('active');
+            setPreviewFromRow(rows[0]);
+        }
+        applyFilters();
+        updateActionButtons();
+
+        policyForm.addEventListener('submit', async e => {
             e.preventDefault();
-            closeModal(document.querySelector('#policyModal'));
-            Swal.fire({
-                background: 'rgba(0, 11, 28, 0.96)',
-                color: '#FDFDFD',
-                title: 'Policy saved',
-                text: 'Changes will affect new bookings immediately.',
-                icon: 'success',
-                confirmButtonColor: '#00C950',
-            });
+            const payload = {
+                name: policyNameInput.value.trim(),
+                domain_key: policyScopeInput.value,
+                owner: policyOwnerInput.value.trim() || null,
+                reminder: policyReminderInput.value.trim() || null,
+                desc: policyDescInput.value.trim() || null,
+                tags: policyTagsInput.value,
+                impact: policyImpactInput.value.trim() || null,
+                active: policyActiveInput.checked,
+            };
+
+            if (!payload.name) {
+                alert('Policy name is required.');
+                return;
+            }
+
+            const policyId = policyIdInput.value;
+            const method = policyId ? 'PUT' : 'POST';
+            const url = policyId ? `/admin/policies/${policyId}` : '/admin/policies';
+
+            await mutate(url, method, payload, 'Policy saved');
+            window.location.reload();
         });
 
         ruleTestForm.addEventListener('submit', e => {
@@ -382,51 +662,111 @@
             document.querySelector('#testResult').textContent = 'Booking violates the Lead Time rule and Food rule.';
         });
 
-        addRuleBtn.addEventListener('click', () => {
-            const count = ruleList.querySelectorAll('.pol-rule-card').length + 1;
-            const card = document.createElement('div');
-            card.className = 'pol-rule-card';
-            card.innerHTML = `
-                <h4>Rule #${count} · Custom</h4>
-                <p>Rule details will appear here once saved.</p>
-                <div class="pol-actions-table" style="opacity:1;">
-                    <button class="pol-action-btn" type="button">Edit</button>
-                    <button class="pol-action-btn" type="button">Delete</button>
-                </div>
-            `;
-            ruleList.appendChild(card);
-            rulePreviewText.textContent = `Rule #${count} pending configuration.`;
+        addRuleBtn.addEventListener('click', async () => {
+            if (!activePolicy?.id) {
+                alert('Save the policy first before adding rules.');
+                return;
+            }
+
+            const title = prompt('Rule title', 'Custom Rule');
+            if (!title) return;
+            const summary = prompt('Rule summary', '') || '';
+
+            await mutate(`/admin/policies/${activePolicy.id}/rules`, 'POST', {
+                title,
+                summary,
+            }, 'Rule added');
+            window.location.reload();
         });
 
-        document.querySelectorAll('[data-confirm]').forEach(btn => {
-            btn.addEventListener('click', () => {
+        ruleList.addEventListener('click', async e => {
+            const card = e.target.closest('.pol-rule-card');
+            if (!card) return;
+
+            const ruleId = card.dataset.ruleId;
+            if (e.target.matches('[data-rule-edit]')) {
+                const currentTitle = card.querySelector('h4')?.textContent?.replace(/^Rule #[0-9]+ · /, '') || 'Rule';
+                const currentSummary = card.querySelector('p')?.textContent || '';
+                const title = prompt('Rule title', currentTitle);
+                if (!title) return;
+                const summary = prompt('Rule summary', currentSummary) || '';
+                await mutate(`/admin/policies/rules/${ruleId}`, 'PUT', { title, summary }, 'Rule updated');
+                window.location.reload();
+            }
+
+            if (e.target.matches('[data-rule-delete]')) {
+                const confirmed = await confirmDialog('Delete this rule?');
+                if (!confirmed) return;
+                await mutate(`/admin/policies/rules/${ruleId}`, 'DELETE', null, 'Rule deleted');
+                window.location.reload();
+            }
+        });
+
+        const resetForm = () => {
+            policyIdInput.value = '';
+            policyNameInput.value = '';
+            policyScopeInput.value = 'bookings';
+            policyOwnerInput.value = '';
+            policyReminderInput.value = '';
+            policyDescInput.value = '';
+            policyTagsInput.value = '';
+            policyImpactInput.value = '';
+            policyActiveInput.checked = true;
+        };
+
+        const confirmDialog = message => {
+            return Swal.fire({
+                background: 'rgba(0, 11, 28, 0.96)',
+                color: '#FDFDFD',
+                title: 'Please confirm',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00C950',
+                cancelButtonColor: '#FF6B6B',
+            }).then(result => result.isConfirmed);
+        };
+
+        async function mutate(url, method, payload = null, successMessage = 'Saved') {
+            const res = await fetch(url, {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: payload ? JSON.stringify(payload) : null,
+            });
+
+            if (!res.ok) {
+                const errorText = await res.text();
                 Swal.fire({
                     background: 'rgba(0, 11, 28, 0.96)',
                     color: '#FDFDFD',
-                    title: 'Please confirm',
-                    text: btn.dataset.confirm,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#00C950',
-                    cancelButtonColor: '#FF6B6B',
-                }).then(result => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            background: 'rgba(0, 11, 28, 0.96)',
-                            color: '#FDFDFD',
-                            title: 'Action completed',
-                            text: btn.dataset.success || 'Policy updated.',
-                            icon: 'success',
-                            confirmButtonColor: '#00C950',
-                        });
-                    }
+                    title: 'Error',
+                    text: errorText || 'Something went wrong.',
+                    icon: 'error',
+                    confirmButtonColor: '#FF6B6B',
                 });
-            });
-        });
+                throw new Error(errorText);
+            }
 
-        document.querySelector('#policyScope').addEventListener('change', e => {
-            facilityPicker.style.display = e.target.value === 'facility' ? 'block' : 'none';
-        });
+            if (successMessage) {
+                Swal.fire({
+                    background: 'rgba(0, 11, 28, 0.96)',
+                    color: '#FDFDFD',
+                    title: successMessage,
+                    icon: 'success',
+                    confirmButtonColor: '#00C950',
+                });
+            }
+
+            try {
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
     });
 </script>
 @endpush
