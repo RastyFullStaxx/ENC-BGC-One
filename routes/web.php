@@ -16,6 +16,7 @@ use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\FacilityCatalogController;
 use App\Http\Controllers\AccountSettingsController;
 use App\Http\Controllers\Admin\AdminPolicyController;
+use App\Http\Controllers\Admin\AdminFacilityController;
 
 
 Route::get('/', LandingPageController::class)->name('landing');
@@ -132,6 +133,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/audit/{auditLog}/export', [AdminAuditController::class, 'exportEntry'])->name('admin.audit.export.entry');
     Route::post('/admin/audit/{auditLog}/flag', [AdminAuditController::class, 'flag'])->name('admin.audit.flag');
 
+    Route::get('/admin/facilities', [AdminFacilityController::class, 'index'])->name('admin.facilities');
+    Route::post('/admin/facilities', [AdminFacilityController::class, 'store'])->name('admin.facilities.store');
+    Route::get('/admin/facilities/{facility}', [AdminFacilityController::class, 'show'])->name('admin.facilities.show');
+
     // Policies
     Route::get('/admin/policies', [AdminPolicyController::class, 'index'])->name('admin.policies');
     Route::post('/admin/policies', [AdminPolicyController::class, 'store'])->name('admin.policies.store');
@@ -142,9 +147,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/admin/policies/rules/{rule}', [AdminPolicyController::class, 'updateRule'])->name('admin.policies.rules.update');
     Route::delete('/admin/policies/rules/{rule}', [AdminPolicyController::class, 'destroyRule'])->name('admin.policies.rules.destroy');
 });
-
-// Temporary preview route for Admin Facilities Management
-Route::view('/admin/facilities', 'admin.facilities')->name('admin.facilities');
 
 // --- Public Booking Preview (for testing without auth) ---
 Route::get('/book', function () {

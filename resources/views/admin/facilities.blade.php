@@ -8,9 +8,12 @@
 
 @section('content')
 @php
-    $facilities = [
+    // Prefer controller-provided data; fall back to seeded examples for preview.
+    $facilities = $facilities ?? [
         [
+            'id' => 1,
             'name' => 'Orion Boardroom',
+            'room_number' => '1208',
             'building' => 'Building A',
             'floor' => '12F',
             'type' => 'Meeting Room',
@@ -19,9 +22,13 @@
             'status_key' => 'active',
             'photo' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=60',
             'equipment' => ['LED Wall', 'VC Suite', 'Coffee Station'],
+            'hours' => '08:00 – 20:00',
+            'notes' => 'Executive-ready room with VC suite and pantry access.',
         ],
         [
+            'id' => 2,
             'name' => 'Helios Training Lab',
+            'room_number' => '407',
             'building' => 'Building B',
             'floor' => '4F',
             'type' => 'Training Room',
@@ -30,9 +37,13 @@
             'status_key' => 'maintenance',
             'photo' => 'https://images.unsplash.com/photo-1524758870432-af57e54afa26?auto=format&fit=crop&w=900&q=60',
             'equipment' => ['Projector', 'Whiteboards', 'Lapel Microphones'],
+            'hours' => '09:00 – 18:00',
+            'notes' => 'AV refresh in progress; ETA back online this week.',
         ],
         [
+            'id' => 3,
             'name' => 'Summit Hall',
+            'room_number' => 'G12',
             'building' => 'Building A',
             'floor' => 'GF',
             'type' => 'Event Hall',
@@ -41,9 +52,13 @@
             'status_key' => 'active',
             'photo' => 'https://images.unsplash.com/photo-1503420564238-11f5fe3223b4?auto=format&fit=crop&w=900&q=60',
             'equipment' => ['Stage Lighting', 'Sound System', 'Podium'],
+            'hours' => '07:00 – 23:00',
+            'notes' => 'Ideal for town halls and large briefings.',
         ],
         [
+            'id' => 4,
             'name' => 'Nova Collaboration Hub',
+            'room_number' => '715',
             'building' => 'Building B',
             'floor' => '7F',
             'type' => 'Collaboration Space',
@@ -52,16 +67,13 @@
             'status_key' => 'active',
             'photo' => 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=900&q=60',
             'equipment' => ['Breakout Pods', 'TVs', 'Acoustic Panels'],
+            'hours' => '08:00 – 19:00',
+            'notes' => 'Great for agile pods and hybrid brainstorming.',
         ],
     ];
 
-    $policies = [
-        ['title' => 'Food & Beverage', 'desc' => 'Allowed only for rooms with pantry access'],
-        ['title' => 'Session Duration', 'desc' => 'Max 4 hours for training rooms'],
-        ['title' => 'Approval Needed', 'desc' => 'Executive floors require director approval'],
-    ];
-
-    $equipmentOptions = ['Projector', 'LED Wall', 'Wireless Mic', 'Speakerphone', 'Whiteboard', 'Extension Cords', 'Telepresence Kit'];
+    $equipmentOptions = $equipmentOptions ?? ['Projector', 'LED Wall', 'Wireless Mic', 'Speakerphone', 'Whiteboard', 'Extension Cords', 'Telepresence Kit'];
+    $buildings = $buildings ?? [['id' => 1, 'name' => 'Building A'], ['id' => 2, 'name' => 'Building B']];
 @endphp
 
 <section class="admin-facilities-page">
@@ -76,7 +88,7 @@
         <div class="fac-header">
             <div>
                 <h1>Facilities Management</h1>
-                <p>Manage rooms across both buildings. Keep photos, hours, and policies accurate.</p>
+                <p>Manage rooms across both buildings. Keep photos, hours, and equipment accurate.</p>
             </div>
             <button class="fac-btn fac-btn-primary" data-modal-open="facilityModal">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -89,23 +101,23 @@
         <div class="fac-grid" style="margin-bottom: 32px;">
             <div class="fac-widget">
                 <h3>Total facilities</h3>
-                <strong style="font-size: 32px;">42</strong>
+                <strong style="font-size: 32px;">{{ $facilitiesCount ?? count($facilities) }}</strong>
                 <p class="text-muted">Across Building A & B</p>
             </div>
             <div class="fac-widget">
-                <h3>Maintenance Queue</h3>
-                <strong style="font-size: 32px;">3</strong>
+                <h3>Maintenance queue</h3>
+                <strong style="font-size: 32px;">{{ $maintenanceQueue ?? 3 }}</strong>
                 <p class="text-muted">Rooms awaiting completion</p>
             </div>
             <div class="fac-widget">
                 <h3>Bookable capacity</h3>
-                <strong style="font-size: 32px;">1,248</strong>
+                <strong style="font-size: 32px;">{{ $bookableCapacity ?? '1,248' }}</strong>
                 <p class="text-muted">Total seats available</p>
             </div>
             <div class="fac-widget">
-                <h3>Policies updated</h3>
-                <strong style="font-size: 32px;">8</strong>
-                <p class="text-muted">In the last 30 days</p>
+                <h3>Verified photos</h3>
+                <strong style="font-size: 32px;">{{ $verifiedPhotos ?? 18 }}</strong>
+                <p class="text-muted">Updated this quarter</p>
             </div>
         </div>
 
@@ -120,8 +132,9 @@
                 </div>
                 <div class="fac-chip-group">
                     <button class="fac-chip active" data-filter-building="all">All buildings</button>
-                    <button class="fac-chip" data-filter-building="Building A">Building A</button>
-                    <button class="fac-chip" data-filter-building="Building B">Building B</button>
+                    @foreach ($buildings as $building)
+                        <button class="fac-chip" data-filter-building="{{ $building['name'] ?? $building['id'] }}">{{ $building['name'] }}</button>
+                    @endforeach
                 </div>
                 <div class="fac-chip-group fac-chip-divider">
                     <button class="fac-chip active" data-filter-type="all">All types</button>
@@ -134,7 +147,6 @@
                     <button class="fac-chip" data-filter-status="active">Active</button>
                     <button class="fac-chip" data-filter-status="maintenance">Maintenance</button>
                 </div>
-                <button class="fac-btn fac-btn-primary" data-modal-open="filtersDrawer">Advanced filters</button>
             </div>
 
             <div class="fac-table-wrapper">
@@ -153,22 +165,40 @@
                     </thead>
                     <tbody>
                         @foreach ($facilities as $facility)
+                            @php
+                                $facilityPayload = [
+                                    'id' => $facility['id'] ?? null,
+                                    'name' => $facility['name'],
+                                    'room_number' => $facility['room_number'] ?? null,
+                                    'building' => $facility['building'],
+                                    'floor' => $facility['floor'],
+                                    'type' => $facility['type'],
+                                    'capacity' => $facility['capacity'],
+                                    'status' => $facility['status'],
+                                    'status_key' => $facility['status_key'] ?? 'active',
+                                    'photo' => $facility['photo'],
+                                    'equipment' => $facility['equipment'],
+                                    'hours' => $facility['hours'] ?? null,
+                                    'notes' => $facility['notes'] ?? null,
+                                ];
+                            @endphp
                             <tr
                                 data-building="{{ $facility['building'] }}"
                                 data-type="{{ $facility['type'] }}"
                                 data-status="{{ $facility['status_key'] }}"
                                 data-name="{{ $facility['name'] }}"
+                                data-facility='@json($facilityPayload)'
                             >
                                 <td>
                                     <img src="{{ $facility['photo'] }}" alt="{{ $facility['name'] }}" class="fac-photo">
                                 </td>
                                 <td>
-                                    <div class="fac-name">
+                                    <button type="button" class="fac-name fac-name-link" data-modal-open="facilityDetailModal">
                                         {{ $facility['name'] }}
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                                             <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                                         </svg>
-                                    </div>
+                                    </button>
                                     <p class="text-muted small mb-0">{{ implode(' • ', $facility['equipment']) }}</p>
                                 </td>
                                 <td>{{ $facility['building'] }}</td>
@@ -199,48 +229,11 @@
             </div>
 
             <div class="fac-pagination">
-                <span>1–20 of 42</span>
+                <span>1–20 of {{ $facilitiesCount ?? count($facilities) }}</span>
                 <div class="fac-chip-group">
                     <button class="fac-chip active">1</button>
                     <button class="fac-chip">2</button>
                     <button class="fac-chip">3</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="fac-grid">
-            <div class="fac-widget">
-                <h3>Upcoming maintenance</h3>
-                <ul>
-                    <li><strong>Helios Training Lab</strong> — HVAC calibration · Aug 16</li>
-                    <li><strong>Summit Hall</strong> — Lighting upgrade · Aug 19</li>
-                    <li><strong>Nova Hub</strong> — Furniture refresh · Aug 22</li>
-                </ul>
-            </div>
-            <div class="fac-widget">
-                <h3>Policies snapshot</h3>
-                <ul>
-                    @foreach ($policies as $policy)
-                        <li>
-                            <strong>{{ $policy['title'] }}</strong>
-                            <span class="d-block text-muted">{{ $policy['desc'] }}</span>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            <div class="fac-widget">
-                <h3>Quick actions</h3>
-                <div class="fac-quick-panel">
-                    <div class="fac-quick-card">
-                        <p class="text-muted small mb-1">Conflict check</p>
-                        <strong>2 bookings impacted</strong>
-                        <p class="text-muted mb-0">Review before editing Orion Boardroom.</p>
-                    </div>
-                    <div class="fac-quick-card">
-                        <p class="text-muted small mb-1">Policies pending</p>
-                        <strong>3 rooms</strong>
-                        <p class="text-muted mb-0">Require updated security policy.</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -249,38 +242,49 @@
 
 {{-- Add / Edit Facility Modal --}}
 <div class="fac-modal-overlay" id="facilityModal">
-    <div class="fac-modal">
+    <div class="fac-modal fac-modal--wide">
         <header>
-            <h3>Facility Details</h3>
+            <div>
+                <p class="fac-breadcrumb mb-1">New entry</p>
+                <h3>Add facility</h3>
+                <p class="text-muted small mb-0">Capture core room details so bookings stay accurate.</p>
+            </div>
             <button class="fac-action-btn" data-modal-close>&times;</button>
         </header>
-        <form id="facilityForm">
+        <form id="facilityForm" method="POST" action="{{ route('admin.facilities.store') }}">
+            @csrf
             <div class="fac-section">
-                <header><h4>Basic details</h4></header>
-                <div class="fac-grid">
+                <header><h4>Basics</h4></header>
+                <div class="fac-grid fac-grid--tight">
                     <div class="fac-field">
                         <label>Name *</label>
-                        <input type="text" required>
+                        <input type="text" name="name" required placeholder="e.g., Orion Boardroom">
+                    </div>
+                    <div class="fac-field">
+                        <label>Room #</label>
+                        <input type="text" name="room_number" placeholder="1208">
                     </div>
                     <div class="fac-field">
                         <label>Building *</label>
-                        <select required>
+                        <select name="building_id" required>
                             <option value="">Choose building</option>
-                            <option>Building A</option>
-                            <option>Building B</option>
+                            @foreach ($buildings as $building)
+                                <option value="{{ $building['id'] }}">{{ $building['name'] }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="fac-field">
                         <label>Floor *</label>
-                        <input type="text" placeholder="e.g., 12F">
+                        <input type="text" name="floor" placeholder="e.g., 12F" required>
                     </div>
                     <div class="fac-field">
                         <label>Capacity *</label>
-                        <input type="number" min="1" placeholder="Max people">
+                        <input type="number" name="capacity" min="1" placeholder="Max people" required>
                     </div>
                     <div class="fac-field">
                         <label>Type *</label>
-                        <select>
+                        <select name="type" required>
+                            <option value="">Select type</option>
                             <option>Meeting Room</option>
                             <option>Training Room</option>
                             <option>Event Hall</option>
@@ -289,23 +293,26 @@
                     </div>
                     <div class="fac-field">
                         <label>Status</label>
-                        <select>
-                            <option>Active</option>
-                            <option>Under Maintenance</option>
+                        <select name="status">
+                            <option value="active">Active</option>
+                            <option value="under maintenance">Under Maintenance</option>
                         </select>
                     </div>
                 </div>
                 <div class="fac-field">
-                    <label>Location description</label>
-                    <textarea rows="2" placeholder="Entrance details, nearby amenities..."></textarea>
+                    <label>Description</label>
+                    <textarea name="description" rows="2" placeholder="Entrance details, nearby amenities..."></textarea>
                 </div>
             </div>
 
             <div class="fac-section">
-                <header><h4>Photos</h4></header>
+                <header><h4>Photos & media</h4></header>
                 <div class="fac-upload-grid">
-                    @for ($i = 0; $i < 6; $i++)
-                        <div class="fac-upload-slot">Upload</div>
+                    <div class="fac-upload-slot">
+                        <input type="url" name="photo_url" class="fac-upload-input" placeholder="Primary photo URL">
+                    </div>
+                    @for ($i = 0; $i < 3; $i++)
+                        <div class="fac-upload-slot fac-upload-slot--ghost">Add gallery</div>
                     @endfor
                 </div>
             </div>
@@ -316,17 +323,148 @@
                     <label>Select equipment</label>
                     <div class="fac-chip-group">
                         @foreach ($equipmentOptions as $option)
-                            <span class="fac-chip" data-equipment="{{ $option }}">{{ $option }}</span>
+                            <label class="fac-chip fac-chip-input">
+                                <input type="checkbox" name="equipment[]" value="{{ $option }}"> {{ $option }}
+                            </label>
                         @endforeach
                     </div>
                 </div>
                 <div class="fac-field">
                     <label>Custom equipment</label>
-                    <input type="text" placeholder="Add custom item">
+                    <input type="text" name="custom_equipment" placeholder="Add custom item">
                 </div>
             </div>
 
             <div class="fac-section">
                 <header>
                     <h4>Operating hours</h4>
-                    <button type="button" class="fac-action-btn" data-copy-hours="true">Copy to all days</button
+                    <button type="button" class="fac-action-btn" data-copy-hours="true">Copy to all days</button>
+                </header>
+                <div class="fac-grid fac-grid--tight">
+                    <div class="fac-field">
+                        <label>Opens</label>
+                        <input type="time" name="open_time" value="08:00">
+                    </div>
+                    <div class="fac-field">
+                        <label>Closes</label>
+                        <input type="time" name="close_time" value="20:00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="fac-modal-actions">
+                <button type="button" class="fac-btn fac-btn-ghost" data-modal-close>Cancel</button>
+                <button type="submit" class="fac-btn fac-btn-primary">Save facility</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- Full Facility Detail Modal --}}
+<div class="fac-modal-overlay" id="facilityDetailModal">
+    <div class="fac-modal fac-modal--wide">
+        <header>
+            <div>
+                <p class="fac-breadcrumb mb-1">Facility overview</p>
+                <h3 id="detailName">Facility name</h3>
+                <p class="fac-meta" id="detailMeta">Building • Floor • Capacity</p>
+            </div>
+            <button class="fac-action-btn" data-modal-close>&times;</button>
+        </header>
+
+        <div class="fac-section fac-detail-hero">
+            <img id="detailPhoto" src="" alt="" class="fac-detail-photo">
+            <div>
+                <div class="fac-detail-badges">
+                    <span class="fac-status" id="detailStatus">Status</span>
+                    <span class="fac-pill fac-pill-positive" id="detailHours">Hours</span>
+                </div>
+                <p class="fac-meta" id="detailNotes">Notes about this facility will appear here.</p>
+                <div class="fac-chip-group fac-chip-compact" id="detailEquipment"></div>
+            </div>
+        </div>
+
+        <div class="fac-grid fac-detail-grid">
+            <div class="fac-widget">
+                <h3>Location</h3>
+                <p class="fac-meta mb-1" id="detailBuilding"></p>
+                <p class="fac-meta mb-0" id="detailFloor"></p>
+            </div>
+            <div class="fac-widget">
+                <h3>Type</h3>
+                <p class="fac-meta mb-1" id="detailType"></p>
+                <p class="fac-meta mb-0">Room # <span id="detailRoom">—</span></p>
+            </div>
+            <div class="fac-widget">
+                <h3>Capacity</h3>
+                <p class="fac-meta mb-1" id="detailCapacity"></p>
+                <p class="fac-meta mb-0">Recommended setup ready</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const openers = document.querySelectorAll('[data-modal-open]');
+        const closers = document.querySelectorAll('[data-modal-close]');
+
+        openers.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-modal-open');
+                const overlay = document.getElementById(targetId);
+                if (!overlay) return;
+
+                // Pre-fill facility detail modal from row data
+                if (targetId === 'facilityDetailModal') {
+                    const row = btn.closest('tr');
+                    const payload = row?.dataset?.facility ? JSON.parse(row.dataset.facility) : null;
+                    if (payload) fillFacilityDetail(payload);
+                }
+
+                overlay.classList.add('active');
+            });
+        });
+
+        closers.forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.fac-modal-overlay')?.classList.remove('active');
+            });
+        });
+
+        document.querySelectorAll('.fac-modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        });
+
+        function fillFacilityDetail(data) {
+            const fallbackPhoto = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop';
+            document.getElementById('detailName').textContent = data.name || 'Facility';
+            document.getElementById('detailMeta').textContent = `${data.building ?? 'Building'} • ${data.floor ?? 'Floor'} • ${data.capacity ?? '—'} seats`;
+            document.getElementById('detailBuilding').textContent = data.building ?? 'Building';
+            document.getElementById('detailFloor').textContent = data.floor ?? '—';
+            document.getElementById('detailType').textContent = data.type ?? 'Room';
+            document.getElementById('detailRoom').textContent = data.room_number ?? '—';
+            document.getElementById('detailCapacity').textContent = data.capacity ? `${data.capacity} seats` : '—';
+            document.getElementById('detailStatus').textContent = data.status ?? 'Active';
+            document.getElementById('detailStatus').className = `fac-status ${data.status_key === 'maintenance' ? 'maintenance' : 'active'}`;
+            document.getElementById('detailHours').textContent = data.hours ?? 'Hours not set';
+            document.getElementById('detailPhoto').src = data.photo || fallbackPhoto;
+            document.getElementById('detailPhoto').alt = data.name || 'Facility photo';
+            document.getElementById('detailNotes').textContent = data.notes ?? 'No notes yet. Add details to guide requesters.';
+
+            const equipWrap = document.getElementById('detailEquipment');
+            equipWrap.innerHTML = '';
+            (data.equipment || []).forEach(item => {
+                const chip = document.createElement('span');
+                chip.className = 'fac-chip active';
+                chip.textContent = item;
+                equipWrap.appendChild(chip);
+            });
+        }
+    });
+</script>
+@endpush
+@endsection

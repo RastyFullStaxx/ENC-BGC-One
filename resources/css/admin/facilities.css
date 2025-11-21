@@ -62,6 +62,13 @@
     color: var(--fac-gray-400);
 }
 
+.fac-name-link {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
 .fac-btn {
     border: none;
     border-radius: 14px;
@@ -145,6 +152,11 @@
     background: rgba(0, 201, 80, 0.2);
 }
 
+.fac-chip-compact .fac-chip {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
 .fac-chip-divider {
     border-left: 1px solid var(--fac-gray-100);
     padding-left: 14px;
@@ -191,6 +203,11 @@
     border: 1px solid var(--fac-gray-100);
 }
 
+.fac-grid--tight {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
 .fac-name {
     font-weight: 600;
     color: #FFD66B;
@@ -207,6 +224,18 @@
     border-radius: 999px;
     font-size: 12px;
     font-weight: 600;
+}
+
+.fac-chip-input {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--fac-white);
+    border-color: var(--fac-gray-200);
+}
+
+.fac-chip-input input {
+    accent-color: #4C7DFF;
 }
 
 .fac-status.active {
@@ -321,6 +350,10 @@
     gap: 18px;
 }
 
+.fac-modal--wide {
+    width: min(1200px, 100%);
+}
+
 .fac-field {
     display: flex;
     flex-direction: column;
@@ -374,6 +407,18 @@
     cursor: pointer;
 }
 
+.fac-upload-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: var(--fac-white);
+    text-align: center;
+}
+
+.fac-upload-slot--ghost {
+    opacity: 0.5;
+}
+
 .fac-hours-table {
     width: 100%;
     border-collapse: collapse;
@@ -390,6 +435,32 @@
     justify-content: flex-end;
     gap: 12px;
     margin-top: 12px;
+}
+
+.fac-detail-hero {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 18px;
+    align-items: center;
+}
+
+.fac-detail-photo {
+    width: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+    min-height: 220px;
+    border: 1px solid var(--fac-gray-100);
+}
+
+.fac-detail-badges {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.fac-detail-grid {
+    align-items: stretch;
 }
 
 .fac-quick-panel {
@@ -440,11 +511,11 @@
         padding: 24px;
     }
 
-    .fac-table thead {
-        display: none;
-    }
+.fac-table thead {
+    display: none;
+}
 
-    .fac-table tr {
+.fac-table tr {
         display: flex;
         flex-direction: column;
         border-bottom: 1px solid var(--fac-gray-100);
