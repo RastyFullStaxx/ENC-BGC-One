@@ -281,6 +281,13 @@
     overflow-y: auto;
 }
 
+.pol-modal.narrow {
+    width: min(680px, 96%);
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 .pol-modal::-webkit-scrollbar {
     width: 10px;
 }

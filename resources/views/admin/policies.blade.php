@@ -377,6 +377,35 @@
     </div>
 </div>
 
+{{-- Edit Rule Modal --}}
+<div class="pol-modal-overlay" id="ruleEditModal">
+    <div class="pol-modal narrow">
+        <header>
+            <h3>Edit Rule</h3>
+            <button class="pol-action-btn" data-modal-close>&times;</button>
+        </header>
+        <form id="ruleEditForm" class="pol-form">
+            <input type="hidden" id="ruleEditId">
+            <div class="pol-field">
+                <label>Title</label>
+                <input type="text" id="ruleEditTitle" required placeholder="Rule title">
+            </div>
+            <div class="pol-field">
+                <label>Summary</label>
+                <textarea id="ruleEditSummary" rows="2" placeholder="What this rule enforces"></textarea>
+            </div>
+            <div class="pol-field">
+                <label>Position</label>
+                <input type="number" id="ruleEditPosition" min="1" step="1" placeholder="1">
+            </div>
+            <div class="pol-modal-actions">
+                <button type="button" class="pol-btn" data-modal-close>Cancel</button>
+                <button type="submit" class="pol-btn pol-btn-primary">Save rule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
@@ -407,6 +436,12 @@
         const addRuleBtn = document.querySelector('#addRuleBtn');
         const ruleList = document.querySelector('#ruleList');
         const rulePreviewText = document.querySelector('#rulePreviewText');
+        const ruleEditModal = document.querySelector('#ruleEditModal');
+        const ruleEditForm = document.querySelector('#ruleEditForm');
+        const ruleEditId = document.querySelector('#ruleEditId');
+        const ruleEditTitle = document.querySelector('#ruleEditTitle');
+        const ruleEditSummary = document.querySelector('#ruleEditSummary');
+        const ruleEditPosition = document.querySelector('#ruleEditPosition');
         const filters = { status: 'all', keyword: '' };
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         const policyCache = {};
@@ -414,7 +449,26 @@
 
 
         const closeModal = overlay => overlay.classList.remove('active');
-        const openModal = id => document.getElementById(id).classList.add('active');
+        const openModal = id => {
+            const modal = document.getElementById(id);
+            if (!modal) return;
+            modal.classList.add('active');
+            const inner = modal.querySelector('.pol-modal');
+            const parent = modal.closest('#policyModal');
+            if (parent && parent.querySelector('.pol-modal')) {
+                // center within parent modal if nested
+                const parentModal = parent.querySelector('.pol-modal');
+                inner.style.position = 'absolute';
+                inner.style.top = '50%';
+                inner.style.left = '50%';
+                inner.style.transform = 'translate(-50%, -50%)';
+            } else {
+                inner.style.position = '';
+                inner.style.top = '';
+                inner.style.left = '';
+                inner.style.transform = '';
+            }
+        };
 
         modals.forEach(overlay => {
             overlay.addEventListener('click', e => {
@@ -517,6 +571,7 @@
                 const card = document.createElement('div');
                 card.className = 'pol-rule-card';
                 card.dataset.ruleId = rule.id;
+                card.dataset.position = rule.position || idx + 1;
                 card.innerHTML = `
                     <h4>Rule #${idx + 1} · ${rule.title || 'Custom'}</h4>
                     <p>${rule.summary || ''}</p>
@@ -687,11 +742,14 @@
             if (e.target.matches('[data-rule-edit]')) {
                 const currentTitle = card.querySelector('h4')?.textContent?.replace(/^Rule #[0-9]+ · /, '') || 'Rule';
                 const currentSummary = card.querySelector('p')?.textContent || '';
-                const title = prompt('Rule title', currentTitle);
-                if (!title) return;
-                const summary = prompt('Rule summary', currentSummary) || '';
-                await mutate(`/admin/policies/rules/${ruleId}`, 'PUT', { title, summary }, 'Rule updated');
-                window.location.reload();
+                const currentPosition = card.dataset.position || '';
+
+                ruleEditId.value = ruleId;
+                ruleEditTitle.value = currentTitle;
+                ruleEditSummary.value = currentSummary;
+                ruleEditPosition.value = currentPosition;
+                openModal('ruleEditModal');
+                return;
             }
 
             if (e.target.matches('[data-rule-delete]')) {
@@ -767,6 +825,25 @@
                 return null;
             }
         }
+
+        ruleEditForm.addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = ruleEditId.value;
+            const payload = {
+                title: ruleEditTitle.value.trim(),
+                summary: ruleEditSummary.value.trim(),
+            };
+            if (ruleEditPosition.value) {
+                payload.position = Number(ruleEditPosition.value);
+            }
+            if (!payload.title) {
+                alert('Title is required.');
+                return;
+            }
+            await mutate(`/admin/policies/rules/${id}`, 'PUT', payload, 'Rule updated');
+            closeModal(ruleEditModal);
+            window.location.reload();
+        });
     });
 </script>
 @endpush
