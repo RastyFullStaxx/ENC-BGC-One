@@ -118,7 +118,15 @@
                                         <td>
                                             <div class="pol-actions-table inline">
                                                 <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
-                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">
+                                                    @if($policy->status === 'active')
+                                                        Deactivate
+                                                    @elseif($policy->status === 'draft')
+                                                        Confirm
+                                                    @else
+                                                        Reactivate
+                                                    @endif
+                                                </button>
                                                 <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
@@ -180,7 +188,17 @@
                                         <td>
                                             <div class="pol-actions-table inline">
                                                 <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
-                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">
+                                                    @if($policy->status === 'active')
+                                                        Deactivate
+                                                    @elseif($policy->status === 'draft')
+                                                        Confirm
+                                                    @elseif($policy->status === 'archived')
+                                                        Reactivate
+                                                    @else
+                                                        Activate
+                                                    @endif
+                                                </button>
                                                 <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
@@ -242,7 +260,17 @@
                                         <td>
                                             <div class="pol-actions-table inline">
                                                 <button class="pol-action-btn pol-action-edit" data-modal-open="policyModal" data-action="edit">Edit</button>
-                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">Activate / Reactivate</button>
+                                                <button class="pol-action-btn pol-action-status" data-action="status" data-status="{{ $policy->status }}">
+                                                    @if($policy->status === 'active')
+                                                        Deactivate
+                                                    @elseif($policy->status === 'draft')
+                                                        Confirm
+                                                    @elseif($policy->status === 'archived')
+                                                        Reactivate
+                                                    @else
+                                                        Activate
+                                                    @endif
+                                                </button>
                                                 <button class="pol-action-btn pol-action-deactivate" data-action="delete" data-confirm="Delete {{ $policy->name }}?" data-success="Policy deleted.">Delete</button>
                                             </div>
                                         </td>
@@ -298,7 +326,7 @@
                 <textarea rows="2" id="policyImpact" placeholder="Where this shows up or what it blocks (optional)"></textarea>
             </div>
             <div class="pol-field">
-                <label>Active</label>
+                <label>Activate immediately (uncheck to save as draft)</label>
                 <input type="checkbox" class="pol-toggle" id="policyActive" checked>
             </div>
 
@@ -604,7 +632,7 @@
             policyDescInput.value = policy.desc || '';
             policyTagsInput.value = (policy.tags || []).join(', ');
             policyImpactInput.value = policy.impact || '';
-            policyActiveInput.checked = policy.status === 'active';
+            policyActiveInput.checked = policy.status === 'active' || policy.status === 'draft';
         };
 
         const setPreviewFromRow = row => {
@@ -649,7 +677,17 @@
                     }
 
                     if (action === 'status') {
-                        const nextStatus = (policy.status || '').toLowerCase() === 'active' ? 'draft' : 'active';
+                        let nextStatus;
+                        const currentStatus = (policy.status || '').toLowerCase();
+                        
+                        if (currentStatus === 'active') {
+                            nextStatus = 'archived';
+                        } else if (currentStatus === 'draft') {
+                            nextStatus = 'active';
+                        } else {
+                            nextStatus = 'active';
+                        }
+                        
                         await mutate(`/admin/policies/${policy.id}/status`, 'POST', { status: nextStatus });
                         window.location.reload();
                         return;
@@ -696,6 +734,7 @@
                 desc: policyDescInput.value.trim() || null,
                 tags: policyTagsInput.value,
                 impact: policyImpactInput.value.trim() || null,
+                status: policyActiveInput.checked ? 'active' : 'draft',
                 active: policyActiveInput.checked,
             };
 
