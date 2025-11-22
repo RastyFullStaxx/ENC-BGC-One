@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('capacity');
             $table->enum('type', ['meeting','training','multipurpose']);
             $table->enum('status', ['Available','Occupied','Limited_Availability','Under_Maintenance'])->default('Available');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

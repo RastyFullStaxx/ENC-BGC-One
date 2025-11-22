@@ -27,12 +27,15 @@ return new class extends Migration
 
         if (Schema::hasColumn('notification_logs', 'recipient_id')) {
             DB::statement('
-                UPDATE notification_logs nl
-                LEFT JOIN bookings b ON nl.booking_id = b.id
-                SET nl.recipient_id = COALESCE(nl.recipient_id, b.requester_id),
-                    nl.recipient_role = COALESCE(nl.recipient_role, "user")
-                WHERE nl.recipient_id IS NULL
+                UPDATE notification_logs AS nl
+                SET 
+                    recipient_id = COALESCE(nl.recipient_id, b.requester_id),
+                    recipient_role = COALESCE(nl.recipient_role, \'user\')
+                FROM bookings AS b
+                WHERE nl.booking_id = b.id
+                AND nl.recipient_id IS NULL
             ');
+
         }
     }
 

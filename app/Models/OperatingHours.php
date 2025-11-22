@@ -13,6 +13,7 @@ class OperatingHours extends Model
         'facility_id',
         'open_time',
         'close_time',
+        'timezone',
     ];
 
     /**

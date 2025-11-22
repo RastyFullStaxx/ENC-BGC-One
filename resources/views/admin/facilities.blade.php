@@ -7,75 +7,6 @@
 @endpush
 
 @section('content')
-@php
-    // Prefer controller-provided data; fall back to seeded examples for preview.
-    $facilities = $facilities ?? [
-        [
-            'id' => 1,
-            'name' => 'Orion Boardroom',
-            'room_number' => '1208',
-            'building' => 'Building A',
-            'floor' => '12F',
-            'type' => 'Meeting Room',
-            'capacity' => 16,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['LED Wall', 'VC Suite', 'Coffee Station'],
-            'hours' => '08:00 – 20:00',
-            'notes' => 'Executive-ready room with VC suite and pantry access.',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Helios Training Lab',
-            'room_number' => '407',
-            'building' => 'Building B',
-            'floor' => '4F',
-            'type' => 'Training Room',
-            'capacity' => 32,
-            'status' => 'Under Maintenance',
-            'status_key' => 'maintenance',
-            'photo' => 'https://images.unsplash.com/photo-1524758870432-af57e54afa26?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Projector', 'Whiteboards', 'Lapel Microphones'],
-            'hours' => '09:00 – 18:00',
-            'notes' => 'AV refresh in progress; ETA back online this week.',
-        ],
-        [
-            'id' => 3,
-            'name' => 'Summit Hall',
-            'room_number' => 'G12',
-            'building' => 'Building A',
-            'floor' => 'GF',
-            'type' => 'Event Hall',
-            'capacity' => 150,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1503420564238-11f5fe3223b4?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Stage Lighting', 'Sound System', 'Podium'],
-            'hours' => '07:00 – 23:00',
-            'notes' => 'Ideal for town halls and large briefings.',
-        ],
-        [
-            'id' => 4,
-            'name' => 'Nova Collaboration Hub',
-            'room_number' => '715',
-            'building' => 'Building B',
-            'floor' => '7F',
-            'type' => 'Collaboration Space',
-            'capacity' => 24,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Breakout Pods', 'TVs', 'Acoustic Panels'],
-            'hours' => '08:00 – 19:00',
-            'notes' => 'Great for agile pods and hybrid brainstorming.',
-        ],
-    ];
-
-    $equipmentOptions = $equipmentOptions ?? ['Projector', 'LED Wall', 'Wireless Mic', 'Speakerphone', 'Whiteboard', 'Extension Cords', 'Telepresence Kit'];
-    $buildings = $buildings ?? [['id' => 1, 'name' => 'Building A'], ['id' => 2, 'name' => 'Building B']];
-@endphp
-
 <section class="admin-facilities-page">
     <div class="admin-facilities-shell">
         <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
@@ -101,22 +32,22 @@
         <div class="fac-grid" style="margin-bottom: 32px;">
             <div class="fac-widget">
                 <h3>Total facilities</h3>
-                <strong style="font-size: 32px;">{{ $facilitiesCount ?? count($facilities) }}</strong>
+                <strong style="font-size: 32px;">{{ $facilitiesCount ?? 0 }}</strong>
                 <p class="text-muted">Across Building A & B</p>
             </div>
             <div class="fac-widget">
                 <h3>Maintenance queue</h3>
-                <strong style="font-size: 32px;">{{ $maintenanceQueue ?? 3 }}</strong>
+                <strong style="font-size: 32px;">{{ $maintenanceQueue ?? 0 }}</strong>
                 <p class="text-muted">Rooms awaiting completion</p>
             </div>
             <div class="fac-widget">
                 <h3>Bookable capacity</h3>
-                <strong style="font-size: 32px;">{{ $bookableCapacity ?? '1,248' }}</strong>
+                <strong style="font-size: 32px;">{{ $bookableCapacity ?? 0 }}</strong>
                 <p class="text-muted">Total seats available</p>
             </div>
             <div class="fac-widget">
                 <h3>Verified photos</h3>
-                <strong style="font-size: 32px;">{{ $verifiedPhotos ?? 18 }}</strong>
+                <strong style="font-size: 32px;">{{ $verifiedPhotos ?? 0 }}</strong>
                 <p class="text-muted">Updated this quarter</p>
             </div>
         </div>
@@ -133,14 +64,14 @@
                 <div class="fac-chip-group">
                     <button class="fac-chip active" data-filter-building="all">All buildings</button>
                     @foreach ($buildings as $building)
-                        <button class="fac-chip" data-filter-building="{{ $building['name'] ?? $building['id'] }}">{{ $building['name'] }}</button>
+                        <button class="fac-chip" data-filter-building="{{ $building['name'] }}">{{ $building['name'] }}</button>
                     @endforeach
                 </div>
                 <div class="fac-chip-group fac-chip-divider">
                     <button class="fac-chip active" data-filter-type="all">All types</button>
-                    <button class="fac-chip" data-filter-type="Meeting Room">Meeting</button>
-                    <button class="fac-chip" data-filter-type="Training Room">Training</button>
-                    <button class="fac-chip" data-filter-type="Event Hall">Hall</button>
+                    <button class="fac-chip" data-filter-type="meeting">Meeting</button>
+                    <button class="fac-chip" data-filter-type="training">Training</button>
+                    <button class="fac-chip" data-filter-type="multipurpose">Multipurpose</button>
                 </div>
                 <div class="fac-chip-group fac-chip-divider">
                     <button class="fac-chip active" data-filter-status="all">All status</button>
@@ -164,13 +95,15 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($facilities as $facility)
+                        @forelse ($facilities as $facility)
                             @php
                                 $facilityPayload = [
-                                    'id' => $facility['id'] ?? null,
+                                    'id' => $facility['id'],
+                                    'facility_code' => $facility['facility_code'] ?? null,
                                     'name' => $facility['name'],
                                     'room_number' => $facility['room_number'] ?? null,
                                     'building' => $facility['building'],
+                                    'building_id' => $facility['building_id'] ?? null,
                                     'floor' => $facility['floor'],
                                     'type' => $facility['type'],
                                     'capacity' => $facility['capacity'],
@@ -184,9 +117,9 @@
                             @endphp
                             <tr
                                 data-building="{{ $facility['building'] }}"
-                                data-type="{{ $facility['type'] }}"
+                                data-type="{{ strtolower($facility['type']) }}"
                                 data-status="{{ $facility['status_key'] }}"
-                                data-name="{{ $facility['name'] }}"
+                                data-name="{{ strtolower($facility['name']) }}"
                                 data-facility='@json($facilityPayload)'
                             >
                                 <td>
@@ -203,7 +136,7 @@
                                 </td>
                                 <td>{{ $facility['building'] }}</td>
                                 <td>{{ $facility['floor'] }}</td>
-                                <td>{{ $facility['type'] }}</td>
+                                <td>{{ ucfirst($facility['type']) }}</td>
                                 <td>{{ $facility['capacity'] }}</td>
                                 <td>
                                     <span class="fac-status {{ $facility['status_key'] === 'active' ? 'active' : 'maintenance' }}">
@@ -212,29 +145,36 @@
                                 </td>
                                 <td>
                                     <div class="fac-actions">
-                                        <button class="fac-action-btn fac-action-edit" data-modal-open="facilityModal" data-facility="{{ $facility['name'] }}">Edit</button>
-                                        @php $isInactive = ($facility['status_key'] ?? 'active') !== 'active'; @endphp
-                                        <button
-                                            class="fac-action-btn {{ $isInactive ? 'fac-action-reactivate' : 'fac-action-deactivate' }}"
-                                            data-confirm="{{ $isInactive ? 'Reactivate ' . $facility['name'] . '?' : 'Deactivate ' . $facility['name'] . '?' }}"
-                                            data-success="{{ $facility['name'] }} {{ $isInactive ? 'is now visible in catalog.' : 'is now hidden from catalog.' }}"
-                                        >
-                                            {{ $isInactive ? 'Reactivate' : 'Deactivate' }}
-                                        </button>
+                                        <button class="fac-action-btn fac-action-edit" data-edit-facility="{{ $facility['id'] }}">Edit</button>
+                                        <form method="POST" action="{{ route('admin.facilities.destroy', $facility['id']) }}" style="display: inline;" onsubmit="return confirm('Delete {{ $facility['name'] }}? This action cannot be undone.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="fac-action-btn fac-action-deactivate">Delete</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 40px;">
+                                    <p class="text-muted">No facilities found. Click "Add Facility" to create one.</p>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
             <div class="fac-pagination">
-                <span>1–20 of {{ $facilitiesCount ?? count($facilities) }}</span>
+                <span>Showing {{ count($facilities) }} of {{ $facilitiesCount ?? count($facilities) }}</span>
                 <div class="fac-chip-group">
-                    <button class="fac-chip active">1</button>
-                    <button class="fac-chip">2</button>
-                    <button class="fac-chip">3</button>
+                    @php
+                        $totalPages = ceil(($facilitiesCount ?? count($facilities)) / 20);
+                        $currentPage = 1;
+                    @endphp
+                    @for ($i = 1; $i <= min($totalPages, 5); $i++)
+                        <button class="fac-chip {{ $i === $currentPage ? 'active' : '' }}" data-page="{{ $i }}">{{ $i }}</button>
+                    @endfor
                 </div>
             </div>
         </div>
@@ -246,28 +186,31 @@
     <div class="fac-modal fac-modal--wide">
         <header>
             <div>
-                <p class="fac-breadcrumb mb-1">New entry</p>
-                <h3>Add facility</h3>
+                <p class="fac-breadcrumb mb-1" id="modalBreadcrumb">New entry</p>
+                <h3 id="modalTitle">Add facility</h3>
                 <p class="fac-modal-subtitle small mb-0">Capture core room details so bookings stay accurate.</p>
             </div>
             <button class="fac-action-btn" data-modal-close>&times;</button>
         </header>
-        <form id="facilityForm" method="POST" action="{{ route('admin.facilities.store') }}">
+        <form id="facilityForm" method="POST" action="{{ route('admin.facilities.store') }}" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="_method" id="formMethod" value="POST">
+            <input type="hidden" name="facility_id" id="facilityId">
+            
             <div class="fac-section">
                 <header><h4>Basics</h4></header>
                 <div class="fac-grid fac-grid--tight">
                     <div class="fac-field">
                         <label>Name *</label>
-                        <input type="text" name="name" required placeholder="e.g., Orion Boardroom">
+                        <input type="text" name="name" id="facilityName" required placeholder="e.g., Orion Boardroom">
                     </div>
                     <div class="fac-field">
                         <label>Room #</label>
-                        <input type="text" name="room_number" placeholder="1208">
+                        <input type="text" name="room_number" id="facilityRoomNumber" placeholder="1208">
                     </div>
                     <div class="fac-field">
                         <label>Building *</label>
-                        <select name="building_id" required>
+                        <select name="building_id" id="facilityBuilding" required>
                             <option value="">Choose building</option>
                             @foreach ($buildings as $building)
                                 <option value="{{ $building['id'] }}">{{ $building['name'] }}</option>
@@ -276,45 +219,56 @@
                     </div>
                     <div class="fac-field">
                         <label>Floor *</label>
-                        <input type="text" name="floor" placeholder="e.g., 12F" required>
+                        <select name="floor" id="facilityFloor" required>
+                            <option value="">Choose floor</option>
+                            <option value="ground">Ground</option>
+                            <option value="2nd">2nd</option>
+                            <option value="3rd">3rd</option>
+                        </select>
                     </div>
                     <div class="fac-field">
                         <label>Capacity *</label>
-                        <input type="number" name="capacity" min="1" placeholder="Max people" required>
+                        <input type="number" name="capacity" id="facilityCapacity" min="1" placeholder="Max people" required>
                     </div>
                     <div class="fac-field">
                         <label>Type *</label>
-                        <select name="type" required>
+                        <select name="type" id="facilityType" required>
                             <option value="">Select type</option>
-                            <option>Meeting Room</option>
-                            <option>Training Room</option>
-                            <option>Event Hall</option>
-                            <option>Collaboration Space</option>
+                            <option value="meeting">Meeting Room</option>
+                            <option value="training">Training Room</option>
+                            <option value="multipurpose">Multipurpose</option>
                         </select>
                     </div>
                     <div class="fac-field">
                         <label>Status</label>
-                        <select name="status">
+                        <select name="status" id="facilityStatus">
                             <option value="active">Active</option>
-                            <option value="under maintenance">Under Maintenance</option>
+                            <option value="maintenance">Under Maintenance</option>
                         </select>
                     </div>
                 </div>
                 <div class="fac-field">
                     <label>Description</label>
-                    <textarea name="description" rows="2" placeholder="Entrance details, nearby amenities..."></textarea>
+                    <textarea name="description" id="facilityDescription" rows="2" placeholder="Entrance details, nearby amenities..."></textarea>
                 </div>
             </div>
 
             <div class="fac-section">
                 <header><h4>Photos & media</h4></header>
                 <div class="fac-upload-grid">
-                    <div class="fac-upload-slot">
-                        <input type="url" name="photo_url" class="fac-upload-input" placeholder="Primary photo URL">
+                    <div class="fac-upload-slot" id="photoUploadSlot">
+                        <input type="file" name="photo" id="facilityPhoto" accept="image/*" style="display: none;">
+                        <input type="hidden" name="photo_url" id="facilityPhotoUrl">
+                        <button type="button" class="fac-upload-trigger" onclick="document.getElementById('facilityPhoto').click()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <span>Click to upload photo</span>
+                        </button>
+                        <img id="photoPreview" src="" alt="Preview" style="display: none; width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
                     </div>
-                    @for ($i = 0; $i < 3; $i++)
-                        <div class="fac-upload-slot fac-upload-slot--ghost">Add gallery</div>
-                    @endfor
                 </div>
             </div>
 
@@ -322,7 +276,7 @@
                 <header><h4>Equipment</h4></header>
                 <div class="fac-field">
                     <label>Select equipment</label>
-                    <div class="fac-chip-group">
+                    <div class="fac-chip-group" id="equipmentCheckboxes">
                         @foreach ($equipmentOptions as $option)
                             <label class="fac-chip fac-chip-input">
                                 <input type="checkbox" name="equipment[]" value="{{ $option }}"> {{ $option }}
@@ -332,23 +286,22 @@
                 </div>
                 <div class="fac-field">
                     <label>Custom equipment</label>
-                    <input type="text" name="custom_equipment" placeholder="Add custom item">
+                    <input type="text" name="custom_equipment" id="facilityCustomEquipment" placeholder="Add custom item">
                 </div>
             </div>
 
             <div class="fac-section">
                 <header>
                     <h4>Operating hours</h4>
-                    <button type="button" class="fac-action-btn" data-copy-hours="true">Copy to all days</button>
                 </header>
                 <div class="fac-grid fac-grid--tight">
                     <div class="fac-field">
                         <label>Opens</label>
-                        <input type="time" name="open_time" value="08:00">
+                        <input type="time" name="open_time" id="facilityOpenTime" value="08:00">
                     </div>
                     <div class="fac-field">
                         <label>Closes</label>
-                        <input type="time" name="close_time" value="20:00">
+                        <input type="time" name="close_time" id="facilityCloseTime" value="20:00">
                     </div>
                 </div>
             </div>
@@ -410,14 +363,17 @@
     document.addEventListener('DOMContentLoaded', () => {
         const openers = document.querySelectorAll('[data-modal-open]');
         const closers = document.querySelectorAll('[data-modal-close]');
+        const facilityForm = document.getElementById('facilityForm');
+        const searchInput = document.getElementById('facilitySearch');
+        const facilitiesTable = document.getElementById('facilitiesTable');
 
+        // Modal handlers
         openers.forEach(btn => {
             btn.addEventListener('click', () => {
                 const targetId = btn.getAttribute('data-modal-open');
                 const overlay = document.getElementById(targetId);
                 if (!overlay) return;
 
-                // Pre-fill facility detail modal from row data
                 if (targetId === 'facilityDetailModal') {
                     const row = btn.closest('tr');
                     const payload = row?.dataset?.facility ? JSON.parse(row.dataset.facility) : null;
@@ -428,25 +384,132 @@
             });
         });
 
+        // Edit facility handlers
+        document.querySelectorAll('[data-edit-facility]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const facilityId = btn.getAttribute('data-edit-facility');
+                
+                try {
+                    const response = await fetch(`/admin/facilities/${facilityId}`);
+                    const data = await response.json();
+                    
+                    fillFacilityForm(data);
+                    document.getElementById('facilityModal').classList.add('active');
+                } catch (error) {
+                    console.error('Error loading facility:', error);
+                    alert('Failed to load facility data');
+                }
+            });
+        });
+
         closers.forEach(btn => {
             btn.addEventListener('click', () => {
-                btn.closest('.fac-modal-overlay')?.classList.remove('active');
+                const overlay = btn.closest('.fac-modal-overlay');
+                overlay?.classList.remove('active');
+                if (overlay?.id === 'facilityModal') {
+                    resetFacilityForm();
+                }
             });
         });
 
         document.querySelectorAll('.fac-modal-overlay').forEach(overlay => {
             overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('active');
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                    if (overlay.id === 'facilityModal') {
+                        resetFacilityForm();
+                    }
+                }
             });
         });
 
+        // Photo upload handler
+        const photoInput = document.getElementById('facilityPhoto');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoUploadSlot = document.getElementById('photoUploadSlot');
+        const uploadTrigger = photoUploadSlot.querySelector('.fac-upload-trigger');
+
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    photoPreview.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                    uploadTrigger.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Clear photo preview when clicking on it
+        photoPreview.addEventListener('click', () => {
+            if (confirm('Remove photo?')) {
+                photoPreview.src = '';
+                photoPreview.style.display = 'none';
+                uploadTrigger.style.display = 'flex';
+                photoInput.value = '';
+                document.getElementById('facilityPhotoUrl').value = '';
+            }
+        });
+
+        // Fill form for editing
+        function fillFacilityForm(data) {
+            document.getElementById('modalBreadcrumb').textContent = 'Edit entry';
+            document.getElementById('modalTitle').textContent = 'Edit facility';
+            document.getElementById('formMethod').value = 'PUT';
+            document.getElementById('facilityId').value = data.id;
+            facilityForm.action = `/admin/facilities/${data.id}`;
+
+            document.getElementById('facilityName').value = data.name || '';
+            document.getElementById('facilityRoomNumber').value = data.room_number || '';
+            document.getElementById('facilityBuilding').value = data.building_id || '';
+            document.getElementById('facilityFloor').value = data.floor || '';
+            document.getElementById('facilityCapacity').value = data.capacity || '';
+            document.getElementById('facilityType').value = data.type || '';
+            document.getElementById('facilityStatus').value = data.status_key || 'active';
+            document.getElementById('facilityDescription').value = data.notes || '';
+            document.getElementById('facilityPhotoUrl').value = data.photo || '';
+            document.getElementById('facilityOpenTime').value = data.open_time || '08:00';
+            document.getElementById('facilityCloseTime').value = data.close_time || '20:00';
+
+            // Show existing photo preview
+            if (data.photo) {
+                photoPreview.src = data.photo;
+                photoPreview.style.display = 'block';
+                uploadTrigger.style.display = 'none';
+            }
+
+            // Check equipment boxes
+            document.querySelectorAll('#equipmentCheckboxes input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = data.equipment && data.equipment.includes(checkbox.value);
+            });
+        }
+
+        // Reset form
+        function resetFacilityForm() {
+            document.getElementById('modalBreadcrumb').textContent = 'New entry';
+            document.getElementById('modalTitle').textContent = 'Add facility';
+            document.getElementById('formMethod').value = 'POST';
+            document.getElementById('facilityId').value = '';
+            facilityForm.action = '{{ route("admin.facilities.store") }}';
+            facilityForm.reset();
+            
+            // Reset photo preview
+            photoPreview.src = '';
+            photoPreview.style.display = 'none';
+            uploadTrigger.style.display = 'flex';
+            photoInput.value = '';
+        }
+
+        // Fill detail modal
         function fillFacilityDetail(data) {
             const fallbackPhoto = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop';
             document.getElementById('detailName').textContent = data.name || 'Facility';
             document.getElementById('detailMeta').textContent = `${data.building ?? 'Building'} • ${data.floor ?? 'Floor'} • ${data.capacity ?? '—'} seats`;
             document.getElementById('detailBuilding').textContent = data.building ?? 'Building';
             document.getElementById('detailFloor').textContent = data.floor ?? '—';
-            document.getElementById('detailType').textContent = data.type ?? 'Room';
+            document.getElementById('detailType').textContent = data.type ? data.type.charAt(0).toUpperCase() + data.type.slice(1) : 'Room';
             document.getElementById('detailRoom').textContent = data.room_number ?? '—';
             document.getElementById('detailCapacity').textContent = data.capacity ? `${data.capacity} seats` : '—';
             document.getElementById('detailStatus').textContent = data.status ?? 'Active';
@@ -463,6 +526,55 @@
                 chip.className = 'fac-chip active';
                 chip.textContent = item;
                 equipWrap.appendChild(chip);
+            });
+        }
+
+        // Search functionality
+        if (searchInput && facilitiesTable) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                filterTable();
+            });
+        }
+
+        // Filter chips
+        document.querySelectorAll('[data-filter-building], [data-filter-type], [data-filter-status]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active from siblings
+                btn.parentElement.querySelectorAll('.fac-chip').forEach(chip => chip.classList.remove('active'));
+                btn.classList.add('active');
+                filterTable();
+            });
+        });
+
+        function filterTable() {
+            const searchTerm = searchInput?.value.toLowerCase() || '';
+            const activeBuilding = document.querySelector('[data-filter-building].active')?.dataset.filterBuilding || 'all';
+            const activeType = document.querySelector('[data-filter-type].active')?.dataset.filterType || 'all';
+            const activeStatus = document.querySelector('[data-filter-status].active')?.dataset.filterStatus || 'all';
+
+            const rows = facilitiesTable?.querySelectorAll('tbody tr') || [];
+            
+            rows.forEach(row => {
+                if (!row.dataset.facility) {
+                    return; // Skip empty state row
+                }
+
+                const name = row.dataset.name || '';
+                const building = row.dataset.building || '';
+                const type = row.dataset.type || '';
+                const status = row.dataset.status || '';
+
+                const matchesSearch = !searchTerm || name.includes(searchTerm) || building.toLowerCase().includes(searchTerm) || type.includes(searchTerm);
+                const matchesBuilding = activeBuilding === 'all' || building === activeBuilding;
+                const matchesType = activeType === 'all' || type === activeType;
+                const matchesStatus = activeStatus === 'all' || status === activeStatus;
+
+                if (matchesSearch && matchesBuilding && matchesType && matchesStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
             });
         }
     });

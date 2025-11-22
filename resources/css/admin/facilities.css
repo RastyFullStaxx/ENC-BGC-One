@@ -457,12 +457,44 @@
 .fac-upload-slot {
     border: 1px dashed var(--fac-gray-200);
     border-radius: 18px;
-    height: 120px;
+    height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--fac-gray-400);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.fac-upload-trigger {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    color: var(--fac-gray-400);
+    cursor: pointer;
+    padding: 20px;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.fac-upload-trigger:hover {
+    color: var(--fac-white);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.fac-upload-trigger svg {
+    opacity: 0.7;
+}
+
+.fac-upload-trigger span {
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .fac-upload-input {
@@ -475,6 +507,15 @@
 
 .fac-upload-slot--ghost {
     opacity: 0.5;
+}
+
+#photoPreview {
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+#photoPreview:hover {
+    opacity: 0.8;
 }
 
 .fac-hours-table {
