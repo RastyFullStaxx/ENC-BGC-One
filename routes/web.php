@@ -118,6 +118,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/bulk/status', [AdminUserController::class, 'bulkStatus'])->name('bulk-status');
     });
 
+    Route::prefix('/admin/departments')->name('admin.departments.')->group(function () {
+        Route::post('/', [AdminUserController::class, 'storeDepartment'])->name('store');
+        Route::put('/{department}', [AdminUserController::class, 'updateDepartment'])->name('update');
+        Route::delete('/{department}', [AdminUserController::class, 'destroyDepartment'])->name('destroy');
+    });
+
     Route::get('/admin/analytics', [AdminAnalyticsController::class, 'index'])->name('admin.analytics');
     Route::get('/admin/analytics/export/csv', [AdminAnalyticsController::class, 'exportCsv'])->name('admin.analytics.export.csv');
     Route::get('/admin/analytics/export/charts', [AdminAnalyticsController::class, 'exportCharts'])->name('admin.analytics.export.charts');

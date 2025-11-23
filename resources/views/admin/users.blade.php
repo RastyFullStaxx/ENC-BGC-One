@@ -24,6 +24,9 @@
     data-reset-url-template="{{ route('admin.users.reset', '__USER__') }}"
     data-bulk-status-url="{{ route('admin.users.bulk-status') }}"
     data-store-url="{{ route('admin.users.store') }}"
+    data-department-store-url="{{ route('admin.departments.store') }}"
+    data-department-update-url-template="{{ route('admin.departments.update', '__DEPT__') }}"
+    data-department-destroy-url-template="{{ route('admin.departments.destroy', '__DEPT__') }}"
 >
     <div class="admin-users-shell">
         <a href="{{ route('admin.hub') }}" class="admin-back-button admin-back-button--light">
@@ -275,26 +278,27 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="departmentTableBody">
                             @foreach ($departmentSummaries as $dept)
-                                <tr>
+                                <tr data-department-id="{{ $dept['id'] }}">
                                     <td>{{ $dept['name'] }}</td>
                                     <td>{{ $dept['head'] ?? '—' }}</td>
                                     <td>{{ $dept['count'] }}</td>
                                     <td>
                                         <div class="admin-table-actions" style="opacity:1;">
                                             <button
-                                                class="admin-quick-btn admin-quick-btn-warning"
-                                                data-modal-open="departmentModal"
+                                                class="admin-quick-btn admin-quick-btn-warning edit-department-btn"
+                                                data-department-id="{{ $dept['id'] }}"
                                                 data-department-name="{{ $dept['name'] }}"
                                                 data-department-head="{{ $dept['head'] ?? '' }}"
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                class="admin-quick-btn admin-quick-btn-muted"
-                                                data-confirm="Delete {{ $dept['name'] }} department?"
-                                                data-success="{{ $dept['name'] }} department removed."
+                                                class="admin-quick-btn admin-quick-btn-muted delete-department-btn"
+                                                data-department-id="{{ $dept['id'] }}"
+                                                data-department-name="{{ $dept['name'] }}"
+                                                data-department-count="{{ $dept['count'] }}"
                                             >
                                                 Delete
                                             </button>
@@ -511,6 +515,9 @@
             activate: page?.dataset.activateUrlTemplate,
             reset: page?.dataset.resetUrlTemplate,
             bulkStatus: page?.dataset.bulkStatusUrl,
+            departmentStore: page?.dataset.departmentStoreUrl,
+            departmentUpdate: page?.dataset.departmentUpdateUrlTemplate,
+            departmentDestroy: page?.dataset.departmentDestroyUrlTemplate,
         };
 
         const rowsContainer = document.querySelector('#adminUserTableBody');
@@ -546,6 +553,7 @@
         const departmentForm = document.querySelector('#departmentForm');
         const departmentNameInput = document.querySelector('#departmentName');
         const departmentHeadInput = document.querySelector('#departmentHead');
+        const departmentTableBody = document.querySelector('#departmentTableBody');
 
         const tabs = document.querySelectorAll('.admin-tab');
         const panels = {
@@ -562,6 +570,7 @@
         let addSelectedRole = 'staff';
         let addSelectedStatus = 'active';
         let activeRoleCard = null;
+        let currentEditDepartmentId = null;
 
         const swalBase = {
             background: 'rgba(0, 11, 28, 0.96)',
@@ -594,6 +603,7 @@
             });
 
         const buildUrl = (template, id) => template?.replace('__USER__', id);
+        const buildDeptUrl = (template, id) => template?.replace('__DEPT__', id);
         const capitalize = value => (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
 
         const apiRequest = async (url, method = 'POST', payload = null) => {
@@ -1149,13 +1159,187 @@
             notify({ title: 'Role deleted', text: 'Role removed from the view.' });
         });
 
-        departmentForm?.addEventListener('submit', e => {
+        departmentForm?.addEventListener('submit', async e => {
             e.preventDefault();
-            closeModal(document.querySelector('#departmentModal'));
-            notify({ title: 'Department saved', text: `${departmentNameInput.value} captured.` });
+            
+            const name = departmentNameInput.value.trim();
+            const head = departmentHeadInput.value.trim();
+            
+            if (!name) {
+                notify({ title: 'Error', text: 'Department name is required.', icon: 'error' });
+                return;
+            }
+
+            const isEdit = currentEditDepartmentId !== null;
+            const url = isEdit 
+                ? buildDeptUrl(urlTemplates.departmentUpdate, currentEditDepartmentId)
+                : urlTemplates.departmentStore;
+            const method = isEdit ? 'PUT' : 'POST';
+
+            try {
+                const data = await apiRequest(url, method, { name, head });
+                
+                closeModal(document.querySelector('#departmentModal'));
+                
+                if (isEdit) {
+                    updateDepartmentRow(data.department);
+                    notify({ 
+                        title: 'Department updated', 
+                        text: `"${data.department.name}" has been updated successfully.` 
+                    });
+                } else {
+                    addDepartmentRow(data.department);
+                    notify({ 
+                        title: 'Department created', 
+                        text: `"${data.department.name}" has been added successfully.` 
+                    });
+                }
+                
+                departmentForm.reset();
+                currentEditDepartmentId = null;
+            } catch (err) {
+                notify({ title: 'Error', text: err.message, icon: 'error' });
+            }
         });
 
-        document.querySelectorAll('[data-confirm]:not([data-action])').forEach(btn => {
+        // Edit department button handler
+        document.addEventListener('click', e => {
+            const editBtn = e.target.closest('.edit-department-btn');
+            if (editBtn) {
+                e.preventDefault();
+                currentEditDepartmentId = editBtn.dataset.departmentId;
+                departmentNameInput.value = editBtn.dataset.departmentName || '';
+                departmentHeadInput.value = editBtn.dataset.departmentHead || '';
+                
+                const modal = document.querySelector('#departmentModal');
+                const header = modal.querySelector('header h3');
+                header.textContent = 'Edit Department';
+                openModal('departmentModal');
+            }
+        });
+
+        // Delete department button handler
+        document.addEventListener('click', async e => {
+            const deleteBtn = e.target.closest('.delete-department-btn');
+            if (deleteBtn) {
+                e.preventDefault();
+                const deptId = deleteBtn.dataset.departmentId;
+                const deptName = deleteBtn.dataset.departmentName;
+                const deptCount = parseInt(deleteBtn.dataset.departmentCount || '0');
+                
+                if (deptCount > 0) {
+                    notify({ 
+                        title: 'Cannot delete', 
+                        text: `Cannot delete "${deptName}". ${deptCount} user(s) are still assigned to this department.`,
+                        icon: 'error'
+                    });
+                    return;
+                }
+
+                const confirmation = await confirmAction({
+                    title: 'Delete department?',
+                    text: `Are you sure you want to delete "${deptName}"? This action cannot be undone.`,
+                    confirmText: 'Yes, delete it'
+                });
+
+                if (!confirmation.isConfirmed) return;
+
+                try {
+                    const url = buildDeptUrl(urlTemplates.departmentDestroy, deptId);
+                    await apiRequest(url, 'DELETE');
+                    
+                    removeDepartmentRow(deptId);
+                    notify({ 
+                        title: 'Department deleted', 
+                        text: `"${deptName}" has been deleted successfully.` 
+                    });
+                } catch (err) {
+                    notify({ title: 'Error', text: err.message, icon: 'error' });
+                }
+            }
+        });
+
+        // Add department modal open handler
+        document.addEventListener('click', e => {
+            const btn = e.target.closest('[data-modal-open="departmentModal"]');
+            if (btn && !btn.classList.contains('edit-department-btn')) {
+                currentEditDepartmentId = null;
+                departmentForm.reset();
+                const modal = document.querySelector('#departmentModal');
+                const header = modal.querySelector('header h3');
+                header.textContent = 'Department Details';
+            }
+        });
+
+        // Helper functions for department table updates
+        const addDepartmentRow = (dept) => {
+            const row = document.createElement('tr');
+            row.dataset.departmentId = dept.id;
+            row.innerHTML = `
+                <td>${dept.name}</td>
+                <td>${dept.head || '—'}</td>
+                <td>${dept.count}</td>
+                <td>
+                    <div class="admin-table-actions" style="opacity:1;">
+                        <button
+                            class="admin-quick-btn admin-quick-btn-warning edit-department-btn"
+                            data-department-id="${dept.id}"
+                            data-department-name="${dept.name}"
+                            data-department-head="${dept.head || ''}"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            class="admin-quick-btn admin-quick-btn-muted delete-department-btn"
+                            data-department-id="${dept.id}"
+                            data-department-name="${dept.name}"
+                            data-department-count="${dept.count}"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            `;
+            departmentTableBody.appendChild(row);
+        };
+
+        const updateDepartmentRow = (dept) => {
+            const row = departmentTableBody.querySelector(`tr[data-department-id="${dept.id}"]`);
+            if (!row) return;
+            
+            row.innerHTML = `
+                <td>${dept.name}</td>
+                <td>${dept.head || '—'}</td>
+                <td>${dept.count}</td>
+                <td>
+                    <div class="admin-table-actions" style="opacity:1;">
+                        <button
+                            class="admin-quick-btn admin-quick-btn-warning edit-department-btn"
+                            data-department-id="${dept.id}"
+                            data-department-name="${dept.name}"
+                            data-department-head="${dept.head || ''}"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            class="admin-quick-btn admin-quick-btn-muted delete-department-btn"
+                            data-department-id="${dept.id}"
+                            data-department-name="${dept.name}"
+                            data-department-count="${dept.count}"
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            `;
+        };
+
+        const removeDepartmentRow = (deptId) => {
+            const row = departmentTableBody.querySelector(`tr[data-department-id="${deptId}"]`);
+            if (row) row.remove();
+        };
+
+        document.querySelectorAll('[data-confirm]:not([data-action]):not(.delete-department-btn)').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const confirmation = await confirmAction({
                     title: 'Please confirm',

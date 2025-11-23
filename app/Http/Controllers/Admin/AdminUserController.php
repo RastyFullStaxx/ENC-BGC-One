@@ -53,6 +53,7 @@ class AdminUserController extends Controller
 
         $departmentSummaries = $departments->map(function (Department $department) use ($departmentCounts) {
             return [
+                'id' => $department->id,
                 'name' => $department->name,
                 'head' => '—',
                 'count' => (int) ($departmentCounts[$department->id] ?? 0),
@@ -166,6 +167,103 @@ class AdminUserController extends Controller
             'status' => 'ok',
             'message' => 'Statuses updated.',
             'users' => $updated->map(fn (User $user) => $this->transformUser($user)),
+        ]);
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:departments,name'],
+            'head' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $department = Department::create([
+            'name' => $data['name'],
+        ]);
+
+        $this->logUserAction('Created department', null, [
+            'target' => $department->name,
+            'before' => null,
+            'after' => ['name' => $department->name],
+            'changes' => ['Department created: ' . $department->name],
+            'risk' => 'low',
+        ]);
+
+        $userCount = User::where('department_id', $department->id)->count();
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Department created successfully.',
+            'department' => [
+                'id' => $department->id,
+                'name' => $department->name,
+                'head' => $data['head'] ?? '—',
+                'count' => $userCount,
+            ],
+        ], 201);
+    }
+
+    public function updateDepartment(Request $request, Department $department)
+    {
+        $before = $department->only(['name']);
+        
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255', Rule::unique('departments', 'name')->ignore($department->id)],
+            'head' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $department->update([
+            'name' => $data['name'],
+        ]);
+
+        $this->logUserAction('Updated department', null, [
+            'target' => $department->name,
+            'before' => $before,
+            'after' => ['name' => $department->name],
+            'changes' => $this->diffChanges($before, ['name' => $department->name]),
+            'risk' => 'low',
+        ]);
+
+        $userCount = User::where('department_id', $department->id)->count();
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Department updated successfully.',
+            'department' => [
+                'id' => $department->id,
+                'name' => $department->name,
+                'head' => $data['head'] ?? '—',
+                'count' => $userCount,
+            ],
+        ]);
+    }
+
+    public function destroyDepartment(Request $request, Department $department)
+    {
+        $userCount = User::where('department_id', $department->id)->count();
+        
+        if ($userCount > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => "Cannot delete department. {$userCount} user(s) are still assigned to this department.",
+            ], 422);
+        }
+
+        $departmentName = $department->name;
+        $department->delete();
+
+        $this->logUserAction('Deleted department', null, [
+            'target' => $departmentName,
+            'before' => ['name' => $departmentName],
+            'after' => null,
+            'changes' => ['Department deleted: ' . $departmentName],
+            'risk' => 'medium',
+        ]);
+
+        return response()->json([
+            'status' => 'ok',
+            'message' => 'Department deleted successfully.',
+            'department_id' => $department->id,
         ]);
     }
 
