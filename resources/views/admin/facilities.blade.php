@@ -9,69 +9,7 @@
 @section('content')
 @php
     // Prefer controller-provided data; fall back to seeded examples for preview.
-    $facilities = $facilities ?? [
-        [
-            'id' => 1,
-            'name' => 'Orion Boardroom',
-            'room_number' => '1208',
-            'building' => 'Building A',
-            'floor' => '12F',
-            'type' => 'Meeting Room',
-            'capacity' => 16,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['LED Wall', 'VC Suite', 'Coffee Station'],
-            'hours' => '08:00 – 20:00',
-            'notes' => 'Executive-ready room with VC suite and pantry access.',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Helios Training Lab',
-            'room_number' => '407',
-            'building' => 'Building B',
-            'floor' => '4F',
-            'type' => 'Training Room',
-            'capacity' => 32,
-            'status' => 'Under Maintenance',
-            'status_key' => 'maintenance',
-            'photo' => 'https://images.unsplash.com/photo-1524758870432-af57e54afa26?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Projector', 'Whiteboards', 'Lapel Microphones'],
-            'hours' => '09:00 – 18:00',
-            'notes' => 'AV refresh in progress; ETA back online this week.',
-        ],
-        [
-            'id' => 3,
-            'name' => 'Summit Hall',
-            'room_number' => 'G12',
-            'building' => 'Building A',
-            'floor' => 'GF',
-            'type' => 'Event Hall',
-            'capacity' => 150,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1503420564238-11f5fe3223b4?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Stage Lighting', 'Sound System', 'Podium'],
-            'hours' => '07:00 – 23:00',
-            'notes' => 'Ideal for town halls and large briefings.',
-        ],
-        [
-            'id' => 4,
-            'name' => 'Nova Collaboration Hub',
-            'room_number' => '715',
-            'building' => 'Building B',
-            'floor' => '7F',
-            'type' => 'Collaboration Space',
-            'capacity' => 24,
-            'status' => 'Active',
-            'status_key' => 'active',
-            'photo' => 'https://images.unsplash.com/photo-1431540015161-0bf868a2d407?auto=format&fit=crop&w=900&q=60',
-            'equipment' => ['Breakout Pods', 'TVs', 'Acoustic Panels'],
-            'hours' => '08:00 – 19:00',
-            'notes' => 'Great for agile pods and hybrid brainstorming.',
-        ],
-    ];
-
+    $facilities = $facilities ?? [];
     $equipmentOptions = $equipmentOptions ?? ['Projector', 'LED Wall', 'Wireless Mic', 'Speakerphone', 'Whiteboard', 'Extension Cords', 'Telepresence Kit'];
     $buildings = $buildings ?? [['id' => 1, 'name' => 'Building A'], ['id' => 2, 'name' => 'Building B']];
 @endphp
@@ -122,32 +60,41 @@
         </div>
 
         <div class="fac-surface">
-            <div class="fac-toolbar">
+            <form class="fac-toolbar" id="facFilterForm" method="GET" action="{{ route('admin.facilities') }}">
+                @php
+                    $activeBuilding = $filters['building'] ?? '';
+                    $activeType = $filters['type'] ?? '';
+                    $activeStatus = $filters['status'] ?? '';
+                @endphp
+                <input type="hidden" name="building" id="filterBuilding" value="{{ $activeBuilding }}">
+                <input type="hidden" name="type" id="filterType" value="{{ $activeType }}">
+                <input type="hidden" name="status" id="filterStatus" value="{{ $activeStatus }}">
                 <div class="fac-search">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.6"/>
                         <path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                     </svg>
-                    <input type="search" id="facilitySearch" placeholder="Search by name, building, or type">
+                    <input type="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search by name, building, or type">
                 </div>
                 <div class="fac-chip-group">
-                    <button class="fac-chip active" data-filter-building="all">All buildings</button>
+                    <button class="fac-chip {{ $activeBuilding === '' ? 'active' : '' }}" data-filter-building="">All buildings</button>
                     @foreach ($buildings as $building)
-                        <button class="fac-chip" data-filter-building="{{ $building['name'] ?? $building['id'] }}">{{ $building['name'] }}</button>
+                        <button class="fac-chip {{ $activeBuilding === ($building['name'] ?? '') ? 'active' : '' }}" data-filter-building="{{ $building['name'] }}">{{ $building['name'] }}</button>
                     @endforeach
                 </div>
                 <div class="fac-chip-group fac-chip-divider">
-                    <button class="fac-chip active" data-filter-type="all">All types</button>
-                    <button class="fac-chip" data-filter-type="Meeting Room">Meeting</button>
-                    <button class="fac-chip" data-filter-type="Training Room">Training</button>
-                    <button class="fac-chip" data-filter-type="Event Hall">Hall</button>
+                    <button class="fac-chip {{ $activeType === '' ? 'active' : '' }}" data-filter-type="">All types</button>
+                    <button class="fac-chip {{ $activeType === 'Meeting Room' ? 'active' : '' }}" data-filter-type="Meeting Room">Meeting</button>
+                    <button class="fac-chip {{ $activeType === 'Training Room' ? 'active' : '' }}" data-filter-type="Training Room">Training</button>
+                    <button class="fac-chip {{ $activeType === 'Event Hall' ? 'active' : '' }}" data-filter-type="Event Hall">Hall</button>
                 </div>
                 <div class="fac-chip-group fac-chip-divider">
-                    <button class="fac-chip active" data-filter-status="all">All status</button>
-                    <button class="fac-chip" data-filter-status="active">Active</button>
-                    <button class="fac-chip" data-filter-status="maintenance">Maintenance</button>
+                    <button class="fac-chip {{ $activeStatus === '' ? 'active' : '' }}" data-filter-status="">All status</button>
+                    <button class="fac-chip {{ $activeStatus === 'active' ? 'active' : '' }}" data-filter-status="active">Active</button>
+                    <button class="fac-chip {{ $activeStatus === 'maintenance' ? 'active' : '' }}" data-filter-status="maintenance">Maintenance</button>
                 </div>
-            </div>
+                <button class="fac-btn fac-btn-primary" type="submit">Apply</button>
+            </form>
 
             <div class="fac-table-wrapper">
                 <table class="fac-table" id="facilitiesTable">
@@ -166,21 +113,23 @@
                     <tbody>
                         @foreach ($facilities as $facility)
                             @php
-                                $facilityPayload = [
-                                    'id' => $facility['id'] ?? null,
-                                    'name' => $facility['name'],
-                                    'room_number' => $facility['room_number'] ?? null,
-                                    'building' => $facility['building'],
-                                    'floor' => $facility['floor'],
-                                    'type' => $facility['type'],
-                                    'capacity' => $facility['capacity'],
-                                    'status' => $facility['status'],
-                                    'status_key' => $facility['status_key'] ?? 'active',
-                                    'photo' => $facility['photo'],
-                                    'equipment' => $facility['equipment'],
-                                    'hours' => $facility['hours'] ?? null,
-                                    'notes' => $facility['notes'] ?? null,
-                                ];
+                        $facilityPayload = [
+                            'id' => $facility['id'] ?? null,
+                            'name' => $facility['name'],
+                            'room_number' => $facility['room_number'] ?? null,
+                            'building_id' => $facility['building_id'] ?? null,
+                            'building' => $facility['building'],
+                            'floor' => $facility['floor'],
+                            'type' => $facility['type'],
+                            'capacity' => $facility['capacity'],
+                            'status' => $facility['status'],
+                            'status_key' => $facility['status_key'] ?? 'active',
+                            'photo' => $facility['photo'],
+                            'equipment' => $facility['equipment'],
+                            'photos' => $facility['photos'] ?? [],
+                            'hours' => $facility['hours'] ?? null,
+                            'notes' => $facility['notes'] ?? null,
+                        ];
                             @endphp
                             <tr
                                 data-building="{{ $facility['building'] }}"
@@ -206,21 +155,28 @@
                                 <td>{{ $facility['type'] }}</td>
                                 <td>{{ $facility['capacity'] }}</td>
                                 <td>
-                                    <span class="fac-status {{ $facility['status_key'] === 'active' ? 'active' : 'maintenance' }}">
+                                    <span class="fac-status {{ $facility['status_key'] === 'maintenance' ? 'maintenance' : 'active' }}">
                                         {{ $facility['status'] }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="fac-actions">
-                                        <button class="fac-action-btn fac-action-edit" data-modal-open="facilityModal" data-facility="{{ $facility['name'] }}">Edit</button>
-                                        @php $isInactive = ($facility['status_key'] ?? 'active') !== 'active'; @endphp
                                         <button
-                                            class="fac-action-btn {{ $isInactive ? 'fac-action-reactivate' : 'fac-action-deactivate' }}"
-                                            data-confirm="{{ $isInactive ? 'Reactivate ' . $facility['name'] . '?' : 'Deactivate ' . $facility['name'] . '?' }}"
-                                            data-success="{{ $facility['name'] }} {{ $isInactive ? 'is now visible in catalog.' : 'is now hidden from catalog.' }}"
-                                        >
-                                            {{ $isInactive ? 'Reactivate' : 'Deactivate' }}
-                                        </button>
+                                            class="fac-action-btn fac-action-edit"
+                                            data-modal-open="facilityModal"
+                                            data-facility='@json($facility)'
+                                        >Edit</button>
+                                        @php $isInactive = ($facility['status_key'] ?? 'active') !== 'active'; @endphp
+                                        <form method="POST" action="{{ route('admin.facilities.status', $facility['id']) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button
+                                                type="submit"
+                                                class="fac-action-btn {{ $isInactive ? 'fac-action-reactivate' : 'fac-action-deactivate' }}"
+                                            >
+                                                {{ $isInactive ? 'Reactivate' : 'Deactivate' }}
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -229,14 +185,20 @@
                 </table>
             </div>
 
-            <div class="fac-pagination">
-                <span>1–20 of {{ $facilitiesCount ?? count($facilities) }}</span>
-                <div class="fac-chip-group">
-                    <button class="fac-chip active">1</button>
-                    <button class="fac-chip">2</button>
-                    <button class="fac-chip">3</button>
+            @php
+                $start = ($facilities->currentPage() - 1) * $facilities->perPage() + 1;
+                $end = min($facilities->total(), $facilities->currentPage() * $facilities->perPage());
+            @endphp
+            @if ($facilities->lastPage() > 1)
+                <div class="fac-pagination">
+                    <span>{{ $start }}–{{ $end }} of {{ $facilities->total() }}</span>
+                    <div class="fac-chip-group">
+                        @for ($page = 1; $page <= $facilities->lastPage(); $page++)
+                            <a class="fac-chip {{ $page === $facilities->currentPage() ? 'active' : '' }}" href="{{ $facilities->url($page) }}">{{ $page }}</a>
+                        @endfor
+                    </div>
                 </div>
-            </div>
+            @endif
         </div>
     </div>
 </section>
@@ -252,8 +214,9 @@
             </div>
             <button class="fac-action-btn" data-modal-close>&times;</button>
         </header>
-        <form id="facilityForm" method="POST" action="{{ route('admin.facilities.store') }}">
+        <form id="facilityForm" method="POST" action="{{ route('admin.facilities.store') }}" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="_method" value="POST" id="facilityFormMethod">
             <div class="fac-section">
                 <header><h4>Basics</h4></header>
                 <div class="fac-grid fac-grid--tight">
@@ -296,7 +259,9 @@
                         <label>Status</label>
                         <select name="status">
                             <option value="active">Active</option>
-                            <option value="under maintenance">Under Maintenance</option>
+                            <option value="occupied">Occupied</option>
+                            <option value="limited">Limited Availability</option>
+                            <option value="maintenance">Under Maintenance</option>
                         </select>
                     </div>
                 </div>
@@ -308,13 +273,37 @@
 
             <div class="fac-section">
                 <header><h4>Photos & media</h4></header>
+                <div class="fac-preview-grid" id="photoPreviewGrid"></div>
                 <div class="fac-upload-grid">
-                    <div class="fac-upload-slot">
-                        <input type="url" name="photo_url" class="fac-upload-input" placeholder="Primary photo URL">
+                    <label class="fac-upload-slot fac-upload-slot--button">
+                        <input type="file" name="photos[]" accept="image/*" class="fac-upload-input-file">
+                        <span class="fac-upload-label">Upload primary</span>
+                        <small class="fac-meta">JPG, PNG up to 4MB</small>
+                    </label>
+                    <label class="fac-upload-slot fac-upload-slot--button fac-upload-slot--ghost">
+                        <input type="file" name="photos[]" accept="image/*" class="fac-upload-input-file">
+                        <span class="fac-upload-label">Upload gallery</span>
+                        <small class="fac-meta">Secondary</small>
+                    </label>
+                    <label class="fac-upload-slot fac-upload-slot--button fac-upload-slot--ghost">
+                        <input type="file" name="photos[]" accept="image/*" class="fac-upload-input-file">
+                        <span class="fac-upload-label">Upload gallery</span>
+                        <small class="fac-meta">Secondary</small>
+                    </label>
+                    <label class="fac-upload-slot fac-upload-slot--button fac-upload-slot--ghost">
+                        <input type="file" name="photos[]" accept="image/*" class="fac-upload-input-file">
+                        <span class="fac-upload-label">Upload gallery</span>
+                        <small class="fac-meta">Secondary</small>
+                    </label>
+                </div>
+                <div class="fac-field mt-2">
+                    <label>Paste URLs (optional)</label>
+                    <div class="fac-upload-grid fac-upload-grid--urls">
+                        <input type="text" name="photo_url" class="fac-upload-input" placeholder="Primary photo URL (optional)" inputmode="url">
+                        @for ($i = 0; $i < 3; $i++)
+                            <input type="text" name="photo_urls[]" class="fac-upload-input fac-upload-input--ghost" placeholder="Additional photo URL (optional)" inputmode="url">
+                        @endfor
                     </div>
-                    @for ($i = 0; $i < 3; $i++)
-                        <div class="fac-upload-slot fac-upload-slot--ghost">Add gallery</div>
-                    @endfor
                 </div>
             </div>
 
@@ -406,15 +395,24 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const openers = document.querySelectorAll('[data-modal-open]');
         const closers = document.querySelectorAll('[data-modal-close]');
+        const facilityForm = document.getElementById('facilityForm');
+            const facilityFormMethod = document.getElementById('facilityFormMethod');
+            const facilityFormAction = facilityForm?.getAttribute('action');
+            const filterForm = document.getElementById('facFilterForm');
+            const filterBuilding = document.getElementById('filterBuilding');
+            const filterType = document.getElementById('filterType');
+            const filterStatus = document.getElementById('filterStatus');
+            const previewGrid = document.getElementById('photoPreviewGrid');
 
-        openers.forEach(btn => {
-            btn.addEventListener('click', () => {
-                const targetId = btn.getAttribute('data-modal-open');
-                const overlay = document.getElementById(targetId);
+            openers.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-modal-open');
+                    const overlay = document.getElementById(targetId);
                 if (!overlay) return;
 
                 // Pre-fill facility detail modal from row data
@@ -424,21 +422,87 @@
                     if (payload) fillFacilityDetail(payload);
                 }
 
+                if (targetId === 'facilityModal') {
+                    const payload = btn.dataset.facility ? JSON.parse(btn.dataset.facility) : null;
+                    setupFacilityForm(payload);
+                }
+
                 overlay.classList.add('active');
             });
         });
 
-        closers.forEach(btn => {
-            btn.addEventListener('click', () => {
-                btn.closest('.fac-modal-overlay')?.classList.remove('active');
-            });
-        });
+                closers.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        btn.closest('.fac-modal-overlay')?.classList.remove('active');
+                    });
+                });
 
-        document.querySelectorAll('.fac-modal-overlay').forEach(overlay => {
-            overlay.addEventListener('click', (e) => {
-                if (e.target === overlay) overlay.classList.remove('active');
+            document.querySelectorAll('.fac-modal-overlay').forEach(overlay => {
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) overlay.classList.remove('active');
+                });
             });
-        });
+
+            // Filters
+            document.querySelectorAll('[data-filter-building]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (filterBuilding) filterBuilding.value = btn.dataset.filterBuilding || '';
+                    filterForm?.submit();
+                });
+            });
+            document.querySelectorAll('[data-filter-type]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (filterType) filterType.value = btn.dataset.filterType || '';
+                    filterForm?.submit();
+                });
+            });
+            document.querySelectorAll('[data-filter-status]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (filterStatus) filterStatus.value = btn.dataset.filterStatus || '';
+                    filterForm?.submit();
+                });
+            });
+
+            // Sweet alerts for status forms and session feedback
+            document.querySelectorAll('form[action*="/admin/facilities/"][action$="/status"]').forEach(form => {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const btn = form.querySelector('button[type="submit"]');
+                    const isReactivate = btn?.classList.contains('fac-action-reactivate');
+                    Swal.fire({
+                        title: isReactivate ? 'Reactivate facility?' : 'Deactivate facility?',
+                        text: isReactivate ? 'This will make the room visible again.' : 'This will hide the room from catalog.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: isReactivate ? 'Reactivate' : 'Deactivate',
+                        cancelButtonText: 'Cancel'
+                    }).then(result => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+
+            const statusMsg = @json(session('status'));
+            if (statusMsg) {
+                Swal.fire({ icon: 'success', title: 'Success', text: statusMsg, timer: 1800, showConfirmButton: false });
+            }
+
+            function renderPreviews(images = []) {
+                if (!previewGrid) return;
+                previewGrid.innerHTML = '';
+                images.filter(Boolean).forEach(src => {
+                    const thumb = document.createElement('div');
+                    thumb.className = 'fac-preview-thumb';
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = 'Facility photo';
+                    thumb.appendChild(img);
+                    previewGrid.appendChild(thumb);
+                });
+            }
 
         function fillFacilityDetail(data) {
             const fallbackPhoto = 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop';
@@ -463,6 +527,79 @@
                 chip.className = 'fac-chip active';
                 chip.textContent = item;
                 equipWrap.appendChild(chip);
+            });
+        }
+
+        function setupFacilityForm(data) {
+            if (!facilityForm) return;
+            facilityForm.reset();
+            facilityForm.setAttribute('action', facilityFormAction);
+            facilityFormMethod.value = 'POST';
+            const inputs = {
+                name: facilityForm.querySelector('[name="name"]'),
+                room_number: facilityForm.querySelector('[name="room_number"]'),
+                building_id: facilityForm.querySelector('[name="building_id"]'),
+                floor: facilityForm.querySelector('[name="floor"]'),
+                capacity: facilityForm.querySelector('[name="capacity"]'),
+                type: facilityForm.querySelector('[name="type"]'),
+                status: facilityForm.querySelector('[name="status"]'),
+                description: facilityForm.querySelector('[name="description"]'),
+                open_time: facilityForm.querySelector('[name="open_time"]'),
+                close_time: facilityForm.querySelector('[name="close_time"]'),
+                photo_url: facilityForm.querySelector('[name="photo_url"]'),
+                photo_urls: facilityForm.querySelectorAll('[name="photo_urls[]"]'),
+            };
+
+            // clear checkboxes
+            facilityForm.querySelectorAll('[name="equipment[]"]').forEach(cb => cb.checked = false);
+            renderPreviews([]);
+
+            if (data) {
+                facilityForm.setAttribute('action', `{{ url('/admin/facilities') }}/${data.id}`);
+                facilityFormMethod.value = 'PATCH';
+                if (inputs.name) inputs.name.value = data.name || '';
+                if (inputs.room_number) inputs.room_number.value = data.room_number || '';
+                if (inputs.building_id) inputs.building_id.value = data.building_id || '';
+                if (inputs.floor) inputs.floor.value = data.floor || '';
+                if (inputs.capacity) inputs.capacity.value = data.capacity || '';
+                if (inputs.type) inputs.type.value = data.type || '';
+                if (inputs.status) inputs.status.value = data.status || 'Active';
+                if (inputs.description) inputs.description.value = data.notes || '';
+                if (inputs.open_time && data.hours) {
+                    const parts = data.hours.split('–').map(p => p.trim());
+                    if (parts[0]) inputs.open_time.value = parts[0];
+                    if (parts[1]) inputs.close_time.value = parts[1];
+                }
+                const photos = data.photos || [];
+                if (inputs.photo_url) inputs.photo_url.value = photos[0] || '';
+                inputs.photo_urls?.forEach((input, idx) => input.value = photos[idx + 1] || '');
+                renderPreviews(photos);
+
+                const equipment = new Set(data.equipment || []);
+                facilityForm.querySelectorAll('[name="equipment[]"]').forEach(cb => {
+                    if (equipment.has(cb.value)) cb.checked = true;
+                });
+
+                if (inputs.status) inputs.status.value = data.status_key || 'active';
+            }
+
+            // file + URL preview updates
+            const fileInputs = facilityForm.querySelectorAll('.fac-upload-input-file');
+            fileInputs.forEach(input => {
+                input.onchange = () => {
+                    const files = Array.from(fileInputs).flatMap(fi => Array.from(fi.files || []));
+                    const urls = files.map(file => URL.createObjectURL(file));
+                    const urlFields = Array.from(facilityForm.querySelectorAll('[name="photo_url"], [name="photo_urls[]"]')).map(f => f.value).filter(Boolean);
+                    renderPreviews([...urls, ...urlFields]);
+                };
+            });
+            const urlInputs = facilityForm.querySelectorAll('[name="photo_url"], [name="photo_urls[]"]');
+            urlInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    const urlFields = Array.from(urlInputs).map(f => f.value).filter(Boolean);
+                    const files = Array.from(fileInputs).flatMap(fi => Array.from(fi.files || [])).map(file => URL.createObjectURL(file));
+                    renderPreviews([...files, ...urlFields]);
+                });
             });
         }
     });

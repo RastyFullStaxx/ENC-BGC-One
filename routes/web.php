@@ -135,6 +135,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/facilities', [AdminFacilityController::class, 'index'])->name('admin.facilities');
     Route::post('/admin/facilities', [AdminFacilityController::class, 'store'])->name('admin.facilities.store');
+    Route::patch('/admin/facilities/{facility}', [AdminFacilityController::class, 'update'])->name('admin.facilities.update');
+    Route::match(['patch', 'post', 'get'], '/admin/facilities/{facility}/status', [AdminFacilityController::class, 'toggleStatus'])->name('admin.facilities.status');
     Route::get('/admin/facilities/{facility}', [AdminFacilityController::class, 'show'])->name('admin.facilities.show');
 
     // Policies

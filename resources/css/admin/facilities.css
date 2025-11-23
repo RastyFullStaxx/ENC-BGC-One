@@ -433,6 +433,17 @@
     background: rgba(255, 255, 255, 0.03);
     padding: 12px;
     color: var(--fac-white);
+    appearance: none;
+}
+
+.fac-field select option {
+    background: #011126;
+    color: var(--fac-white);
+}
+
+.fac-field select:focus {
+    border-color: var(--fac-blue-light);
+    outline: none;
 }
 
 .fac-section {
@@ -450,19 +461,45 @@
 
 .fac-upload-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 12px;
+}
+
+.fac-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.fac-preview-thumb {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--fac-gray-100);
+    height: 90px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.fac-preview-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .fac-upload-slot {
     border: 1px dashed var(--fac-gray-200);
     border-radius: 18px;
-    height: 120px;
+    min-height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--fac-gray-400);
     cursor: pointer;
+    text-align: center;
+    padding: 12px;
+    position: relative;
 }
 
 .fac-upload-input {
@@ -475,6 +512,38 @@
 
 .fac-upload-slot--ghost {
     opacity: 0.5;
+}
+
+.fac-upload-slot--button input[type="file"] {
+    width: 100%;
+}
+
+.fac-upload-input-file {
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+}
+
+.fac-upload-slot--button {
+    border-style: solid;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--fac-white);
+    display: grid;
+    place-items: center;
+    gap: 6px;
+}
+
+.fac-upload-label {
+    font-weight: 700;
+}
+
+.fac-upload-grid--urls {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.fac-upload-input--ghost {
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .fac-hours-table {
@@ -584,4 +653,27 @@
         justify-content: space-between;
         border: none;
     }
+}
+
+/* SweetAlert styling for visibility on dark theme */
+.swal2-popup {
+    background: #0b1225;
+    color: var(--fac-white);
+    border: 1px solid var(--fac-gray-100);
+}
+
+.swal2-styled:focus {
+    box-shadow: none;
+}
+
+.swal2-styled.swal2-confirm {
+    background: linear-gradient(120deg, var(--fac-blue-light), #4C7DFF) !important;
+    color: var(--fac-white) !important;
+    border: 1px solid rgba(76, 125, 255, 0.5) !important;
+}
+
+.swal2-styled.swal2-cancel {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: var(--fac-white) !important;
+    border: 1px solid var(--fac-gray-100) !important;
 }
