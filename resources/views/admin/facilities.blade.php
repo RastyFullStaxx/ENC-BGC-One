@@ -4,6 +4,35 @@
 
 @push('styles')
     @vite(['resources/css/admin/facilities.css'])
+    <style>
+        /* Ensure SweetAlert appears above facility modals */
+        .swal2-container {
+            z-index: 10000 !important;
+        }
+        
+        /* Fix SweetAlert button visibility */
+        .swal2-confirm,
+        .swal2-cancel {
+            color: #fff !important;
+            font-weight: 500 !important;
+        }
+        
+        .swal2-confirm {
+            background-color: #0d6efd !important;
+        }
+        
+        .swal2-cancel {
+            background-color: #6c757d !important;
+        }
+        
+        .swal2-confirm:hover {
+            background-color: #0b5ed7 !important;
+        }
+        
+        .swal2-cancel:hover {
+            background-color: #5c636a !important;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -146,11 +175,7 @@
                                 <td>
                                     <div class="fac-actions">
                                         <button class="fac-action-btn fac-action-edit" data-edit-facility="{{ $facility['id'] }}">Edit</button>
-                                        <form method="POST" action="{{ route('admin.facilities.destroy', $facility['id']) }}" style="display: inline;" onsubmit="return confirm('Delete {{ $facility['name'] }}? This action cannot be undone.');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="fac-action-btn fac-action-deactivate">Delete</button>
-                                        </form>
+                                        <button class="fac-action-btn fac-action-delete" data-delete-facility="{{ $facility['id'] }}" data-facility-name="{{ $facility['name'] }}">Delete</button>
                                     </div>
                                 </td>
                             </tr>
@@ -359,8 +384,22 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // Show success message if exists
+        @if(session('status'))
+            Swal.fire({
+                title: 'Success!',
+                text: '{{ session('status') }}',
+                icon: 'success',
+                confirmButtonColor: '#0d6efd',
+                confirmButtonText: 'OK',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
         const openers = document.querySelectorAll('[data-modal-open]');
         const closers = document.querySelectorAll('[data-modal-close]');
         const facilityForm = document.getElementById('facilityForm');
@@ -398,6 +437,58 @@
                 } catch (error) {
                     console.error('Error loading facility:', error);
                     alert('Failed to load facility data');
+                };
+            });
+        });
+
+        // Delete facility handlers
+        document.querySelectorAll('[data-delete-facility]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const facilityId = btn.getAttribute('data-delete-facility');
+                const facilityName = btn.getAttribute('data-facility-name');
+                
+                const result = await Swal.fire({
+                    title: 'Delete facility?',
+                    html: `Are you sure you want to delete <strong>${facilityName}</strong>?<br><small class="text-muted">This action cannot be undone.</small>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                });
+                
+                if (result.isConfirmed) {
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Deleting...',
+                        text: 'Please wait while we delete the facility.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Create and submit delete form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/facilities/${facilityId}`;
+                    
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    
+                    form.appendChild(csrfInput);
+                    form.appendChild(methodInput);
+                    document.body.appendChild(form);
+                    form.submit();
                 }
             });
         });
@@ -444,12 +535,60 @@
 
         // Clear photo preview when clicking on it
         photoPreview.addEventListener('click', () => {
-            if (confirm('Remove photo?')) {
-                photoPreview.src = '';
-                photoPreview.style.display = 'none';
-                uploadTrigger.style.display = 'flex';
-                photoInput.value = '';
-                document.getElementById('facilityPhotoUrl').value = '';
+            Swal.fire({
+                title: 'Remove photo?',
+                text: 'This will clear the selected photo.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, remove it',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    photoPreview.src = '';
+                    photoPreview.style.display = 'none';
+                    uploadTrigger.style.display = 'flex';
+                    photoInput.value = '';
+                    document.getElementById('facilityPhotoUrl').value = '';
+                }
+            });
+        });
+
+        // Form submission handler with confirmation
+        facilityForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const isEdit = document.getElementById('facilityId').value !== '';
+            const facilityName = document.getElementById('facilityName').value;
+            
+            const result = await Swal.fire({
+                title: isEdit ? 'Update facility?' : 'Add new facility?',
+                html: isEdit 
+                    ? `Are you sure you want to update <strong>${facilityName}</strong>?`
+                    : `Are you sure you want to add <strong>${facilityName}</strong>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: isEdit ? 'Yes, update it' : 'Yes, add it',
+                cancelButtonText: 'Cancel'
+            });
+            
+            if (result.isConfirmed) {
+                // Show loading state
+                Swal.fire({
+                    title: isEdit ? 'Updating...' : 'Adding...',
+                    text: 'Please wait while we process your request.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                // Submit the form
+                facilityForm.submit();
             }
         });
 
