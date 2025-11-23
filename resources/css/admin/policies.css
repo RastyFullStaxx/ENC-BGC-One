@@ -129,13 +129,15 @@
     border: 1px solid var(--pol-gray-100);
     border-radius: 24px;
     overflow: hidden;
+    overflow-x: auto;
 }
 
 .pol-table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
+    table-layout: auto;
     background: rgba(3, 12, 30, 0.65);
+    min-width: 1200px;
 }
 
 .pol-table th,
@@ -783,7 +785,8 @@
 
 .pol-table-simple th:last-child,
 .pol-table-simple td:last-child {
-    width: 240px;
+    width: 280px;
+    min-width: 280px;
 }
 
 .pol-preview-shell {
@@ -820,14 +823,13 @@
 
 .pol-actions-table.inline {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     opacity: 1;
     justify-content: flex-start;
     align-items: center;
     white-space: nowrap;
-    min-width: 220px;
-    width: 100%;
-    height: 100%;
+    min-width: 260px;
+    flex-wrap: nowrap;
 }
 
 .pol-action-btn {
@@ -837,7 +839,9 @@
     font-weight: 700;
     cursor: pointer;
     border-radius: 12px;
-    padding: 8px 12px;
+    padding: 8px 14px;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .pol-action-edit {
