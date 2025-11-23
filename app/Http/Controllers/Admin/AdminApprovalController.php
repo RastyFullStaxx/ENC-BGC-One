@@ -105,11 +105,10 @@ class AdminApprovalController extends Controller
         ];
 
         $newStatus = $statusMap[$data['action']];
-        $booking->skip_audit_observer = true;
         $beforeStatus = $booking->status;
 
         $booking->status = $newStatus;
-        $booking->save();
+        $booking->saveQuietly();
 
         $booking->approval()->updateOrCreate(
             ['booking_id' => $booking->id],

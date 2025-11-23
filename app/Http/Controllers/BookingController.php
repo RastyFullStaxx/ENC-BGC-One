@@ -80,10 +80,19 @@ class BookingController extends Controller
         $facilities = $query->get()->map(function ($facility) use ($request) {
             $availability = $this->getFacilityAvailability($facility, $request->date ?? Carbon::now('Asia/Manila')->format('Y-m-d'));
             
-            // Convert photo URLs from storage paths to web-accessible URLs
+            // Map photo URLs - handle both storage paths and direct web paths
             $photos = $facility->photos->map(function ($photo) {
-                // Remove 'public/' prefix and prepend '/' for web root
-                return '/' . str_replace('public/', '', $photo->url);
+                $url = $photo->url;
+                // If it starts with 'storage/', convert to web-accessible path
+                if (str_starts_with($url, 'storage/')) {
+                    return '/storage/' . str_replace('storage/', '', $url);
+                }
+                // If it already starts with '/', it's a web path - use as is
+                if (str_starts_with($url, '/')) {
+                    return $url;
+                }
+                // Otherwise, assume it's a storage path without prefix
+                return '/storage/' . $url;
             })->toArray();
             
             return [
